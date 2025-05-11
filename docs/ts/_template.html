@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>基本型 - TypeScript 学習</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>TypeScript 学習ポータル</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="01_basic_type.html">基本型</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="previous-page.html" class="prev">前</a> |
+        <a href="next-page.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>基本型</h2>
+        <p>
+          TypeScript で使われる基本的な型について解説します。以下は、TypeScript
+          でよく使われる型のいくつかです。
+        </p>
+
+        <!-- コードブロック -->
+        <pre><code class="language-ts">let isDone: boolean = true;
+let age: number = 25;
+let username: string = "John Doe";
+</code></pre>
+
+        <p>
+          上記のコードでは、`boolean` 型、`number` 型、`string`
+          型を使っています。これらは TypeScript での基本的な型です。
+        </p>
+
+        <!-- 数式の表示 -->
+        <p>次に、数学的な表現である集合の例を示します。</p>
+        <p>
+          関数
+          <code>sum</code> は、2つの文字列を受け取り、文字列を返すとします。
+        </p>
+        <p>
+          数式:
+          <span
+            >\( \text{sum}: \text{string} \times \text{string} \to \text{string}
+            \)</span
+          >
+        </p>
+
+        <div class="block-remark">
+          <span></span>
+            <div class="text-content">
+          <strong>備考：</strong
+          >この型はプリミティブ型の一つですが、特殊な取り扱いがあります。
+          ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取
+          り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。ィブ型の一つですが、特殊な取り扱いがあります。
+          </div>
+        </div>
+
+        <div class="block-note">
+          <span></span>
+          <strong>定義：</strong
+          ><code>number</code>型は整数・浮動小数点数を共に表現します。
+        </div>
+
+        <div class="block-info">
+          <span></span>
+          <strong>注意：</strong
+          >暗黙の型変換により、意図しない挙動が起こる場
+        </div>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <p>&copy; 2025 TypeScript 学習ポータル. All rights reserved.</p>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

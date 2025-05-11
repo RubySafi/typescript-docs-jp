@@ -1,0 +1,74 @@
+/* ベース設定 */
+body {
+    font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    background-color: #f4f4f8;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ヘッダー */
+header {
+    background-color: #283593;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border-bottom: 3px solid #1a237e;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+header p {
+    margin: 0.3rem 0 0;
+    font-size: 1rem;
+}
+
+/* メイン */
+main {
+    padding: 1.5rem;
+}
+
+section h2 {
+    border-left: 6px solid #283593;
+    padding-left: 0.5rem;
+    margin-top: 0;
+    font-size: 1.3rem;
+}
+
+/* リスト */
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    margin: 0.8rem 0;
+}
+
+a {
+    text-decoration: none;
+    color: #1e88e5;
+    font-weight: bold;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: background-color 0.2s, border 0.2s;
+}
+
+a:hover {
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+}
+
+/* フッター */
+footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    padding: 1rem;
+    border-top: 1px solid #ccc;
+    margin-top: 2rem;
+}

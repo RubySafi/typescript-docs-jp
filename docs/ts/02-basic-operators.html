@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>演算子</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+      .op {
+        font-family: Consolas;
+        background-color: #f5f5f5;
+        padding: 0 0.2em;
+        border-radius: 3px;
+      }
+      .inline {
+        font-family: monospace;
+        background-color: #f5f5f5;
+        padding: 0 0.2em;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>演算子 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="02-basic-operators.html">基本的な演算子</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="01-primitive-types.html" class="prev">前</a> |
+        <a href=".html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>number型</h2>
+        <p>
+          number型にある数を表現する方法として，単に10進数字を書く以外にも，2進数リテラル，8進数リテラル，16進数リテラルがサポートされている．
+        </p>
+        <table>
+          <tr>
+            <th>種類</th>
+            <th>書式例</th>
+            <th>説明</th>
+          </tr>
+          <tr>
+            <td>10進数</td>
+            <td>123</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>2進数</td>
+            <td>0b101</td>
+            <td>0bまたは0Bを使用</td>
+          </tr>
+          <tr>
+            <td>8進数</td>
+            <td>0o312</td>
+            <td>0oまたは0Oを使用</td>
+          </tr>
+          <tr>
+            <td>16進数</td>
+            <td>0x1A3, 0x1a3</td>
+            <td>0xまたは0Xを使用</td>
+          </tr>
+        </table>
+
+        <pre><code class="language-ts">
+console.log(0b101); //5
+console.log(0o101); //65
+console.log(0x101); //257
+            </code></pre>
+
+        <h3>二項演算子</h3>
+        <p>
+          number 型に対する演算子は，様々なものが用意されている．a, b
+          に対して演算子\(\star\)を使用するときは，\(a\star
+          b\)と記述する．以下には代表的なものを述べる（これ以外の演算子は公式ドキュメント等を参考のこと）．
+        </p>
+        <table>
+          <tr>
+            <th>演算子</th>
+            <th>説明</th>
+            <th>補足</th>
+          </tr>
+          <tr>
+            <td>
+              <span class="op">+</span>, <span class="op">-</span>,
+              <span class="op">*</span> , <span class="op">/</span>,
+              <span class="op">%</span>, <span class="op">**</span>
+            </td>
+            <td>足し算，引き算，掛け算，割り算，剰余，べき乗，</td>
+            <td>
+              これらは全域関数であり，計算不能なものは，InfinityやNaNなどとして返す．商は「切り捨て除算」ではない．
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="op">&lt;&lt;</span>,
+              <span class="op">&gt;&gt;</span>, <span class="op">^</span>,
+              <span class="op">&</span>, <span class="op">|</span>
+            </td>
+            <td>ビットシフト，ビット積，ビット和，ビットXOR</td>
+            <td>
+              全域関数だが，内部的には整数に変換され，シフト量は31以下に収めてから計算するため，整数以外に使用すると予期せぬ挙動をすることがある．
+            </td>
+          </tr>
+        </table>
+
+        <h3>単項演算子</h3>
+        <p>
+          number 型に対する単項演算子として代表的なものを述べる．a
+          に対して演算子\(\star\)を使用するときは，\(\star a\)と記述する．
+        </p>
+        <table>
+          <tr>
+            <th>演算子</th>
+            <th>説明</th>
+            <th>補足</th>
+          </tr>
+          <tr>
+            <td><span class="op">+</span>, <span class="op">-</span></td>
+            <td>単項プラス，単項マイナス</td>
+            <td>単項マイナスは符号を反転させる．</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="op">~</span>
+            </td>
+            <td>ビット否定</td>
+            <td>正確には「符号付き32ビット整数の2の補数反転」．</td>
+          </tr>
+        </table>
+
+        <pre><code class="language-ts">
+console.log(20 + 4); //24
+console.log(20 - 4); //16
+console.log(20 * 4); //80
+console.log(20 / 4); //5
+
+console.log(20 / 3); // 6.66666...
+console.log(20 % 3); // 剰余：2
+console.log(3 ** 4); // べき乗：81
+
+console.log(1 / 0); // Infinity
+console.log(1 / -0); // -Infinity
+console.log(0 / 0); // NaN
+
+console.log(3 & 5); // 0b001 & 0b101 -> 0b001 = 1
+console.log(3 | 5); // 0b011 | 0b101 -> 0b111 = 7
+console.log(3 ^ 5); // 0b011 ^ 0b101 -> 0b110 = 6
+
+console.log(~0b101); // -6（注：符号付き32ビット整数の反転：0b00...0101 -> 0b111...1010 = -6）
+            </code></pre>
+
+        <div class="block-remark">
+          <span class="icon"></span>
+          <div class="text-content">
+            全域関数である反面，例外を投げないので，適切に処理する必要がある．
+            また，剰余は数学における定義と異なるので，負の数の剰余については使用する場合は注意が必要である．
+          </div>
+        </div>
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            NaN は自身とは異なる（NaN === NaN は
+            false）という性質をもつ特別な数である． NaN
+            かどうかを判定するには，Number.IsNan()を用いる．
+            <pre><code class="language-ts">
+let a = NaN;
+let b = NaN;
+console.log(a === b); //false
+console.log(Number.isNaN(a)); //true
+            </code></pre>
+          </div>
+        </div>
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            1/0 = Infinity, 1/(-0) = -Infinity
+            からわかるように，0にも符号が設定されているが，
+            <span class="inline">0===-0</span>は true
+            になる．正のゼロと負のゼロを区別するには，Object.is()を用いる．
+            <pre><code class="language-ts">
+let a = 0;
+let b = -0;
+console.log(a === b); //true
+console.log(Object.is(a, b)); //false
+            </code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="content">
+        <h2>string</h2>
+        <p>
+          文字列を表現する方法として，次の3種類のリテラルがサポートされている．
+        </p>
+        <table>
+          <tr>
+            <th>種類</th>
+            <th>書式例</th>
+            <th>説明</th>
+          </tr>
+          <tr>
+            <td>文字列リテラル</td>
+            <td>"abc", 'pqr'</td>
+            <td>
+              「"」や「'」で囲まれた部分が文字列となる．<strong>改行禁止</strong>．
+            </td>
+          </tr>
+          <tr>
+            <td>テンプレートリテラル</td>
+            <td>`Hello, ${name}!`</td>
+            <td>
+              文字列に式を埋め込める．書式指定の機能（%.2fなど）がないことは注意．また，<strong>改行しても，そのまま解釈される</strong>．
+            </td>
+          </tr>
+        </table>
+
+        <pre><code class="language-ts">
+console.log("I don't know."); //""で囲まれた部分が文字->「'」が文字になる
+console.log('The word "abc".'); //""で囲まれた部分が文字->「"」が文字になる
+            </code></pre>
+
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            ""ブロックの中に"を入れたいときは，エスケープさせる必要がある．エスケープ文字については，
+            例えば，<span class="op">\n</span>（改行），<span class="op"
+              >\t</span
+            >（タブ）， <span class="op">\"</span>，<span class="op">\'</span
+            >，<span class="op">\`</span>，<span class="op">\\</span> ，<span
+              class="op"
+              >\u{XXXXX}</span
+            >（Unicode文字）などがあるが，
+            非常にたくさんあるので，詳細は公式リファレンス等を参照せよ．
+          </div>
+        </div>
+
+        <h3>結合演算子「+」</h3>
+        <p>
+          string 型では，文字列の結合を「+」を用いて表現をすることができる．
+        </p>
+        <pre><code class="language-ts">
+let a = 'abc';
+let b = 'xyz';
+let c = a + b;
+console.log(c); //"abcxyz"
+            </code></pre>
+
+        <table>
+          <tr>
+            <th>例</th>
+            <th>結果</th>
+            <th>補足</th>
+          </tr>
+          <tr>
+            <td>"abc" + "def"</td>
+            <td>"abcdef"</td>
+            <td>文字列の結合が行われる．</td>
+          </tr>
+          <tr>
+            <td>"abc" + 345</td>
+            <td>"abc345"</td>
+            <td>第二引数は文字列型に変換(cast)されてから結合が行われる．</td>
+          </tr>
+        </table>
+      </section>
+
+      <section class="content">
+        <h2>boolean</h2>
+        <p>
+          boolean型のものをリテラルで表現する際は，<code>true</code>や<code>false</code>を用いる．
+        </p>
+        <h3>演算子</h3>
+        <p>
+          以下の演算子が基本的である．Python などとは異なり，<span class="op"
+            >and, or</span
+          >などの keyword はない．
+        </p>
+        <table>
+          <tr>
+            <th>演算子</th>
+            <th>説明</th>
+          </tr>
+          <tr>
+            <td>
+              <span class="op">&&</span>, <span class="op">||</span>,
+              <span class="op">!</span>
+            </td>
+            <td>and, or, not</td>
+          </tr>
+        </table>
+      </section>
+
+      <section class="content">
+        <h2>異なる型の演算</h2>
+        <p>
+          型が異なるものに対しても演算は使用できることがあるが，その際は型の変換が行われる．基本的には「+」が使われるが，以下が代表的な例である．
+        </p>
+        <table>
+          <tr>
+            <th>例</th>
+            <th>結果</th>
+            <th>説明</th>
+          </tr>
+          <tr>
+            <td>"123" + 456</td>
+            <td>"123456"</td>
+            <td>後半の456は文字列に変換される．</td>
+          </tr>
+          <tr>
+            <td>123 + "456"</td>
+            <td>"123456"</td>
+            <td>前半の123は文字列に変換される．</td>
+          </tr>
+          <tr>
+            <td>123 + true</td>
+            <td>124</td>
+            <td>trueは1に変換される．（設定次第で警告が出る）</td>
+          </tr>
+          <tr>
+            <td>123 + false</td>
+            <td>123</td>
+            <td>falseは0に変換される．（設定次第で警告が出る）</td>
+          </tr>
+        </table>
+        <p>
+          暗黙の型変換は，バグの原因になりかねないため，明示的に型変換を行うとよい．
+          以下が，変換の仕方の例である．
+        </p>
+        <table>
+          <tr>
+            <th>例</th>
+            <th>説明</th>
+          </tr>
+          <tr>
+            <td>Number(value)</td>
+            <td>value が number 型に変換される</td>
+          </tr>
+          <tr>
+            <td>String(value)</td>
+            <td>value が string 型に変換される</td>
+          </tr>
+          <tr>
+            <td>(value).toString()</td>
+            <td>value が string 型に変換される</td>
+          </tr>
+          <tr>
+            <td>"${value}"</td>
+            <td>テンプレートリテラルを利用して，value が string 型に変換される</td>
+          </tr>
+        </table>
+
+        <pre><code class="language-ts">let a = true;
+let b = '100';
+let c = '70';
+
+console.log((123).toString() + 456); //123456
+console.log(a.toString() + 456); //true456
+console.log(Number(b) - Number(c)); //30
+console.log(String(a)); //true
+console.log(Number(a)); //1
+console.log(`${a}`); //true
+</code></pre>
+
+
+        <div class="block-remark">
+          <span class="icon"></span>
+          <div class="text-content">
+    <span class="op">.toString</span> は使えない場合もある．また，TypeScript では format 指定に対する機能が標準では提供されていない．
+    例えば，数字の桁数指定（ゼロ埋め）や，日付の yyyyMMdd 形式への変換などはできない．
+    そのため，これらの処理には自作のメソッドを用意するか，外部ライブラリに頼るのが基本である．
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

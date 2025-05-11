@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>Introduction to TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="00-introduction.html">Introduction</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href=".html" class="prev"></a>前 |
+        <a href="01-primitive-types.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>TypeScript とは</h2>
+        <p>
+          TypeScript とは，JavaScript
+          に型の概念を付与した言語である．
+          特に，紹介する関数の中には JavaScript
+          に固有の関数（たとえば console.log）が含まれる． TypeScript
+          での解説であっても，基本的な機能は JavaScript
+          の標準的な関数として紹介することがある．
+        </p>
+      </section>
+
+      <section class="content">
+        <h2>コメントとログ出力</h2>
+        <p>
+          Javascriptで標準で用意されている組み込み関数<code>console.log</code>を用いて，値をコンソールに表示することができる．
+          主な使い方は，<code>console.log(値)</code>である．一方，ソースコードには，コードに影響を与えない任意の文字列（コメント）を残すことができる．
+          なお，JavaScriptでは，各命令（文）の末尾には「;（セミコロン）」を付けるのが基本である．
+        </p>
+        <ul>
+          <li>
+            「//」の後ろに書いたものはすべてコメントになる．ただし，同一行に限る．
+          </li>
+          <li>
+            「/*」と「*/」で囲まれた範囲はコメントになる．複数行も可能である．
+          </li>
+        </ul>
+        <pre><code class="language-ts">
+          console.log(345); // 345と出力される．
+          /*
+          console.log(456); ここはコメントなので，何も起こらない．
+          */
+        </code></pre>
+      </section>
+
+      <section class="content">
+        <h2>変数の宣言</h2>
+        値は変数を宣言したあと，「=」を用いて代入することができる．型に関する指定や，より厳密な宣言方法については次の節で扱うこととし，ここではもっとも基本的な代入の方法を紹介する．
+        <code>const</code
+        >および<code>let</code>が代表的な宣言方法である．<code>const</code>は再代入が不可な変数を宣言する際に用い，
+        <code>let</code>は再代入可能な変数を宣言する際に用いる．
+        <pre><code class="language-ts">
+const a = 3;    // a という変数に3を代入した．aの値は，以後変更しない．
+console.log(a); // 3 と表示される．
+
+let b = 4;      // b という変数に4を代入した．値は後で書き換えることができる．
+console.log(b); // 4 と表示される．
+
+b = 5;          // b の値を 5 に書き換える．const として b を宣言しているとエラーになる．
+console.log(b); // 5 と表示される．
+        </code></pre>
+
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            文字列は，<code>"abc"</code>や<code>'abc'</code>のようにクォートで囲むやり方が基本である．（他にもある）これを使えば，
+            <pre><code>let c = "hoge";</code></pre>
+            のように文字列を代入できる．
+          </div>
+        </div>
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            変数の宣言をする前に代入しようとすると，エラーを吐く．先に宣言だけして，後で代入することは認められる．
+          </div>
+        </div>
+      </section>
+
+      <section class="content">
+        <h2>値の比較と変数の宣言</h2>
+        <p>
+          二つの値が完全に等しいか否かは，<code>===</code>（等しい）および<code>!==</code>（等しくない）により判定できる．
+          一方，問うまでもない比較式は，文法上は正しいが，設定によっては静的解析ツール（ESLintなど）が警告やエラーを出すことがあるため，注意が必要である．
+          正しいときは<code>true</code>，等しくないときは<code>false</code>が出力される．
+        </p>
+        <pre><code class="language-ts">
+console.log(345 === 345); // trueと出力される．
+
+let a, b;                 // 文字列をまとめて宣言．後で代入する．
+a = "abc";
+b = "def";
+console.log(a === b);     // a と b は等しくないので false が出力される．
+console.log(a !== b);     // a と b は等しくないので true が出力される．
+        </code></pre>
+
+        <div class="block-remark">
+          <span class="icon"></span>
+          <div class="text-content">
+            明らかに等しくないものは，設定次第でエラーを吐くことがある．
+          <pre><code>console.log(345 === 234);   // 明らかに等しくないので，エラーとなることがある．
+
+console.log(345 === '123'); // 左辺は数字，右辺は文字で，比較するまでもなく
+console.log(345 !== '123'); // 等しくないので，エラーとなることがある．
+</code></pre>
+          <div class="text-content">
+            以下，設定依存でエラーを出すものについては，細かく扱わないものとする．
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

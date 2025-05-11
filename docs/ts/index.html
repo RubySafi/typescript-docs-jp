@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>TypeScript Index</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #333;
+      color: white;
+      padding: 1rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    nav.breadcrumb {
+      background-color: #f0f0f0;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    nav.breadcrumb a {
+      text-decoration: none;
+      color: #0077cc;
+    }
+
+    nav.breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      padding: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    a {
+      font-weight: bold;
+      color: #0077cc;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      background-color: #f8f8f8;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    /* スマホ向け簡易レスポンシブ対応 */
+    @media screen and (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        padding: 0.5rem;
+      }
+
+      td {
+        border: none;
+        padding-left: 1rem;
+        position: relative;
+      }
+
+      td::before {
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>TypeScript ポータル</h1>
+  </header>
+
+  <nav class="breadcrumb">
+    <a href="../index.html">トップ</a> &gt; TypeScript
+  </nav>
+
+  <main>
+    <h2>TypeScript 学習索引</h2>
+    <p>以下の各ページから，TypeScript の基礎構文について段階的に学習できます．</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>章タイトル</th>
+          <th>概要</th>
+          <th>キーワード</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="章タイトル"><a href="00-introduction.html">Introduction</a></td>
+          <td data-label="概要">TypeScriptとJavaScriptの関係および，簡単な関数等について学びます．</td>
+          <td data-label="キーワード">console.log, =, ===, !==, true, false, let, const</td>
+        </tr>
+        <tr>
+          <td data-label="章タイトル"><a href="01-primitive-types.html">Primitive型</a></td>
+          <td data-label="概要">TypeScriptで使われる基本的なデータ型について学びます。</td>
+          <td data-label="キーワード">boolean, number, string, null, undefined, bigint, symbol, typeof</td>
+        </tr>
+        <tr>
+          <td data-label="章タイトル"><a href="02-basic-operators.html">演算子</a></td>
+          <td data-label="概要">number型，string型，boolean型に対する演算子のうち，基本的なものについて学びます．</td>
+          <td data-label="キーワード">色々な演算子</td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <footer>
+    <small>&copy; 2025. All rights reserved.</small>
+  </footer>
+
+</body>
+</html>

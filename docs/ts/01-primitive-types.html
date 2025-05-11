@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>プリミティブ型 (Primitive Types)</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>プリミティブ型 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="01-primitive-types.html">プリミティブ型</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="00-introduction.html" class="prev">前</a> |
+        <a href="02-basic-operators.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>プリミティブ型</h2>
+        <p>
+          TypeScript
+          にはプリミティブ型と呼ばれる原始的な型がある．以下はプリミティブ型の代表例である：
+        </p>
+        <table>
+          <tr>
+            <th>型</th>
+            <th>説明</th>
+            <th>値の例</th>
+            <th>補足，使用例など</th>
+          </tr>
+          <tr>
+            <td>number</td>
+            <td>整数や実数などの数</td>
+            <td>\(3, -2, 4.5,\) ...</td>
+            <td>特別な値として，NaN, Infinity, \(-\)Infinity がある．</td>
+          </tr>
+          <tr>
+            <td>string</td>
+            <td>文字列</td>
+            <td>"abc", `xyz`, 'pqr', ...</td>
+            <td>
+              「'」「"」「`」の3種類の文字列リテラルの表記がサポートされている．
+            </td>
+          </tr>
+          <tr>
+            <td>boolean</td>
+            <td>真偽値</td>
+            <td>true, falseのみ</td>
+          </tr>
+          <tr>
+            <td>undefined</td>
+            <td>未初期化や未設定の状態を表す</td>
+            <td>唯一の値 undefined をもつ型</td>
+            <td>
+              何も代入されていない状態の変数など．JavaScriptエンジンが暗黙的に設定することが多い．
+            </td>
+          </tr>
+          <tr>
+            <td>null</td>
+            <td>無を表す</td>
+            <td>唯一の値 null をもつ型</td>
+            <td>
+              明示的に代入して値が明確に空であることを表す用途で使うことがある．
+            </td>
+          </tr>
+        </table>
+
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            他の primitive 型として，<code>bigint</code> (大きな整数),
+            <code>symbol</code> (一意的な識別子) がある．
+          </div>
+        </div>
+        <div class="block-remark">
+          <span class="icon"></span>
+          <div class="text-content">
+            symbolは，ポインタのようなものとは完全に異なり，一意な識別子を生成するための型である．
+            <pre><code class="language-ts">
+let a = Symbol("id");
+let b = Symbol("id");
+console.log(a===b); // false. 同じ symbolは生成されない．
+            </code></pre>
+            例えば，ライブラリ間のネームスペースの衝突防止などに用いられる．
+          </div>
+        </div>
+      </section>
+
+      <section class="content">
+        <h2>typeof 演算子</h2>
+        <p>
+          typeof
+          演算子は，変数や値がどんな型なのかを文字列で調べるときに使うことができる．
+          使用方法は<code>typeof 値</code
+          >であり，引数は1つである．数学的な見方をすれば，typeof
+          演算子はアリティが1の関数（単項演算子）と認識でき，
+          写像の言葉を用いれば以下のようなものだということができる：
+        </p>
+        <p>\(\ \ \ \text{typeof}: Value \to String\)</p>
+        <div class="block-remark">
+          <span class="icon"></span>
+          <div class="text-content">
+            typeof
+            は演算子であり，プログラム的には関数ではない．あくまで単項関数と思うことができる，というだけである．
+          </div>
+        </div>
+
+        typeof 演算子が返す文字列は，以下のように決められている．
+        <table class="typeof_table">
+          <tr>
+            <th>渡す値</th>
+            <th>出力する値</th>
+            <th>備考</th>
+          </tr>
+          <tr>
+            <td>number型</td>
+            <td>"number"</td>
+          </tr>
+          <tr>
+            <td>boolean型</td>
+            <td>"boolean"</td>
+          </tr>
+          <tr>
+            <td>string型</td>
+            <td>"string"</td>
+          </tr>
+          <tr>
+            <td>undefined型</td>
+            <td>"undefined"</td>
+          </tr>
+          <tr>
+            <td>bigint型</td>
+            <td>"bigint"</td>
+          </tr>
+          <tr>
+            <td>symbol型</td>
+            <td>"symbol"</td>
+          </tr>
+          <tr>
+            <td>関数</td>
+            <td>"function"</td>
+            <td>どんな関数（functionオブジェクト）なのかまでかはわからない．</td>
+          </tr>
+          <tr>
+            <td>null型</td>
+            <td>"object"</td>
+            <td>"null"ではないので注意．</td>
+          </tr>
+          <tr>
+            <td>（関数以外の）オブジェクト</td>
+            <td>"object"</td>
+            <td>
+              後で学ぶ Array, Set, Dictionaryなどはすべて object
+              なので，これでは区別できない．
+            </td>
+          </tr>
+        </table>
+
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">Dictionary型は非公式な呼称．</div>
+        </div>
+      </section>
+
+      <section class="content">
+        <h2>型注釈</h2>
+        <p>変数に代入できる型を制限することによって，より安全に coding をすることができる．この機能を<strong>型注釈</strong>という．
+        型注釈のやり方は，</p>
+        <pre><code class="language-ts">
+let b: string;
+        </code></pre>
+        <p>
+        のように，変数を宣言したあとに「:（コロン）」と「型名」を加筆する方法である．
+        こうすることで，指定された型の値しか代入できなくなる．</p>
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">以下のように，型注釈と同時に代入することができる．
+        <pre><code class="language-ts">
+let a: number = 0;
+const b: number = 0;
+        </code></pre>
+        なお，<code class="inline">const</code>は，宣言時に代入をしなければならない．</div>
+        </div>
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">ただ単に<code class="inline">let a;</code>としか宣言していない場合は，JavaScriptでは初期化されていない変数に対する仕様により，<code class="inline">undefined</code>が代入されている．
+        </div>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
