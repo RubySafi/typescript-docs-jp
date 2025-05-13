@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ループ処理</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+      .op {
+        font-family: Consolas;
+        background-color: #f5f5f5;
+        padding: 0 0.2em;
+        border-radius: 3px;
+      }
+      .inline {
+        font-family: monospace;
+        background-color: #f5f5f5;
+        padding: 0 0.2em;
+        border-radius: 3px;
+      }
+      h3 {
+        margin-top: 2em;
+        margin-bottom: 0.5em;
+        padding-left: 0.5em;
+        border-left: 4px solid #007acc; /* 視覚的な区切り */
+        background-color: #f0f8ff; /* やや淡い背景色 */
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #003366;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>ループ処理 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="05-loop.html">ループ処理</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="04-condition.html" class="prev">前</a> |
+        <a href="06-function.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>ループ処理</h2>
+        <p>
+          ここでは，プログラムを書く際に良く行われるループ処理について扱う．ループについては，配列のページで紹介した
+          for文以外にも，whileを使う方法が提供されている．一方，ループでは無限ループを実装することが良くあるが，無限ループを安全に
+          取り扱うには，async
+          などの高度な概念が必要になる．現段階でこれを説明すると大変なことになるため，
+          便宜上（だが便利）な概念である「現在時刻」も紹介する．
+        </p>
+        <h3>現在時刻</h3>
+        <p>
+          現在時刻を<code>Date.now()</code>により取得することができる．これは，number型のものであり，1970/01/01からの経過時刻をミリ秒単位で取得できる．
+        </p>
+        <pre><code>let now = Date.now();
+console.log(`型：${typeof now}`);// number
+console.log(`経過時刻[ms]${now}`);
+</code></pre>
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            <p>
+              上記<code>now</code>を加工することで現在時刻を取得することは（泥臭い方法で）できるが，Dateクラスを利用すればもっと楽に取得できる．
+              しかし，このページでは無限ループのコントロールとして便宜上<code>Date.now()</code>を導入しただけであり，
+              Dateクラスの詳細は，また別のページで行うことにし，これ以上は深入りしない．
+            </p>
+          </div>
+        </div>
+        <h3>for文</h3>
+        <p>
+          for文については，<a href="03-array.html">配列のページ</a
+          >にて紹介したので，ここでは概要のみ説明する．使い方は主に3種類で，以下のものがあった：
+        </p>
+        <pre><code class="language-ts">let list = ['a', 'b', 'c'];
+
+for (let i = 0; i &lt; list.length; i++) {
+  console.log(list[i]);
+}
+
+for (const key in list) {
+  console.log(key);
+}
+
+for (const val of list) {
+  console.log(val);
+}
+</code></pre>
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            <p>以下のようにすれば，配列の要素を逆順にアクセスできる：</p>
+            <pre><code class="language-ts">for(let i = list.length-1; i >= 0; i--) {
+  console.log(list[i]);
+}</code></pre>
+          </div>
+        </div>
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            <p>無限ループへの対応は，while文の中で解説する．</p>
+          </div>
+        </div>
+        <h3>while文</h3>
+        <p>
+          多言語にあるwhile文も typescript
+          で実装されている．構文は以下の通りである：
+        </p>
+        <pre><code>while (条件) {
+  処理;
+}
+</code></pre>
+        <ol>
+          <li>条件をチェックし，偽ならば終了する</li>
+          <li>ループ中の処理を行う</li>
+          <li>1に戻る</li>
+        </ol>
+        <p>使用例は以下の通り．</p>
+        <pre><code class="language-ts">let x = 0;
+
+while (x &lt; 10) {
+  console.log(`val=${x}`);
+  x++;
+}</code></pre>
+        <div class="block-remark">
+          <span class="icon"></span>
+          <div class="text-content">
+            <ul>
+              <li>
+                上記のようなコードの場合，無限ループにならないように忘れずに<code>x++;</code>のような処理を書く必要がある．書き忘れると
+                フリーズの原因になりかねない．
+              </li>
+              <li>
+                条件式を<code>true</code>にすることで意図的に無限ループにすることがある．
+              </li>
+              <li>
+                無限ループにする場合，あるいはループ回数が非常に大きい場合は，フリーズを防ぐため，待機命令をいれるべきである．待機命令の出し方は色々とあるが，
+                もっとも簡単な初心者向けの方法は現在時刻を利用する方法であり，以下のように実装すればよい：
+                <pre><code class="language-ts">let x = 0;
+let startTime = Date.now(); // 初期時刻を取得
+
+while (true) {
+  console.log(`x=${x}sec`);
+  x++;
+
+  while (Date.now() - startTime &lt; 1000) {} //1秒待機
+  startTime = Date.now(); // 時刻リセット
+}
+</code></pre>
+                <p>
+                  なお，上記は実際に待機しているわけではなく，無限ループをし続けているので<strong>CPU使用率が高くなる</strong>問題点はあるが，
+                  特に難しい概念を用意することなく，また関数化することなく気軽に利用ができる．本当に待機させる必要があるかどうかはコードの種類に依存するため，
+                  必要性の判断は各自で行うとよい．
+                </p>
+                <p>
+                  後の節では，asyncやsetTimeoutを利用した，より効率的な方法を紹介する．
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>do...while文</h3>
+        <p>
+          while文は，条件を先にチェックしたあとループに入る．一方，プログラムを組む際，最低一回は実行してほしいループ処理に出会う場面が多々ある．
+          その際に役に立つのが，<code>do...while</code>文である．
+          構文は以下の通り．
+        </p>
+        <pre><code>do {
+  ループ処理;
+} while(条件式)
+</code></pre>
+
+        <ol>
+          <li>ループ中の処理を行う</li>
+          <li>条件をチェックし，偽ならば終了する</li>
+          <li>1に戻る</li>
+        </ol>
+        <p>これにより，少なくとも1回ループ処理が実行される．</p>
+
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            例えば，ユーザーにパスワード入力を求め，正しいパスワードだったら処理を続行し，誤ったパスワードだったら再度パスワード入力を促す，
+            などが一つの使用例である．なお，たいていのものはfor文やwhile文で代用できる．
+          </div>
+        </div>
+      </section>
+      <section class="content">
+        <h2>ループ制御文（break, continue）</h2>
+        <p>
+          ループ中の挙動を制御することができる重要な<code>break</code>および<code>continue</code>を紹介する．
+        </p>
+        <h3>break</h3>
+        <p>
+          ループ中に<code>break;</code>を入れると，条件式をチェックすることなく，即座にループを抜ける．
+        </p>
+        <pre><code class="language-ts">for (let i = 0; i &lt; 10; i++) {
+  if (i &gt; 3) {
+    break;
+  }
+  console.log(i);
+} //0, 1, 2, 3 しか表示されない．</code></pre>
+        <h3>continue</h3>
+        <p>
+          ループ中に<code>continue;</code>を入れると，現在のループ中の処理を中断し，即座にループ継続判定に移る．
+        </p>
+        <pre><code class="language-ts">for (let i = 0; i &lt; 10; i++) {
+  if (i % 3 === 0) {
+    continue; //3の倍数のときはスキップ
+  }
+  console.log(i);
+}</code></pre>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

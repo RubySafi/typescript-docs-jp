@@ -1,0 +1,46 @@
+.function-block {
+  border: 1px solid #ccc;
+  padding: 1em;
+  margin: 1.5em 0;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.function-block h3 {
+  margin-top: 0;
+  color: #2a5d9f;
+}
+
+.function-block .function-signature,
+.function-block .function-description,
+.function-block .function-example {
+  margin-top: 0.8em;
+}
+
+.function-block code {
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: Consolas, monospace;
+}
+
+.function-block pre {
+  padding: 0.8em;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+pre.signature {
+  background-color: #f0f0f0;
+  padding: 0.3em 0.6em;
+  display: inline-block;
+  font-size: 0.95em;
+  margin: 0.2em 0;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.note {
+  font-size: 0.9em;  /* 少し小さく */
+  color: #666;       /* 薄い色にして目立たせすぎない */
+  margin-left: 0.5em; /* 少し左にスペースを開ける */
+}

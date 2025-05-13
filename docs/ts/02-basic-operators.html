@@ -88,7 +88,7 @@
       </div>
       <div class="next-prev-links">
         &lt; <a href="01-primitive-types.html" class="prev">前</a> |
-        <a href=".html" class="next">次</a>&gt;
+        <a href="03-array.html" class="next">次</a>&gt;
       </div>
     </nav>
 
@@ -167,6 +167,15 @@ console.log(0x101); //257
               全域関数だが，内部的には整数に変換され，シフト量は31以下に収めてから計算するため，整数以外に使用すると予期せぬ挙動をすることがある．
             </td>
           </tr>
+          <tr>
+            <td>
+              <span class="op">&lt;</span>, <span class="op">&lt;=</span>,
+              <span class="op">&gt;</span> , <span class="op">&gt;=</span>,
+              <span class="op">===</span>, <span class="op">!==</span>
+            </td>
+            <td>比較演算子，厳密等価演算子，厳密不等価演算子</td>
+            <td>これらは全域関数であり，戻り値は true または false となる．</td>
+          </tr>
         </table>
 
         <h3>単項演算子</h3>
@@ -184,6 +193,11 @@ console.log(0x101); //257
             <td><span class="op">+</span>, <span class="op">-</span></td>
             <td>単項プラス，単項マイナス</td>
             <td>単項マイナスは符号を反転させる．</td>
+          </tr>
+          <tr>
+            <td><span class="op">++</span>, <span class="op">--</span></td>
+            <td>インクリメント，デクリメント</td>
+            <td>値を1増やす/減らす</td>
           </tr>
           <tr>
             <td>
@@ -234,6 +248,8 @@ let b = NaN;
 console.log(a === b); //false
 console.log(Number.isNaN(a)); //true
             </code></pre>
+            また，NaNとの大小比較はすべて false として返ってくる（NaN
+            は何物とも比較できない（全ての比較が false になる））．
           </div>
         </div>
         <div class="block-info">
@@ -249,6 +265,36 @@ let b = -0;
 console.log(a === b); //true
 console.log(Object.is(a, b)); //false
             </code></pre>
+          </div>
+        </div>
+
+        <div class="block-note">
+          <span class="icon"></span>
+          <div class="text-content">
+            インクリメント演算子「++」は，number型の変数<code>val</code>に対し，<code>val++</code>や<code>++val</code>のようにして使用する．
+            ともに，valの値を1増やす，という演算に該当し，<code
+              >val = val + 1;</code
+            >と同じであり，
+            <code>val++;</code
+            >や<code>++val;</code>のみを書いた場合は結果は変わらない．
+            しかし，他の式を併用すると話は変わってくる．これらの式は，「valというobjectの値を変更する」という操作と「値を返す」という操作の
+            同時実行を行う訳だが，これらの順番が逆になる．以下のコードを実行するとよくわかる．
+            <pre><code class="language-ts">let x, y;
+
+x = 10;
+y = ++x; //xを1増やしたあと，その値を y に渡す
+console.log(`x = ${x}, y = ${y}`);
+
+x = 10;
+y = x++; //xをyに渡したあと，x を1増やす
+console.log(`x = ${x}, y = ${y}`);</code></pre>
+            <p>
+              上記のようなことを行いたい場合，初心者のうちは処理を分離して，
+            </p>
+            <pre><code>let x = 10;
+x++;
+let y = x;</code></pre>
+            <p>のようにするのが無難である．</p>
           </div>
         </div>
       </section>
@@ -411,7 +457,9 @@ console.log(c); //"abcxyz"
           </tr>
           <tr>
             <td>"${value}"</td>
-            <td>テンプレートリテラルを利用して，value が string 型に変換される</td>
+            <td>
+              テンプレートリテラルを利用して，value が string 型に変換される
+            </td>
           </tr>
         </table>
 
@@ -427,17 +475,46 @@ console.log(Number(a)); //1
 console.log(`${a}`); //true
 </code></pre>
 
-
         <div class="block-remark">
           <span class="icon"></span>
           <div class="text-content">
-    <span class="op">.toString</span> は使えない場合もある．また，TypeScript では format 指定に対する機能が標準では提供されていない．
-    例えば，数字の桁数指定（ゼロ埋め）や，日付の yyyyMMdd 形式への変換などはできない．
-    そのため，これらの処理には自作のメソッドを用意するか，外部ライブラリに頼るのが基本である．
+            <span class="op">.toString</span>
+            は使えない場合もある．また，TypeScript では format
+            指定に対する機能が標準では提供されていない．
+            例えば，数字の桁数指定（ゼロ埋め）や，日付の yyyyMMdd
+            形式への変換などはできない．
+            そのため，これらの処理には自作のメソッドを用意するか，外部ライブラリに頼るのが基本である．
           </div>
         </div>
-
       </section>
+      
+      <section class="content">
+        <h2>複合代入演算子</h2>
+        <p>よく使われる演算の短縮表現があり，その一つに複合代入演算子がある．これは様々な型に定義されるため，
+          特に型に対しては言及せずに仕様のみ述べる．以下の複合代入演算子は，与えられた演算が意味を成すときに限り成立する．
+        </p>
+        <table>
+          <tr>
+            <th>式</th>
+            <th>説明</th>
+          </tr>
+          <tr>
+            <td>x += y;</td>
+            <td>x = x + y; の略記（x に x+y を代入する，という操作）</td>
+          </tr>
+        </table>
+        <p>より一般に，演算子 \(\star\) に対し， 「x \(\star\) = y」は，「x = x \(\star\) y」の略記として扱われる．\(\star\)としては，
+        <span class="op">+</span>,
+        <span class="op">-</span>,
+        <span class="op">*</span>,
+        <span class="op">/</span>,
+        <span class="op">**</span>,
+        <span class="op">&</span>,
+        <span class="op">&&</span>,
+        <span class="op">|</span>,
+        <span class="op">||</span>など，様々な二項演算子に対して適用できる．</p>
+        </section>
+
     </main>
 
     <!-- フッター -->

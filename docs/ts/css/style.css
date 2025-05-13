@@ -122,6 +122,7 @@ main {
   background-color: #333;
   padding: 0.1rem 0.2rem;
   border-radius: 3px;
+  line-height: 1.2; /* 行間隔を広げる */
   font-size: 1rem;
   display: inline-block; /* code内での表示を調整 */
 }

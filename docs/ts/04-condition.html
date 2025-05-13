@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>条件分岐</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+      .op {
+        font-family: Consolas;
+        background-color: #f5f5f5;
+        padding: 0 0.2em;
+        border-radius: 3px;
+      }
+      .inline {
+        font-family: monospace;
+        background-color: #f5f5f5;
+        padding: 0 0.2em;
+        border-radius: 3px;
+      }
+      h3 {
+        margin-top: 2em;
+        margin-bottom: 0.5em;
+        padding-left: 0.5em;
+        border-left: 4px solid #007acc; /* 視覚的な区切り */
+        background-color: #f0f8ff; /* やや淡い背景色 */
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #003366;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>条件分岐 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="04-condition.html">条件分岐</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="03-array.html" class="prev">前</a> |
+        <a href="05-loop.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>条件分岐</h2>
+        <h3>if, else, else if</h3>
+        <p>if, else を使って条件分岐を行うことができる．構文は</p>
+        <pre><code class="language-ts">if (条件式) {
+  真の場合;
+}
+else {
+  偽の場合;
+}
+</code></pre>
+        <p>である．使用例は</p>
+        <pre><code class="language-ts">let x = 100; //書き換えると結果が変わる．
+
+if (x > 10) {
+  console.log('大きい'); //x>10が真のときの処理
+} else {
+  console.log('普通'); //それ以外のときの処理
+}</code></pre>
+        <p>となる．条件分岐が深くなると，例えば，</p>
+        <pre><code class="language-ts">let x = NaN; //書き換えると結果が変わる．
+
+if (x &gt; 0) {
+  console.log('正');
+} else {
+  if (x === 0) {
+    console.log('ゼロ');
+  } else {
+    if (x &lt; 0) {
+      console.log('負');
+    } else {
+      console.log('その他');
+    }
+  }
+}</code></pre>
+        <p>
+          のように非常に読みにくくなる．この場合の短縮方法として，
+          <code>else {if (条件式) { 文;}}</code>の部分を，単に<code
+            >else if (条件式) {文;}</code
+          >と略す手段が用意されている．これを利用すれば，上記の例は
+        </p>
+        <pre><code>let x = NaN; //書き換えると結果が変わる．
+
+if (x &gt; 0) {
+  console.log('正');
+} else if (x === 0) {
+  console.log('ゼロ');
+} else if (x &lt; 0) {
+  console.log('負');
+} else {
+  console.log('その他');
+}</code></pre>
+        <p>となり，インデントの位置が揃うので読みやすくなる．</p>
+
+        <h3>3項演算子</h3>
+        <p>他言語などに用意されている3項演算子も使用することができる．構文は</p>
+        <pre><code>let val = (条件式) ? (真の場合の値) : (偽の場合の値);</code></pre>
+        <p>
+          である．これは一行で書くことができるため便利なのだが，簡単に記述できる場合に限り使用したほうが望ましい．
+        </p>
+        <pre><code class="language-ts">let char = 7;
+let exch = (char === 0) ? 1 : char;//charが0のときは1を返し，そうでないときは char を返す．
+console.log(exch);
+</code></pre>
+        <div class="block-remark">
+          <span class="icon"></span>
+          <div class="text-content">
+            変数valに代入する関係上，真の場合の値と偽の場合の値の型は揃えることが推奨される．
+          </div>
+        </div>
+        <h3>switch文</h3>
+        <p>
+          多言語にあるswitch文も typescript
+          で実装されている．構文は以下の通りである：
+        </p>
+        <pre><code>switch (val)
+{
+  case 値1:
+    文1;//val===値1のときに実行
+    break;
+  case 値2:
+    文2;//val===値2のときに実行
+    break;
+  default:
+    文;//上記以外のときに実行
+    break;
+}
+</code></pre>
+        <p>
+          このように，各val
+          に対し，厳密等価演算子で各値に合致するかをチェックする．使用例は以下の通り．
+        </p>
+        <pre><code class="language-ts">let x: number = 2; //書き換えると結果が変わる．
+switch (x) {
+  case 0:
+    console.log('xは0');
+    break;
+  case 1:
+    console.log('xは1');
+    break;
+  default:
+    console.log('xは0,1以外');
+    break;
+}</code></pre>
+
+        <div class="block-remark">
+          <span class="icon"></span>
+          <div class="text-content">
+            厳密等価演算子で判断するということは，NaNをcaseブロックで取得することは不可能ということになる．
+            <pre><code class="language-ts">let x: number = NaN;
+switch (x) {
+  case NaN:
+    console.log('NaN === NaN は false なので，ここは決して通過しない．');
+    break;
+  default:
+    let text = Number.isNaN(x) ? 'xはNaN' : 'xはNaN以外';
+    console.log(text);
+    break;
+}
+</code></pre>
+          </div>
+        </div>
+
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            caseブロックを意図的にbreak;で閉じないことで，次の条件式に動作を写すテクニック(fall-through)は，引き続き
+            typescript でも有効である．
+            <pre><code class="language-ts">let x: number = 1;
+switch (x) {
+  case 0:
+    console.log('xは0');
+    break;
+  case 1:
+  case 2:
+    console.log('xは1か2');
+    break;
+  default:
+    console.log('その他');
+    break;
+}
+</code></pre>
+            <p>
+              分かりにくくなるので，やる場合は意図がはっきりする場合に限るほうがよい．
+            </p>
+          </div>
+        </div>
+
+        <div class="block-note">
+          <span class="icon"></span>
+          <div class="text-content">
+            defaultブロックは省略可能であるが，それが意図した動作になるかは検討すべきである．
+          </div>
+        </div>
+
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+  switch 文では，渡す値をリテラル（例: true）とし，各 case に評価式（条件式）を書くテクニックが存在する．
+  この方法では，条件を if-else のように順に評価できるため，場合によっては可読性が向上する．
+  ただし，複数の case 式が同じ値（例: true）を返す可能性がある点に注意が必要である．
+  実行時には，最初にマッチした case ブロックのみが実行され，以降はスキップされる．
+  通常は if-else による記述のほうが一般的かつ推奨されるが，この構文も知っておくと役立つ場面がある．
+            <pre><code class="language-ts">let grade = 75;
+switch (true) {
+  case grade >= 90:
+    console.log("A");
+    break;
+  case grade >= 80:
+    console.log("B");
+    break;
+  case grade >= 70:
+    console.log("C");
+    break;
+  default:
+    console.log("D");
+    break;
+}
+</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
