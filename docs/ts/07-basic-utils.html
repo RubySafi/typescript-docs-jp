@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>基本演算・判定・配列操作</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/function-block.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+      .op {
+        font-family: Consolas;
+        background-color: #f5f5f5;
+        padding: 0 0.2em;
+        border-radius: 3px;
+      }
+      .inline {
+        font-family: monospace;
+        background-color: #f5f5f5;
+        padding: 0 0.2em;
+        border-radius: 3px;
+      }
+      h3 {
+        margin-top: 2em;
+        margin-bottom: 0.5em;
+        padding-left: 0.5em;
+        border-left: 4px solid #007acc; /* 視覚的な区切り */
+        background-color: #f0f8ff; /* やや淡い背景色 */
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #003366;
+      }
+
+      .toc {
+        display: grid;
+        grid-template-columns: 0.7fr 0.7fr 1fr;
+        gap: 20px;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .toc ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+
+      .toc li {
+        margin-bottom: 5px;
+      }
+
+      .toc a {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+        font-size: 1.05rem;
+      }
+
+      .toc a:hover {
+        color: #0056b3;
+      }
+
+      .toc li.section-label {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-top: 0px;
+        margin-bottom: 5px;
+        padding-bottom: 3px;
+        border-bottom: 1px solid #ccc;
+        color: #333;
+        cursor: default;
+      }
+
+      @media (max-width: 600px) {
+        .toc {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .multiline-code {
+        white-space: pre-wrap;
+        word-break: break-word; /* 長い単語が折り返されない問題を防ぐ */
+        display: inline-block; /* <strong>の右に来るように */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>関数 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="07-basic-utils.html">基本演算・判定・配列操作</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="06-function.html" class="prev">前</a> |
+        <a href="08-html-introduction.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>目次</h2>
+        <p>以下において，Mathライブラリ，Numberクラス，Arrayクラスのよく使うメソッドについて紹介する．</p>
+        <div class="toc">
+          <ul>
+            <li class="section-label">Mathライブラリの基本</li>
+            <li><a href="#math-floor">Math.floor(x)</a></li>
+            <li><a href="#math-ceil">Math.ceil(x)</a></li>
+            <li><a href="#math-round">Math.round(x)</a></li>
+            <li><a href="#math-abs">Math.abs(x)</a></li>
+            <li><a href="#math-max">Math.max(x)</a></li>
+            <li><a href="#math-min">Math.min(x)</a></li>
+            <li><a href="#math-random">Math.random()</a></li>
+          </ul>
+          <ul>
+            <li class="section-label">Numberクラスの基本</li>
+            <li><a href="#number-isinteger">Number.isInteger(x)</a></li>
+            <li><a href="#number-isnan">Number.isNaN(x)</a></li>
+            <li><a href="#number">Number(x)</a></li>
+            <li><a href="#number-parseint">Number.parseInt(x)</a></li>
+            <li><a href="#number-parsefloat">Number.parseFloat(x)</a></li>
+          </ul>
+          <ul>
+            <li class="section-label">Arrayクラスおよび配列メソッドの基本</li>
+            <li><a href="#array-isarray">Array.isArray(x)</a></li>
+            <li><a href="#array-includes">T[].includes(x)</a></li>
+            <li><a href="#array-push">T[].push(x)</a></li>
+            <li><a href="#array-join">T[].join(x)</a></li>
+            <li><a href="#array-map">T[].map(f)</a></li>
+            <li><a href="#array-filter">T[].filter(f)</a></li>
+            <li><a href="#array-foreach">T[].forEach(f)</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="content">
+        <h2>Mathライブラリの基本</h2>
+        <section id="math-floor" class="function-block">
+          <h3>Math.floor(x) <span class="note">切り捨て</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Math.floor(x: number): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            number型の変数 x を引数にもち，小数点以下を切り捨てた整数を返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>let x = 3.5;
+console.log(x);             // 3.5
+console.log(Math.floor(x)); // 3
+</code></pre>
+          </div>
+        </section>
+
+        <section id="math-ceil" class="function-block">
+          <h3>Math.ceil(x) <span class="note">切り上げ</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Math.ceil(x: number): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            number型の変数 x を引数にもち，小数点以下を切り上げた整数を返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>let x = 3.5;
+console.log(x);             // 3.5
+console.log(Math.ceil(x)); // 4
+</code></pre>
+          </div>
+        </section>
+
+        <section id="math-round" class="function-block">
+          <h3>Math.round(x) <span class="note">四捨五入</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Math.round(x: number): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            number型の変数 x
+            を引数にもち，小数点以下を四捨五入(小数部分が0.5以上なら切り上げ)した整数を返す．<br>
+            （注：実数 x の整数部分は[x]であり，小数部分を r とすれば，x = [x] + r となる．）
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Math.round(3.4));  // 3 + 0.4 -> 3 + 0 = 3
+console.log(Math.round(4.5));  // 4 + 0.5 -> 4 + 1 = 5
+console.log(Math.round(5.6));  // 5 + 0.6 -> 5 + 1 = 6
+console.log(Math.round(-3.4)); // -4 + 0.6 -> -4 + 1 = -3
+console.log(Math.round(-4.5)); // -5 + 0.5 -> -5 + 1 = -4 
+console.log(Math.round(-5.6)); // -6 + 0.4 -> -6 + 0 = -6</code></pre>
+          </div>
+        </section>
+
+        <section id="math-abs" class="function-block">
+          <h3>Math.abs(x) <span class="note">絶対値</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Math.abs(x: number): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            number型の変数 x を引数にもち，絶対値をとった値を返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Math.abs(123));  // 123
+console.log(Math.abs(-234)); // 234</code></pre>
+          </div>
+        </section>
+
+        <section id="math-max" class="function-block">
+          <h3>Math.max(x1, x2, ...) <span class="note">最大値</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Math.max(x1: number, x2: number, ...): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            number型の変数 x を任意個渡し，その中で最大のものを返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Math.max(1, 2, 10, 10, 10, 9));  // 10</code></pre>
+          </div>
+        </section>
+
+        <section id="math-min" class="function-block">
+          <h3>Math.min(x1, x2, ...) <span class="note">最小値</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Math.min(x1: number, x2: number, ...): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            number型の変数 x を任意個渡し，その中で最小のものを返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Math.min(1, 2, 10, 10, 10, 9));  // 1</code></pre>
+          </div>
+        </section>
+
+        <section>
+          <aside class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                <code>Math.max</code
+                >や<code>Math.min</code>の引数のような，「任意個の引数」のことを<strong>可変長引数</strong>という．
+                可変長引数を関数定義で使用する際は，定義式では<code
+                  >function 関数名(...変数名: 型[]){}</code
+                >といった表現を利用する．
+                型注釈が<code>型[]</code>という形をしていることから分かるように，関数内部では配列として受け取ることになる．
+                例えば，Math.maxと同じ機能をもつ関数は，以下のように実装することができる．
+              </p>
+              <pre><code>function Max(...arr: number[]): number {
+  let res = -Infinity;
+  for (const elm of arr) {
+    if (elm > res) {
+      res = elm;
+    }
+  }
+  return res;
+}
+console.log(Max(1, 10, 100, 50)); //100
+</code></pre>
+            </div>
+          </aside>
+        </section>
+
+        <section id="math-random" class="function-block">
+          <h3>Math.random() <span class="note">乱数</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Math.random(): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            0以上1未満の乱数を返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Math.random()); //0以上1未満の乱数
+console.log(Math.random() * 100); //0以上100未満の乱数
+console.log(Math.floor(Math.random() * 100)); //0以上100未満の整数の乱数
+console.log(Math.random() * 100 - 50); //-50以上50未満の乱数
+</code></pre>
+          </div>
+        </section>
+      </section>
+
+      <section class="content">
+        <h2>Numberクラスの基本</h2>
+        <section id="number-isinteger" class="function-block">
+          <h3>Number.isInteger(x) <span class="note">整数判定</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Number.isInteger(x: unknown): boolean</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            任意の型の変数 x を引数にもち，それが整数ならば true
+            を，そうでなければ false を返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Number.isInteger(3)); //true
+console.log(Number.isInteger('3')); //false ("3"は文字列)
+console.log(Number.isInteger(1.0)); //true (JavaScript では小数部分が 0 の値も整数とみなす)
+console.log(Number.isInteger(1.1)); //false (1.1は小数)
+</code></pre>
+          </div>
+        </section>
+
+        <section id="number-isnan" class="function-block">
+          <h3>Number.isNaN(x) <span class="note">NaN判定</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Number.isNaN(x: unknown): boolean</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            任意の型の変数 x を引数にもち，それが NaN ならば true
+            を，そうでなければ false を返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Number.isNaN(3));   //false
+console.log(Number.isNaN(NaN)); //true
+</code></pre>
+          </div>
+        </section>
+
+        <section id="number" class="function-block">
+          <h3>Number(x) <span class="note">number型に型変換</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Number(x?: any): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            任意の型の変数 x を引数にもち，それを number
+            型に変更しようと試みて，試した結果を返す．数値に変換できない場合は NaN
+            を返す． 引数を省略すると 0 を返す．
+            （引数が文字列型と分かっているときは，後述の<code>parseFloat</code>を使用するべき）
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Number()); // 0
+console.log(Number(undefined)); // NaN
+console.log(Number(123)); // 123
+console.log(Number('abc')); // NaN
+console.log(Number('456')); // 456
+console.log(Number('246abc')); // NaN
+console.log(Number('0xFF')); // 255（0xは認識される）
+console.log(Number('$FF')); // NaN（$は認識されない）
+</code></pre>
+          </div>
+        </section>
+
+        <section id="number-parseint" class="function-block">
+          <h3>Number.parseInt(x) <span class="note">整数に変換</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Number.parseInt(x: string): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            文字列型変数 x
+            を渡すと，それを整数に変更しようと試みて，試した結果を返す．うまくいかないときは
+            NaN を返す． （実は進法も指定できるが，上記では省略している）
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Number.parseInt('abc')); // NaN
+console.log(Number.parseInt('456')); // 456
+console.log(Number.parseInt('246abc')); // 246（途中まで認識される）
+console.log(Number.parseInt('0xFF')); // 255（0xは認識される）
+console.log(Number.parseInt('$FF')); // NaN（$は認識されない）
+console.log(Number.parseInt('10+20')); // 10（計算式としては認識されない）
+console.log(Number.parseInt('１２３')); // NaN（全角は認識されない）
+</code></pre>
+          </div>
+        </section>
+
+        <section id="number-parsefloat" class="function-block">
+          <h3>Number.parseFloat(x) <span class="note">number に変換</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Number.parseFloat(x: string): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            文字列型変数 x を渡すと，それを number
+            型に変更しようと試みて，試した結果を返す．うまくいかないときは NaN
+            を返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>console.log(Number.parseFloat('abc')); // NaN
+console.log(Number.parseFloat('45.6')); // 45.6
+console.log(Number.parseFloat('   56.7')); // 56.7（空白は無視される）
+console.log(Number.parseFloat('2.46abc')); // 2.46（途中まで認識される）
+console.log(Number.parseFloat('0xFF')); // 0（0xは認識されない）
+console.log(Number.parseFloat('$FF')); // NaN（$は認識されない）
+console.log(Number.parseFloat('10+20')); // 10（計算式としては認識されない）
+console.log(Number.parseFloat('１２３')); // NaN（全角は認識されない）
+</code></pre>
+          </div>
+        </section>
+      </section>
+
+      <section class="content">
+        <h2>Arrayクラスおよび配列メソッドの基本</h2>
+        <section id="array-isarray" class="function-block">
+          <h3>Array.isArray(x) <span class="note">配列判定</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function Array.isArray(x: any): boolean</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            任意の型の変数 x を引数にもち，それが配列ならば true
+            を，そうでなければ false を返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>let x: number[] = [1, 2, 3];
+console.log(Array.isArray(x)); //true
+let y = 1;
+console.log(Array.isArray(y)); //false
+</code></pre>
+          </div>
+        </section>
+
+        <section id="array-includes" class="function-block">
+          <h3>T[].includes(x: T) <span class="note">要素の存在判定</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function T[].includes(x: T): boolean</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            型Tの配列に対し，指定された型Tの値が要素として含まれているかを真偽値で返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>let arr: number[] = [1, 2, 3];
+console.log(arr.includes(3)); //true
+console.log(arr.includes(5)); //false
+</code></pre>
+          </div>
+        </section>
+
+
+        <section id="array-push" class="function-block">
+          <h3>T[].push(x1, x2, ...) <span class="note">要素の末尾への追加</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function T[].push(x1: T, x2: T, ...): number</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            型Tの配列に対し，指定された値たちを末尾へ要素として追加する．戻り値は，要素追加後の配列の長さである．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>let arr: number[] = [1, 2, 3];
+arr.push(10);
+console.log(arr); //[1, 2, 3, 10]
+console.log(arr.push(20, 30, 40)); //7 （長さ7の配列になった）
+console.log(arr); //[1, 2, 3, 10, 20, 30, 40]
+</code></pre>
+          </div>
+        </section>
+
+        <section id="array-join" class="function-block">
+          <h3>T[].join(sep)<span class="note">配列の文字列出力</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <code class="language-typescript"
+              >function T[].join(sep?: string): string</code
+            >
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            指定された separator <code>sep</code> で要素を区切った文字列を返す．
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>let arr: number[] = [1, 2, 3];
+console.log(arr.join(",")); //"1,2,3"
+console.log(arr.join(":")); //"1:2:3"
+console.log(arr.join('xxx')); //"1xxx2xxx3"
+console.log(arr.join()); //1,2,3（区切り記号が省略された場合は ',' が使われる）
+</code></pre>
+          </div>
+        </section>
+
+        <section id="array-map" class="function-block">
+          <h3>T[].map(f)<span class="note">加工した配列の新規出力</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <!-- prettier-ignore -->
+            <code class="language-typescript multiline-code">// f: 各要素を変換（T1 → T2）する関数
+function f(x: T1): T2
+// map: 変換後の値を集めて新しい配列を作成
+function T1[].map(f: function): T2[]</code>
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            配列の各要素に対し，関数fを施して得られる新たな配列を返す．（上記関数構造は，callback関数の記法を使うと一行で書けるが，それについては後の節で扱う）
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>function f(x: number): number {
+  return x * x;
+}
+
+function g(x: number): string {
+  return `${x}*${x}`;
+}
+
+let arr = [1, 2, 3, 4, 5];
+console.log(arr.map(f)); // [1, 4, 9, 16, 25]
+console.log(arr.map(g)); // ['1*1', '2*2', '3*3', '4*4', '5*5']
+console.log(arr); //[1, 2, 3, 4, 5] （元の配列は変更されない）
+</code></pre>
+          </div>
+        </section>
+
+        <section id="array-filter" class="function-block">
+          <h3>T[].filter(f)<span class="note">加工した配列の新規出力</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <!-- prettier-ignore -->
+            <code class="language-typescript multiline-code">// f: 条件判定を行う関数（true/false を返す）
+function f(x: T): boolean
+// filter: 条件を満たす要素のみ抽出
+function T[].filter(f: function): T[]</code>
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            配列の各要素に対し，関数fで真になるかを判定し，真になるもののみを要素とする新たな配列を返す．（上記関数構造は，callback関数の記法を使うと一行で書けるが，それについては後の節で扱う）
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>function f(x: number): boolean {
+  return x > 0;
+}
+
+let arr = [1, -2, 3, -4, 5];
+console.log(arr.filter(f)); // [1, 3, 5]
+console.log(arr); //[1, -2, 3, -4, 5] （元の配列は変更されない）
+</code></pre>
+          </div>
+        </section>
+
+
+        <section id="array-forEach" class="function-block">
+          <h3>T[].forEach(f)<span class="note">配列の各要素への処理の実行</span></h3>
+          <div class="function-signature">
+            <strong>関数構造:</strong>
+            <!-- prettier-ignore -->
+            <code class="language-typescript multiline-code">// 関数 f: 引数 x に処理を加える
+function f(x: T): void
+// メソッド forEach: 各要素に f を適用する
+function T[].forEach(f: function): void</code>
+          </div>
+          <div class="function-description">
+            <strong>解説:</strong>
+            配列の各要素に対し，関数fで定まる処理を実行する．（上記関数構造は，callback関数の記法を使うと一行で書けるが，それについては後の節で扱う）
+          </div>
+          <div class="function-example">
+            <strong>例:</strong>
+            <pre><code>function f(x: number): void {
+  console.log(`${x}*${x}=${x * x}`);
+}
+
+let arr = [1, 2, 3, 4, 5];
+arr.forEach(f); //各要素に対し，処理 f を実行する
+console.log(arr); //[1, 2, 3, 4, 5] （元の配列は変更されない）</code></pre>
+          </div>
+        </section>
+
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+      document.querySelectorAll(".language-typescript").forEach((block) => {
+        hljs.highlightElement(block);
+      });
+    </script>
+  </body>
+</html>
