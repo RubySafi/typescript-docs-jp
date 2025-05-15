@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML with JavaScript</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.tag_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.tag_table th:nth-child(1),
+      table.tag_table td:nth-child(1) {
+        max-width: 300px;
+        width: 25%;
+      }
+
+      /* 2列目（出力する値） */
+      table.tag_table th:nth-child(2),
+      table.tag_table td:nth-child(2) {
+        max-width: 400px;
+        width: 40%;
+      }
+      /* 2列目（出力する値） */
+      table.tag_table th:nth-child(3),
+      table.tag_table td:nth-child(3) {
+        max-width: 200px;
+        width: 35%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>HTML with JavaScript - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="09-html-with-javascript.html">HTMLとJavaScript</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="08-html-introduction.html" class="prev">前</a> |
+        <a href="10-dom-introduction.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section>
+        <h2>JavaScriptとの連携の基礎</h2>
+        <p>HTMLは，JavaScriptと連携させることで，非常に高度なページを実現できる．
+          ここでは，その連携の基礎として，button および alert 関数を利用した方法を紹介する．
+        </p>
+        <h3>onclick属性</h3>
+        <p>
+          タグに対して onclick
+          属性を付与することにより，マウスでクリックしたときに実行する関数
+          を設定できる． 例えば，buttonタグに付与する場合は，開始タグに
+        </p>
+        <pre><code class="language-html">&lt;button onclick = "script"&gt;</code></pre>
+        <p>
+          のように script を文字列で指定する．script には JavaScriptコードを記述するが、関数呼び出しが推奨される．
+          関数は，別の場所で定義して直接呼び出すことも可能である．
+          指定する関数は，"や'で囲むことにより，文字列化しておく必要がある．
+          テンプレートリテラル（`backtick`）を onclick 属性内で使用することも可能だが，
+          HTML構文との相性が悪く，意図せぬパースエラーを招きやすいため非推奨である．
+        </p>
+        <h3>alert関数</h3>
+        <p>
+          組み込み関数の一つに alert関数があり，<code class="language-ts"
+            >alert( x )</code
+          >と記述することにより，x
+          と書かれたダイアログボックスを表示することができる． x
+          は値を評価した後に内部で文字列に変換されるが，初めから文字列を渡しておいたほうが予期せぬ挙動を防ぐことができる．
+        </p>
+        <p><strong>使用例：</strong></p>
+        <pre><code class="language-html">&lt;p&gt;
+  ボタン1&lt;button onclick="alert('Hello!')"&gt;Click me!['Hello!']&lt;/button&gt;を押すと，ダイアログが表示されます．&lt;br&gt;
+  ボタン2&lt;button onclick="alert(123)"&gt;Click me![123]&lt;/button&gt;を押すと，123が表示されます．&lt;br&gt;
+  ボタン3&lt;button onclick="alert('123')"&gt;Click me!['123']&lt;/button&gt;を押すと，
+  123が表示されますが，文字列化されるため，挙動はボタン2と同じです．&lt;br&gt;
+  ボタン4&lt;button onclick="alert(12+34)"&gt;Click me![12+34]&lt;/button&gt;を押すと，
+  値 12+34 が渡されますが，二項演算「+」を処理した46が出力されます．&lt;br&gt;
+  ボタン5&lt;button onclick="alert('12+34')"&gt;Click me!['12+34']&lt;/button&gt;を押すと，
+  文字列 '12+34' が渡されるので，表示は「12+34」という文字列です．&lt;br&gt;
+  ボタン6&lt;button onclick="alert('12'+'34')"&gt;Click me!['12'+'34']&lt;/button&gt;を押すと，
+  文字列 '12'+'34' が渡されますが，二項演算「+」を処理した「1234」が出力されます．&lt;br&gt;
+&lt;/p&gt;
+</code></pre>
+        <h3>scriptタグ（直接記述）</h3>
+        <p>
+          表示したい文字列が長いときや，関数式が長すぎる場合は，onclickに直接記述せずに別の場所に定義を記述することができる．
+          このときに使用するのが<strong>scriptタグ</strong>である．scriptタグを利用する際は，以下のことに注意しておくとよい．
+        </p>
+        <ul>
+          <li>
+            scriptは，scriptタグ&lt;script&gt;～&lt;/script&gt;で挟まれた部分に記述する．
+          </li>
+          <li>
+            記述する script 言語は，JavaScript
+            で書かれたものでなければならない．<br />（TypeScript
+            はコンパイルすると JavaScript
+            で書かれたコードになるので，それを利用する）
+          </li>
+          <li>
+            onclickで関数を呼び出す際，呼び出すよりも前に関数の定義を記述しなければならない．<br />（よって，最上部に記述すると安心である）
+          </li>
+          <li>
+            scriptタグは，可能な限りトップレベルに配置する．<br />（例えば，pタグで挟まれたところに書かない）
+          </li>
+        </ul>
+        <p>
+          なお，TypeScript と JavaScript
+          は型注釈を除けば概ね同じため，コードが同じならば型注釈を省略したものが，たいてい
+          JavaScript コードになる．
+        </p>
+        <p><strong>使用例：</strong></p>
+        <pre><code class="language-html">&lt;!-- 冒頭に書く --&gt;
+&lt;script&gt;
+  function greet() {
+    alert("Hello");
+  }
+  function calc(x) {
+    alert(`${x}+${x}=${2*x}`);
+  }
+&lt;/script&gt;
+&lt;p&gt;
+  ボタン1&lt;button onclick="greet()"&gt;Click me![greet()]&lt;/button&gt;を押すと，関数 greet() が呼び出されます．&lt;br&gt;
+  ボタン2&lt;button onclick="calc(5)"&gt;Click me![calc(5)]&lt;/button&gt;を押すと，関数 calc(5) が呼び出されます．&lt;br&gt;
+&lt;/p&gt;
+</code></pre>
+
+        <h3>scriptタグ（外部ファイル指定）</h3>
+        <p>
+          JavaScriptコードが長い場合や，同じコードを複数のページで使いまわしたいときは，外部ファイルを指定する方法のほうが便利である．
+          その際は，scriptタグに src
+          属性を付与してリンク先を提供することになるため，挟まれる部分はなくなる：
+        </p>
+        <pre><code class="language-html">&lt;!-- 冒頭に書く --&gt;
+&lt;script src="リンク先"&gt;&lt;/script&gt;</code></pre>
+        <p>
+          この script
+          タグを書く位置も，トップレベルで，最上部に記述しておくと安全である．
+          使用する js ファイルは，TypeScript をコンパイルした結果のものの他，web
+          上で公開されている js を使用することもできる．
+          下記例では，htmlファイルと同一ディレクトリに index.js
+          があることを想定している．
+        </p>
+        <p><strong>使用例：</strong></p>
+        <pre><code class="language-html">&lt;!-- 冒頭に書く --&gt;
+&lt;script src="index.js"&gt;&lt;/script&gt;
+&lt;p&gt;
+  ボタン1&lt;button onclick="greet()"&gt;Click me![greet()]&lt;/button&gt;を押すと，関数 greet() が呼び出されます．&lt;br&gt;
+  ボタン2&lt;button onclick="calc(5)"&gt;Click me![calc(5)]&lt;/button&gt;を押すと，関数 calc(5) が呼び出されます．&lt;br&gt;
+&lt;/p&gt;
+</code></pre>
+        <pre><code class="language-ts index-js">function greet() {
+  alert("Hello");
+}
+function calc(x) {
+  alert(`${x}+${x}=${2*x}`);
+}
+</code></pre>
+        <div class="block-remark">
+          <span class="icon"></span>
+          <div class="text-content">
+            alert関数を使用されて表示されるダイアログはカスタマイズができない．「○○からのダイアログ」のような表題の後に，
+            指定した文字列が表示される仕様である．
+          </div>
+        </div>
+
+        <h3>Developerツール</h3>
+        <p>
+          TypeScript を動かした際に，console.log によってメッセージを console
+          に表示することができていた． このような web browser で JavaScript
+          を動かした際，console.log により表示されるメッセージは，通常
+          「開発者ツール」や「Developer
+          tool」などと呼ばれる場所に表示されるが，この場所および名称は web
+          browser によって異なる．
+        </p>
+        <p>たいていのブラウザでは</p>
+        <ul>
+          <li>Tool -> Developer tool</li>
+          <li>ツール -> 開発者ツール</li>
+          <li>Ctrl + Shift + I</li>
+          <li>右クリック -> 開発者ツール -> 検証</li>
+          <li>右クリック -> 検証</li>
+        </ul>
+        <p>
+          などを用いることで開くことができるが，スマホブラウザなど表示機能が無いものが無いわけではない．
+        </p>
+        <p>
+          開発者ツールの中に，Console
+          やコンソールと書かれたタブがあれば，そこで閲覧可能である．
+        </p>
+        <pre><code class="language-html">&lt;p&gt;
+  ボタン1&lt;button onclick="console.log('test')"&gt;Click me![console.log('test')]&lt;/button&gt;を押すごとに，
+  Console に文字列「test」が表示されます．
+&lt;/p&gt;
+</code></pre>
+        <p>
+          この開発者ツールは一種の Debug
+          目的で頻繁に使用することになるため，場所は把握しておくべきである．もしも見つからない場合は，
+          開発者ツールが存在する Browser を利用することを推奨する．
+        </p>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

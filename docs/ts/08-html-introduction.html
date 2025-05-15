@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction to HTML</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.tag_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.tag_table th:nth-child(1),
+      table.tag_table td:nth-child(1) {
+        max-width: 300px;
+        width: 25%;
+      }
+
+      /* 2列目（出力する値） */
+      table.tag_table th:nth-child(2),
+      table.tag_table td:nth-child(2) {
+        max-width: 400px;
+        width: 40%;
+      }
+      /* 2列目（出力する値） */
+      table.tag_table th:nth-child(3),
+      table.tag_table td:nth-child(3) {
+        max-width: 200px;
+        width: 35%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>Introduction to HTML - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="08-html-introduction.html">HTML 入門</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="07-basic-utils.html" class="prev">前</a> |
+        <a href="09-html-with-javascript.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>HTMLの基礎</h2>
+        <section>
+          <h3>HTMLファイルの作り方</h3>
+          <p>
+            HTMLファイルとは，メモ帳のようなテキストファイルだが，次の特徴をもつ．
+          </p>
+          <ul>
+            <li>（通常は）ブラウザを利用して閲覧する．</li>
+            <li>
+              メモ帳とは異なり，文字や色をつけたり，背景画像を設定したり，ボタンを配置したりと，様々なことができる．
+            </li>
+            <li>JavaScriptと連携できる．</li>
+            <li>
+              実は，文法にミスがあっても自動修正で表示できてしまう（メリットでありデメリットでもある）
+            </li>
+          </ul>
+          <p>HTMLファイルの作り方は非常に簡単である．</p>
+          <ol>
+            <li>テキストファイルを開き，何か文章を書く．</li>
+            <li>ファイルを保存し，拡張子を.htmlに変更する．</li>
+            <li>ダブルクリックで開く．</li>
+          </ol>
+          <p>
+            これだけで，webページの作成が完了する．現段階は，ただのプレーンテキストであり無味乾燥な文章しか表示されないが，
+            これにタグと呼ばれる記法を利用して文字や領域に様々な属性を付与することにより，色々な表現が可能となる．
+          </p>
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              HTMLは前述の通り，文法に従わなくてもブラウザが自動的に修正してしまう．したがって，本来は正しく色々と
+              書かないといけないのだが，このページはHTMLの手軽さ及びタグという概念を学ぶことを目的とするため，
+              文法的に正しく書くことは行わない．それについては，後のページで扱う．
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3>タグ</h3>
+          <p>
+            htmlでは，「タグ」と呼ばれるブロックで文字列を囲むことにより，その文字列になんらかの属性を付与することができる．
+            ここで，タグとは，&lt;と&gt;で囲まれたものを指す．例えば，
+          </p>
+          <pre><code class="language-html">&lt;xxx&gt;sample&lt;/xxx&gt;
+</code></pre>
+          <p>
+            とすれば，「sample」という文字列に「xxx」という属性が付与されたことになる．
+            sampleの左側にあるタグ&lt;xxx&gt;のことを「Start
+            tag（開始タグ）」などといい，sampleの右側にあるタグ&lt;/xxx&gt;のことを
+            「End tag（終了タグ）」などという．
+            一方，タグの中には文字列に属性を付与する以外が目的のものがある．例えば「ここで改行を入れる」のようなものは，
+            文字列への属性付与とは無関連である．そのようなタグは単に
+          </p>
+          <pre><code class="language-html">&lt;xxx&gt;
+</code></pre>
+          <p>
+            とだけ記述する．このようなタグのことを「Void element」という．
+            タグ内の「xxx」に書くことができる文字列には色々とあり，これらをこのページで最小限学んでいく．
+          </p>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              タグには上記のように2種類あるため，文法的に一貫性に欠け，美しくない．
+              そこで，「すべてのタグは閉じるべきである」という信念を導入した言語が存在する（例：xhtml）．
+              そのような言語では，Self-closingタグは，開始タグと終了タグをまとめた&lt;xxx/&gt;という形で書くよう決められている．
+            </div>
+          </div>
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              タグには詳細設定の情報を付与することができる．例えば，
+              &lt;xxx&gt;というタグに，「optionA」という詳細設定と「optionB」という詳細設定の情報を付与したい場合は，&lt;xxx
+              option1 option2&gt;のように記載する．
+            </div>
+          </div>
+
+          <h3>注意事項</h3>
+          <p>
+            HTMLは，テキストファイルに書いた文書をそのまま表示するわけではない．特に，最初は以下のことに注意しておくとよい：
+          </p>
+          <ul>
+            <li>単一の改行は無視される</li>
+            <li>連続した空白・改行・タブは1つの空白として処理される</li>
+            <li>
+              タグが特別な意味をもつことから，&lt; や &gt;
+              はエスケープする必要が生じてくる．
+            </li>
+          </ul>
+          <p>例：</p>
+          <pre><code class="language-html">"Say,                       Tom, 
+where are
+
+
+you going?"
+                  "Nowhere."
+</code></pre>
+          <p>表示：</p>
+          <pre><code class="language-browser">Say, Tom, where are you going?" "Nowhere."
+</code></pre>
+          <p>
+            このことから，改行を表現したいときは，何らかの形でタグの力を借りる必要が生じてくる．
+          </p>
+        </section>
+
+        <section>
+          <h3>タグの種類1</h3>
+          <p>タグには様々な種類があるが，何回かに分けて紹介していく．</p>
+          <table class="tag_table">
+            <tr>
+              <th>記法</th>
+              <th>解説</th>
+            </tr>
+            <tr>
+              <td>&lt;br&gt;</td>
+              <td>改行を入れる．</td>
+            </tr>
+            <tr>
+              <td>&lt;strong&gt; ～ &lt;/strong&gt;</td>
+              <td>囲まれた部分を太字にする．</td>
+            </tr>
+            <tr>
+              <td>&lt;p&gt; ～ &lt;/p&gt;</td>
+              <td>
+                囲まれた部分を一つの段落とみなして表示する．（自動改行処理が入る）
+              </td>
+            </tr>
+            <tr>
+              <td>&lt;a href="リンク先"&gt; 文字列 &lt;/a&gt;</td>
+              <td>
+                文字列をクリックすると，指定したリンク先に飛ぶ機能を付ける．
+              </td>
+            </tr>
+          </table>
+          <p><strong>使用例：</strong></p>
+          <pre><code class="language-html">&lt;p&gt;
+  HTMLでは，このように簡単に文章を表示することができます．&lt;br&gt;
+  ただし，改行は&lt;strong&gt;brタグ&lt;/strong&gt;を利用する必要があります．
+&lt;/p&gt;
+&lt;p&gt;
+  &lt;strong&gt;pタグ&lt;/strong&gt;は段落ブロックを意味するので，それを使っても改行が表現できます．&lt;br&gt;
+  改行が無視されるというのは最初は不便に思えるかもしれませんが，
+  インデントの調整によってコードの構造が明確になるため，実は便利な仕様です．
+&lt;/p&gt;
+&lt;p&gt;
+  HTMLについては，&lt;a href="https://google.com"&gt;google&lt;/a&gt;で検索しても良いでしょう．
+&lt;/p&gt;
+</code></pre>
+        </section>
+
+        <section>
+          <h3>特別な記法</h3>
+          <p>
+            タグは特別な意味合いをもつため，不等号記号をHTML文章内で文字として入力する際は，タグと誤認されないようにエスケープする必要がある．
+            HTMLでもいくつかエスケープ文字が用意されている．また，通常のプログラミング言語にあるように，コメントもつけることができる．
+            エスケープ文字は大量にあるため，必要なものに絞って最低限のみ説明する．
+          </p>
+          <table class="tag_table">
+            <tr>
+              <th>記法</th>
+              <th>解説</th>
+              <th>目的</th>
+            </tr>
+            <tr>
+              <td>&lt;!-- コメント入力部分 --&gt;</td>
+              <td>コメントとして取り扱われ，htmlの表示には反映されない．</td>
+              <td>何か備忘録を残したい時に使う．</td>
+            </tr>
+            <tr>
+              <td>&amp;lt;</td>
+              <td>
+                「&lt;」を出力する．「&lt;」（小なり）は英語で less than
+                なので，その頭文字を用いる．
+              </td>
+              <td>タグとの混同を防ぐため．</td>
+            </tr>
+            <tr>
+              <td>&amp;gt;</td>
+              <td>
+                「&gt;」を出力する．「&gt;」（大なり）は英語で greater than
+                なので，その頭文字を用いる．
+              </td>
+              <td>タグとの混同を防ぐため．</td>
+            </tr>
+            <tr>
+              <td>&amp;amp;</td>
+              <td>
+                「&amp;」を出力する．「&amp;」は英語で ampersand
+                なので，その頭文字を用いる．
+              </td>
+              <td>エスケープ文字との混同を防ぐため．</td>
+            </tr>
+          </table>
+          <p>例：</p>
+          <pre><code class="language-html">&lt;!-- 不等式と真偽 --&gt;
+<p>2 &lt; 3 は真であり，5 &gt; 7 は偽である．したがって，(2 &lt; 3) &amp;&amp; (5 &gt; 7) は偽である．</p>
+</code></pre>
+
+          <div class="block-remark">
+            <span class="icon"></span>
+            <div class="text-content">
+              エスケープ文字は，必ず使わないといけないようなものではなく，誤認される時に使わないといけないものなのだが，
+              使っておくことが推奨される．
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3>タグの種類2</h3>
+          <p>ここでは，このページで取り扱う残りの補助的なものを紹介する．</p>
+          <table class="tag_table">
+            <tr>
+              <th>記法</th>
+              <th>解説</th>
+              <th>補足</th>
+            </tr>
+            <tr>
+              <td>&lt;button&gt; ～ &lt;/button&gt;</td>
+              <td>ボタンを配置する．</td>
+              <td>
+                単独では意味がない．buttonタグにオプションを追加して，javascriptのトリガーとして使用する．下の節で扱う．
+              </td>
+            </tr>
+            <tr>
+              <td>&lt;input&gt;</td>
+              <td>テキストボックスを配置する．</td>
+              <td>
+                単独では意味がない．inputタグにオプションを追加して，ユーザーからの入力を
+                javascript に渡したり， javascript
+                から値を表示したりなどの目的で使用する．下の節で扱う．
+              </td>
+            </tr>
+            <tr>
+              <td>&lt;div&gt; ～ &lt;/div&gt;</td>
+              <td>
+                囲まれた領域に名前を付ける際に使用するコンテナ．領域は，何を指定してもよく，別のタグ領域が入っていてもよい．
+              </td>
+              <td>
+                名前を付けることで，javascriptから呼び出して操作することが可能になる．
+              </td>
+            </tr>
+            <tr>
+              <td>&lt;span&gt; 文字列 &lt;/span&gt;</td>
+              <td>
+                囲まれた文字列領域に名前を付ける際に使用するコンテナ．領域は，divとは異なり，文章の一部を指定する．
+              </td>
+              <td>
+                名前を付けることで，javascriptから呼び出して操作することが可能になる．
+              </td>
+            </tr>
+            <tr>
+              <td>class="クラス名"</td>
+              <td>
+                divやspanを含め，タグ領域に対してクラス名を付ける．クラス名は，初心者のうちは，「半角英数」および「アンダースコア」を利用するとよい．
+              </td>
+              <td>
+                クラス名とは，グループ名のようなもので，複数の領域に同じクラス名を付与することが可能．
+                また，一つの領域に複数のクラスを宛がうことも可能．
+              </td>
+            </tr>
+            <tr>
+              <td>id="id名"</td>
+              <td>
+                divやspanを含め，タグ領域に対してid名を付ける．クラス名は，初心者のうちは，「半角英数」および「アンダースコア」を利用するとよい．
+              </td>
+              <td>
+                id名とは，個人名のようなもので，同じid名は一つの領域のみに付与することが可能．
+              </td>
+            </tr>
+          </table>
+          <p><strong>使用例1：</strong></p>
+          <pre><code class="language-html">&lt;p&gt;
+  span領域は文字列をspanタグで&lt;span&gt;囲む&lt;/span&gt;ことで指定できます．
+  クラス名も設定することができます．&lt;br&gt;
+  例えば，クラス名を test1 とすれば，
+  &lt;span class="test1"&gt;このように&lt;/span&gt;設定できます．idも同様です．
+&lt;/p&gt;
+&lt;p&gt;
+  ボタン&lt;button class="test1"&gt;ボタン&lt;/button&gt;や
+  テキストボックスにも&lt;input id="textBox"&gt;クラス名やid名を付けることができます．
+&lt;/p&gt;
+</code></pre>
+
+          <p><strong>使用例2：</strong></p>
+          <pre><code class="language-html">
+&lt;p&gt;
+  div領域は，任意領域をdivタグで囲むことで指定できます．
+&lt;/p&gt;
+&lt;div class = "test1"&gt;
+  &lt;p&gt;
+    div領域の中には，pタグブロックを含めることもできます．同様に，class名も指定できます．
+  &lt;/p&gt;
+  &lt;div id = "name1"&gt;
+    &lt;p&gt;
+      id名の指定も同様です．
+      このように，div領域の中にさらにdiv領域を入れることができ，
+      実際はなんでも入れることが可能です．
+    &lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class = "test2" id = "name2"&gt;
+    &lt;p&gt;
+      このように，classとidを両方指定することもできます．
+    &lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+        </section>
+      </section>
+
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

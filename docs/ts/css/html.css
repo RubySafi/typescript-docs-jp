@@ -1,0 +1,93 @@
+pre code.language-html {
+  background-color: #f8f8f8;  /* 優しい白系 */
+  color: #333;                /* ダークグレー文字 */
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 0.95rem;
+  padding: 1.2em;
+  padding-top: 1.5em;
+  border-radius: 6px;
+  display: block;
+  overflow-x: auto;
+  line-height: 1.5;
+  border: 1px solid #ddd;
+}
+
+/* 左上に言語名ラベルを表示する場合（任意） */
+pre code.language-html::before {
+  content: "HTML";
+  font-size: 0.7em;
+  color: #666;
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px 0 4px 0;
+  position: absolute;
+  top: 0px;
+  left: 0;
+}
+
+/* 左上に言語名ラベルを表示する場合（任意） */
+pre code.index-js::before {
+  content: "index.js";
+  font-size: 0.7em;
+  color: #666;
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px 0 4px 0;
+  position: absolute;
+  top: 0px;
+  left: 0;
+}
+
+
+pre {
+  position: relative;
+  margin-top: 1.6em; /* ラベルとの余白確保 */
+}
+
+
+
+pre code.language-browser {
+  background-color: #f8f8f8;  /* 優しい白系 */
+  color: #333;                /* ダークグレー文字 */
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 0.95rem;
+  padding: 1.2em;
+  padding-top: 1.5em;
+  border-radius: 6px;
+  display: block;
+  overflow-x: auto;
+  line-height: 1.5;
+  border: 1px solid #ddd;
+}
+
+/* 左上に言語名ラベルを表示する場合（任意） */
+pre code.language-browser::before {
+  content: "ブラウザ";
+  font-size: 0.7em;
+  color: #666;
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px 0 4px 0;
+  position: absolute;
+  top: 0px;
+  left: 0;
+}
+pre {
+  position: relative;
+  margin-top: 1.6em; /* ラベルとの余白確保 */
+}
+
+pre code.language-ts{
+  padding-top: 1.5em;
+}
+
+code.language-ts {
+  background-color: #333;  
+  color: white;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 0.95rem;
+  padding: 0.2em;
+  border-radius: 6px;
+  line-height: 1.5;
+}
+

@@ -37,10 +37,21 @@ pre.signature {
   margin: 0.2em 0;
   border-radius: 4px;
   overflow-x: auto;
+  align-items: center; /* 垂直方向に中央揃え */
 }
 
 .note {
   font-size: 0.9em;  /* 少し小さく */
   color: #666;       /* 薄い色にして目立たせすぎない */
   margin-left: 0.5em; /* 少し左にスペースを開ける */
+}
+
+.function-block .function-signature {
+  display: flex;
+  align-items: center;   /* 垂直方向に中央揃え */
+  gap: 0.6em;             /* 見出しとコードの間隔（任意） */
+}
+
+.function-block .function-signature code {
+  white-space: pre-wrap; /* 折り返し表示を有効にする */
 }
