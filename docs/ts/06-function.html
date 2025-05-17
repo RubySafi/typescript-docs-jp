@@ -173,7 +173,9 @@ function greet(name: string): string {
   return 戻り値;
 }
 </code></pre>
-<p>使用方法については，関数宣言と完全に同じだが，関数変数に代入された後でなければ呼び出すことができない．</p>
+        <p>
+          使用方法については，関数宣言と完全に同じだが，関数変数に代入された後でなければ呼び出すことができない．
+        </p>
         <h4>例4：二つの配列を結合した新しい配列を返す関数</h4>
         <pre><code>const merge = function (arr1: number[], arr2: number[]): number[] {
   const res: number[] = [];
@@ -193,9 +195,10 @@ console.log(merge(a, b)); // [1, 2, 3, 10, 11]
 
         <h3>void型</h3>
         <p>
-          関数は「何らかの処理をし，値を返す」だけでなく，「処理を行うことが目的で，値を返さない」場合もある．その場合に指定する戻り値の型を<code>void</code> 型という．
-          void 型を指定した場合は，
-          return
+          関数は「何らかの処理をし，値を返す」だけでなく，「処理を行うことが目的で，値を返さない」場合もある．その場合に指定する戻り値の型を<code
+            >void</code
+          >
+          型という． void 型を指定した場合は， return
           文は，単に<code>return;</code>と書くか，return文そのものが省略可能である．
         </p>
         <h4>例5：名前の配列を渡すと，全員に対してメッセージを出力する関数</h4>
@@ -263,10 +266,12 @@ console.log(a); // 0
           <tr>
             <td>値型<br />(primitive型)</td>
             <td>
-              関数に渡すときに値のコピーが渡される変数<br />（number, string, boolean
-              など）
+              関数に渡すときに値のコピーが渡される変数<br />（number, string,
+              boolean など）
             </td>
-            <td>他の言語では「値が直接格納される変数」と説明されることがある．</td>
+            <td>
+              他の言語では「値が直接格納される変数」と説明されることがある．
+            </td>
           </tr>
           <tr>
             <td>参照型<br />(object型)</td>
@@ -284,6 +289,51 @@ console.log(a); // 0
           他言語のように参照を渡す機能は標準で用意されていないため，同様の処理を実装するには工夫が必要である．
           これについては，後のページで改めて扱うこととする．
         </p>
+      </section>
+      <section id="as" class="content">
+        <h2>as 演算子 - その2</h2>
+        <p>
+          <a href="01-primitive-types.html#as">primitive型のページ</a>で紹介した
+          as 演算子の使用例を紹介しよう．
+          配列<code>number[]</code>には，配列の長さを取得するプロパティ<code>number[].length</code>が用意されているのであった．
+          このプロパティは，number型など他の型には存在しないものであり，使用しようとしている変数の型が配列であることをコンパイラが
+          知っていなければならない．そのため，例えば
+        </p>
+        <pre><code>
+function arrayInfo(x) : void {//型注釈を省略したため，x の型が不明である．
+   let arr = x as number[];//arr は number[] だとコンパイラに教える．
+   console.log(`配列の長さは${arr.length}です．`);//arrは配列なので，arr.length が使用できる．
+}
+</code></pre>
+        <p>のようなコードが記述できる．</p>
+        <div class="block-warning">
+          <span class="icon"></span>
+          <div class="text-content">
+            <p>
+              as 演算子は，coding
+              のときにコンパイラに型を教えてあげる方法であって，
+              実行時に本当にその型になっていることを保証しているわけではない．
+              例えば，上記の例では<code>arrayInfo(x)</code>としているわけだが，
+              「x は number[] 型だ」と教えておきながら，実際には x が number[]
+              型でない可能性がありうる．
+              その場合は，実行時エラーになる．したがって，様々な型チェックの手段を並行して駆使して安全性を確保したほうがよい．
+              上記の場合は，そもそも関数宣言の時点で
+            </p>
+            <pre><code>function arrayInfo(x: number[])</code></pre>
+            <p>
+              としておけば，型が明示されるため，as 演算子を使わずとも配列のプロパティを安全に使用できる．
+              また，配列であることを担保する方法として，次のページで学ぶ<a
+                href="07-basic-utils.html#array-isarray"
+                >Array.isArrayメソッド</a
+              >を利用する方法もあるので，それらを利用して可能なかぎり安全性を確保するとがよい．
+            </p>
+            <p>
+              as 演算子の他の使い方は，<a href="10-dom-introduction.html#as"
+                >DOM操作のページ</a
+              >で紹介する．
+            </p>
+          </div>
+        </div>
       </section>
     </main>
 

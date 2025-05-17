@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOM操作の基礎</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.dom_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.dom_table th:nth-child(1),
+      table.dom_table td:nth-child(1) {
+        min-width: 300px;
+        width: 40%;
+      }
+
+      /* 2列目（出力する値） */
+      table.dom_table th:nth-child(2),
+      table.dom_table td:nth-child(2) {
+        max-width: 400px;
+        width: 60%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>DOM操作の基礎 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="10-dom-introduction.html">DOM操作の基礎</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="09-html-with-javascript.html" class="prev">前</a> |
+        <a href=".html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>Introduction</h2>
+        <h3>DOMとは</h3>
+        <p>
+          DOM（Document Object
+          Model）とは，文章（Document）をオブジェクトとして扱うモデル（Object
+          Model）という意味であり， HTML文書を JavaScript
+          などのプログラミング言語から操作できるようにするためのものである．HTMLは，文章をwebページという形式で
+          オンライン上で表示するためのものなのだが，これをDOM操作により動的に操作できるようになると，生きたページを作ることが可能になる．
+          DOM操作の例として，
+        </p>
+        <ul>
+          <li>タグを削除・編集・追加する．</li>
+          <li>クリックなどのイベントの設定・解除ができる．</li>
+          <li>フォームの入力値の操作ができる．</li>
+          <li>スクロールやフォーカスの制御ができる．</li>
+        </ul>
+        <p>
+          などがある．また，これらの操作の際に，タグ名だけでなく，class名，id名を用いて検索することになる．
+          さらに，プログラミングにより操れるということは，本来手動で作成するのが大変なページもある程度プログラミングで自動化できるようになる．
+        </p>
+        <h3>開発の流れ</h3>
+        <p>実際に開発をする際は，以下の流れになる．</p>
+        <ol>
+          <li>
+            まず，HTMLファイルを編集し，UIの骨組みを作成する．<br />
+            DOM操作の際にclass名やid名で絞り込むことがあるため，class名やid名をつけると後で楽になる．
+          </li>
+          <li>次に，TypeScriptでロジック部分の作成を行う．</li>
+          <li>実際に動かしてみて，バグ修正や必要に応じてUIの修正を行う．</li>
+          <li>UIの拡張やページの追加等を行う．</li>
+          <li>2. に戻る．</li>
+        </ol>
+
+        <h3>document と window</h3>
+        <p>
+          window および document という変数は，DOM操作を必要とする coding
+          において，頻繁に登場するものである．
+          <code class="language-ts">window</code>
+          は DOM 操作に必要な各種の変数やメソッドをすべて格納している，グローバルオブジェクトである．
+          この window のプロパティである document が，HTML
+          文書のタグ情報等をすべて含んだものであり，これを利用して DOM
+          操作を行っていく．
+          <code class="language-ts">window.document</code
+          >としてアクセスするのが正規の利用法だが，通常は window を省略して単に
+          <code class="language-ts">document</code>
+          と書いても良い．
+          （誤解の恐れが生じる際は<code>window.document</code>と記述する．）
+        </p>
+        <h3>型 HTMLElement</h3>
+        <p>
+          HTML 文書において，div タグや button タグなどに代表される各タグ領域は，<code class="language-ts"
+            >HTMLElement</code
+          >
+          という型の オブジェクトとして管理されている．このオブジェクトに対し，
+        </p>
+        <ul>
+          <li>文字列を書き換える</li>
+          <li>文字の色やフォントを設定する</li>
+          <li>クリックしたときの動作を設定する</li>
+        </ul>
+        <p>
+          などの操作をプロパティに値を設定する，という形で行われる．例えば，
+        </p>
+        <pre><code class="language-ts">//注意：このコード単独では意味をなさない
+let element: HTMLElement;
+element.style.color = "red";//フォントの色を赤に設定する．
+element.innerText = "Hello, world!"//表示する文字列
+</code></pre>
+        <p>
+          のように設定する．次の節以降で，取得および設定を行っていく．
+          なお，開発者ツールの console
+          にはエラー情報を含め，色々と表示されるため，そこを確認しながらの作業になる．
+        </p>
+      </section>
+      <section class="content">
+        <h2>約束事</h2>
+        <p>
+          以下，本サイトにおける例の書き方において，以下のような約束をする．
+        </p>
+        <h3>作業ディレクトリ構造</h3>
+        <p>作業ディレクトリ構造は以下であるとする：</p>
+        <pre><code>./dist/index.js
+./src/index.ts
+index.html
+</code></pre>
+        <h3>各ファイルの意味</h3>
+        <ul>
+          <li>index.html ... 起動するメインの HTML ページとする．</li>
+          <li>
+            index.ts ... ロジック部分に対応する TypeScript ファイルとする．
+          </li>
+          <li>
+            index.js ... コンパイラによって自動出力された JavaScript
+            ファイルとする．
+          </li>
+        </ul>
+        <h3>例の表示方法</h3>
+        <p>
+          本ページ以後，例として表示するコードは，「index.html」および「index.ts」のみとし，自動出力される「index.js」については記載しない．
+          したがって，本ページにあるコードを実際に動かすには，index.ts
+          を適切にコンパイルする必要がある．
+        </p>
+        <h3>HTML文法について</h3>
+        <p>
+          HTML文法は完全に無視し，とにかくコードを動かして変化を実感するのを優先する．
+          正しい HTML 文法については別のページで扱う．
+        </p>
+      </section>
+      <section class="content">
+        <h2>DOM 操作入門</h2>
+        <section>
+          <h3>element の取得 - getElementById</h3>
+          <p>この節で新たに学ぶメソッドおよびプロパティは以下である：</p>
+          <table class="dom_table">
+            <tr>
+              <th>使用方法</th>
+              <th>解説</th>
+            </tr>
+            <tr>
+              <td>
+                <code class="language-ts"
+                  >val = document.getElementById( p1 )</code
+                >
+              </td>
+              <td>
+                p1に，idを文字列型で指定する．指定した id をもつタグ領域を
+                HTMLElement 型のものとして返す． 存在しないときは null を返す．
+              </td>
+            </tr>
+            <tr>
+              <td><code class="language-ts">element.style.color = p1</code></td>
+              <td>
+                HTMLElement 型の変数 element に対し，p1
+                で指定した色情報を設定する．初期値に戻す際は，空文字を設定する．
+                色情報は文字列型で与えなければならず，有名な色は"red"のように名称で指定することができる．それ以外の色については，"#RRGGBB"のように16進文字列で指定する．
+              </td>
+            </tr>
+            <tr>
+              <td><code class="language-ts">element.innerText = p1</code></td>
+              <td>
+                HTMLElement 型の変数 element に対し，表示文字列を p1
+                に設定する． p1 は string 型で指定する．
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <code class="language-ts">element.style.fontSize = p1</code>
+              </td>
+              <td>
+                HTMLElement 型の変数 element に対し，表示文字列の font size を
+                p1 に設定する．初期値に戻す際は，空文字を設定する． p1 は string
+                型で指定する．（例：'24px'）
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <code class="language-ts">console.log( p1 )</code>
+              </td>
+              <td>
+                p1 で指定した文字列を console に出力する．console は，開発者ツールの console タブから閲覧できる．
+              </td>
+            </tr>
+          </table>
+
+          <pre><code class="language-ts index-ts">function toRed(): void {
+  let element = document.getElementById('test');
+  if (element !== null) {
+    element.style.color = 'red'; //フォントの色を赤に設定する
+    element.innerText = 'Hello, red world![20px]'; //表示する文字列
+    element.style.fontSize = '20px';
+    console.log('toRedボタンが押されました．');
+  }
+}
+function toBlue(): void {
+  let element = document.getElementById('test');
+  if (element !== null) {
+    element.style.color = '#0000FF'; //フォントの色を青に設定する．
+    element.innerText = 'Hello, blue world![30px]'; //表示する文字列
+    element.style.fontSize = '30px';
+    console.log('toBlueボタンが押されました．');
+  }
+}
+function reset(): void {
+  let element = document.getElementById('test');
+  if (element !== null) {
+    element.style.color = ''; //フォントの色をデフォルトに戻す．
+    element.innerText = 'ボタンを押すと，文字列が変化します．'; //表示する文字列
+    element.style.fontSize = ''; //フォントサイズをデフォルトに戻す．
+    console.log('resetボタンが押されました．');
+  }
+}
+</code></pre>
+          <pre><code class="language-html">&lt;script src="dist/index.js"&gt;&lt;/script&gt;
+&lt;button onclick="toRed()"&gt;toRed&lt;/button&gt;
+&lt;button onclick="toBlue()"&gt;toBlue&lt;/button&gt;
+&lt;button onclick="reset()"&gt;reset&lt;/button&gt;
+&lt;div id="test"&gt;ボタンを押すと，文字列が変化します．&lt;/div&gt;
+</code></pre>
+          <div class="block-warning">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                <code>document.getElementById()</code>は指定した id をもつ
+                HTMLElement を取得する関数だが， 複数のタグに同じ id
+                をセットすることは禁止されている．そのことから，getElementById
+                を行うことで 取得できるタグ領域は高々 1 つである．これより，
+              </p>
+              <ul>
+                <li>
+                  取得できる値は，HTMLElement 型であり，指定した id
+                  が存在しないときは null を得る．
+                </li>
+                <li>
+                  だからこそ，プロパティは「get Element」と単数形になっている．
+                </li>
+              </ul>
+              <p>
+                しかしながら，なんらかのミスにより，複数のタグに同じ id
+                がセットされてしまうことがありうる．
+                この場合は，最初に検出したタグ領域を得るため，予期せぬバグの原因になる可能性がある．
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3>element の取得 - getElementsByClassName</h3>
+          <p>この節で新たに学ぶメソッドおよびプロパティは以下である：</p>
+          <table class="dom_table">
+            <tr>
+              <th>使用方法</th>
+              <th>解説</th>
+            </tr>
+            <tr>
+              <td>
+                <code class="language-ts"
+                  >val = document.getElementsByClassName( p1 )</code
+                >
+              </td>
+              <td>
+                p1に，classを文字列型で指定する．指定した class をもつタグ領域を
+                HTMLCollection 型のものとして返す．HTMLCollection とは，型 Element の配列のようなものであり，
+                各要素が検出された一つ一つのタグ領域に対応する．
+                <ul>
+                  <li>スタイルの変更等を行う場合，Elementは，HTMLElementに型変換をしなければならない．</li>
+                  <li>HTMLCollection は length プロパティをもつ．該当するクラスが存在しない場合は，<code>val.length</code>
+                  の値が 0 になっているので，それで存在判定を行う．</li>
+                <li>各要素へのアクセスは，<code>val[idx]</code>のように使ってアクセスする．インデックス<code>idx</code>は 0 から始まる．</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+
+<section id = "as">
+
+  
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            <h4>as 演算子の使い方 - その 3 </h4>
+            <p>
+              上述の解説にある通り，
+            </p>
+            <pre><code>let elmList = document.getElementsByClassName( p1 );</code></pre>
+            <p>
+              により取得される elmList は，型 Element の配列のようなものなので，実際に sytle などを使用する場合は，
+              型 HTMLElement に変換しなければならない．これが，<a
+                href="01-primitive-types.html#as">as 演算子</a
+              >で述べた，「型の絞込み」に対応している．型 Element は，html 要素の様々なタグ領域を表す総合的な型になっており，
+              文章等が書かれた通常のタグ領域は，Element を更に分類した型 HTMLElement になっている．
+            </p>
+            <p>例えば，最初の要素にアクセスする場合は，以下のようなコードを書けばよい．</p>
+            <pre>
+              <code>let elmList = document.getElementsByClassName( p1 );//Elementの"配列"を取得する(実際は HTMLCollection)．
+if (elmList.length > 0 ){//少なくとも1件以上ヒットしたことを確認しておく．
+    let elm = elmList[0] as HTMLElement;//型 HTMLElement として 0 番目の要素を elm に代入する．
+}</code></pre>
+<p>上記では，0番目の要素にアクセスするため，<code>elmList.length > 0</code>を確認しておく必要があった．
+一方，すべての要素を取得する場合は以下のようなコードを書けばよい．</p>
+<pre>
+              <code>let elmList = document.getElementsByClassName( p1 );//Elementの"配列"を取得する(実際は HTMLCollection)．
+for (let idx = 0; idx &lt; elmList.length; idx++){//elmList.length === 0 ならば，この for 文の中身は実行されない
+    let elm = elmList[idx] as HTMLElement;//型 HTMLElement として idx 番目の要素を elm に代入する．
+}</code></pre>
+          </div>
+        </div>
+</section>
+<p>上記の使い方をもとに，コードの例を書くと以下のようになる．</p>
+          <pre><code class="language-ts index-ts">function toRedFirstElm(): void {
+  let elementList = document.getElementsByClassName('test');
+  if (elementList.length &gt; 0) {
+    let element = elementList[0] as HTMLElement;
+    element.style.color = 'red'; //フォントの色を赤に設定する
+    element.innerText = 'Hello, red world![20px]'; //表示する文字列
+    element.style.fontSize = '20px';
+    console.log('toRedFirstElmボタンが押されました．');
+  }
+}
+function toBlueAll(): void {
+  let elementList = document.getElementsByClassName('test');
+  for (let idx = 0; idx &lt; elementList.length; idx++) {
+    let element = elementList[idx] as HTMLElement;
+    element.style.color = '#0000FF'; //フォントの色を青に設定する．
+    element.innerText = 'Hello, blue world![30px]'; //表示する文字列
+    element.style.fontSize = '30px';
+    console.log(`toBlueAllボタンが押されました．[idx = ${idx}]`);
+  }
+}
+function reset(): void {
+  let elementList = document.getElementsByClassName('test');
+  for (let idx = 0; idx &lt; elementList.length; idx++) {
+    let element = elementList[idx] as HTMLElement;
+    element.style.color = '';
+    element.style.fontSize = '';
+    element.innerText = 'ボタンを押すと，文字列が変化します．'; //表示する文字列
+    console.log(`resetボタンが押されました．[idx = ${idx}]`);
+  }
+}
+</code></pre>
+          <pre><code class="language-html">&lt;script src="dist/index.js"&gt;&lt;/script&gt;
+&lt;button onclick="toRedFirstElm()"&gt;toRedFirstElm&lt;/button&gt;
+&lt;button onclick="toBlueAll()"&gt;toBlueAll&lt;/button&gt;
+&lt;button onclick="reset()"&gt;reset&lt;/button&gt;
+&lt;div class="test"&gt;１つめのクラス[test]．&lt;/div&gt;
+&lt;div class="test"&gt;２つめのクラス[test]．&lt;/div&gt;
+&lt;div class="test"&gt;３つめのクラス[test]．&lt;/div&gt;
+</code></pre>
+          <div class="block-warning">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                <code>document.getElementsByClassName()</code>は指定した class をもつ
+タグ領域を配列（HTMLCollection型）として取得する関数だが， 複数のタグに同じ class
+                がセットされていることが多い．これより，以下に注意する必要がある：
+              </p>
+              <ul>
+                <li>
+                  取得できる値は，Element 型の配列（HTMLCollection型）であり，指定した class
+                  が存在しないときは配列の長さ(length)が 0 になっている．
+                </li>
+                <li>getElementById とは異なり，非テキスト領域にも class 名が設定されていることを想定しているため，
+                  HTMLElement でなく Element の配列（HTMLCollection型）となっている．よって，使用する際は型変換が必要である．
+                </li>
+                <li>
+                  getElementById とは異なり，複数ヒットすることが想定される．
+                  だからこそ，プロパティは「get Elements」と複数形になっている．
+                </li>
+              </ul>
+              <p>
+                getElementById と getElementsByClassName は，ともに似た目的でタグ領域を取得する関数なのだが，
+                プロパティ名が Element と Elements という単数・複数という点は間違いやすく，また
+                getElementsByClassName のほうは HTMLElement 型への型変換が必要という点に対し，特に注意が必要である．
+              </p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

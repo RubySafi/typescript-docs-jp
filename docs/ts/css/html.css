@@ -38,6 +38,19 @@ pre code.index-js::before {
   left: 0;
 }
 
+/* 左上に言語名ラベルを表示する場合（任意） */
+pre code.index-ts::before {
+  content: "index.ts";
+  font-size: 0.7em;
+  color: #666;
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px 0 4px 0;
+  position: absolute;
+  top: 0px;
+  left: 0;
+}
+
 
 pre {
   position: relative;

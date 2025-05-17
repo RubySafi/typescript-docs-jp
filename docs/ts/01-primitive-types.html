@@ -206,7 +206,9 @@ console.log(a===b); // false. 同じ symbolは生成されない．
           <tr>
             <td>関数</td>
             <td>"function"</td>
-            <td>どんな関数（functionオブジェクト）なのかまでかはわからない．</td>
+            <td>
+              どんな関数（functionオブジェクト）なのかまでかはわからない．
+            </td>
           </tr>
           <tr>
             <td>null型</td>
@@ -230,28 +232,88 @@ console.log(a===b); // false. 同じ symbolは生成されない．
       </section>
 
       <section class="content">
-        <h2>型注釈</h2>
-        <p>変数に代入できる型を制限することによって，より安全に coding をすることができる．この機能を<strong>型注釈</strong>という．
-        型注釈のやり方は，</p>
-        <pre><code class="language-ts">
+        <section>
+          <h2>型注釈</h2>
+          <p>
+            変数に代入できる型を制限することによって，より安全に coding
+            をすることができる．この機能を<strong>型注釈</strong>という．
+            型注釈のやり方は，
+          </p>
+          <pre><code class="language-ts">
 let b: string;
         </code></pre>
-        <p>
-        のように，変数を宣言したあとに「:（コロン）」と「型名」を加筆する方法である．
-        こうすることで，指定された型の値しか代入できなくなる．</p>
-        <div class="block-info">
-          <span class="icon"></span>
-          <div class="text-content">以下のように，型注釈と同時に代入することができる．
-        <pre><code class="language-ts">
+          <p>
+            のように，変数を宣言したあとに「:（コロン）」と「型名」を加筆する方法である．
+            こうすることで，指定された型の値しか代入できなくなる．
+          </p>
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              以下のように，型注釈と同時に代入することができる．
+              <pre><code class="language-ts">
 let a: number = 0;
 const b: number = 0;
         </code></pre>
-        なお，<code class="inline">const</code>は，宣言時に代入をしなければならない．</div>
-        </div>
-        <div class="block-info">
-          <span class="icon"></span>
-          <div class="text-content">ただ単に<code class="inline">let a;</code>としか宣言していない場合は，JavaScriptでは初期化されていない変数に対する仕様により，<code class="inline">undefined</code>が代入されている．
-        </div>
+              なお，<code class="inline">const</code
+              >は，宣言時に代入をしなければならない．
+            </div>
+          </div>
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              ただ単に<code class="inline">let a;</code
+              >としか宣言していない場合は，JavaScriptでは初期化されていない変数に対する仕様により，<code
+                class="inline"
+                >undefined</code
+              >が代入されている．
+            </div>
+          </div>
+        </section>
+        <section id="as">
+          <h2>as 演算子 - その1</h2>
+          <p>
+            coding
+            をしていく中で，変数の型がよくわかっていない場面に出くわすことがありうる．
+            例えば，
+          </p>
+          <ul>
+            <li>型注釈を省略していたため，型が不明である．</li>
+            <li>
+              他人から渡された code に型注釈が書いておらず，型が不明である．
+            </li>
+            <li>
+              JavaScript コードをそのまま TypeScript
+              コードとして流用しようとしたとき，JavaScript
+              では型の概念がないため，すべての変数について型が不明である．
+            </li>
+            <li>
+              外部からデータを取得したとき（例えば
+              JSON），データの値のみ取得することになるため，取得された値の型が不明である．
+            </li>
+          </ul>
+          <p>
+            などが考えられうる．TypeScript
+            では，型がわかっていないと使えないものがある．例えば，number
+            型のみが保有するプロパティがあり，変数 x に対して
+            そのプロパティを使用したい場合は，コンパイラが x が number
+            型であると知っていなければならない． その際に便利なのが as
+            演算子である．使用方法は
+          </p>
+          <pre><code class="language-ts">let x = y as T;  //型が不明な変数 y を，型 T として x に代入する．
+const x = y as T;//型が不明な変数 y を，型 T として x に代入する．
+</code></pre>
+          <p>である．</p>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                as
+                演算子は，型がすでにわかっている場合にも使うことがあり，そのようなときは「型をさらに絞り込む」ために使われる．
+                この使い方は TypeScript の設計思想に深く関係しており，後の<a href="06-function.html#as">関数のページ</a>で詳しく紹介する．
+            </div>
+          </div>
+        </section>
       </section>
     </main>
 

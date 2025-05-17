@@ -139,6 +139,7 @@ footer {
 
 
 /* 共通スタイル */
+.block-warning,
 .block-remark,
 .block-note,
 .block-info {
@@ -229,6 +230,30 @@ footer {
   border-left-width: 5px;
   border-radius: 4px;
 }
+
+.block-warning .icon {
+  flex: 0 0 32px; /* 収縮も拡大もさせず、固定幅 */
+  height: 32px;
+  margin-right: 10px;
+  background-image: url('../img/warning_32dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg');
+  background-size: contain; /* アスペクト比を維持してアイコン全体を表示 */
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 警告：橙～赤系 */
+.block-warning {
+  background-color: #fff3e0;         /* 薄いオレンジ系（背景） */
+  border-left-color: #ff7043;        /* 濃いオレンジ（左線） */
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left-width: 5px;
+  border-radius: 4px;
+}
+
 
 
 
