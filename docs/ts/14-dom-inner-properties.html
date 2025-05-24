@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOM - inner properties</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+
+    <script src="js/14_1.js"></script>
+    <script src="js/14_2.js"></script>
+    <script src="js/14_3.js"></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.dom_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.dom_table th:nth-child(1),
+      table.dom_table td:nth-child(1) {
+        min-width: 300px;
+        width: 40%;
+      }
+
+      /* 2列目（出力する値） */
+      table.dom_table th:nth-child(2),
+      table.dom_table td:nth-child(2) {
+        max-width: 400px;
+        width: 60%;
+      }
+
+      .demo-box {
+        position: relative; /* 相対位置指定で ::before を正しく配置 */
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ::before でラベルを追加 */
+      .demo-box::before {
+        content: "Web表示";
+        font-size: 0.7em;
+        color: #666;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px 0 4px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+      }
+
+
+      .demo-box-tree {
+        position: relative; /* 相対位置指定で ::before を正しく配置 */
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ::before でラベルを追加 */
+      .demo-box-tree::before {
+        content: "疑似ツリー";
+        font-size: 0.7em;
+        color: #666;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px 0 4px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+      }
+
+
+
+      .demo-box-code {
+        position: relative; /* 相対位置指定で ::before を正しく配置 */
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ::before でラベルを追加 */
+      .demo-box-code::before {
+        content: "HTMLコード";
+        font-size: 0.7em;
+        color: #666;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px 0 4px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+      }
+
+
+      ul.toc {
+        list-style-type: disc;
+        margin-left: 1.5em;
+        padding-left: 0.5em;
+        line-height: 1.6;
+        font-size: 1rem;
+      }
+
+      ul.toc li a {
+        color: #004080;
+        text-decoration: none;
+      }
+
+      ul.toc li a:hover {
+        text-decoration: underline;
+        color: #0066cc;
+      }
+
+      h1.abstract {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #2c3e50; /* 落ち着いた濃いグレー */
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 0.3em;
+        margin-bottom: 1em;
+        margin-top: 1.5em;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>DOM内容取得 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="14-dom-inner-properties.html">DOM内容取得</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="13-dom-input-textarea.html" class="prev">前</a> |
+        <a href="15-string-class.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>DOMの内容取得方法</h2>
+          <p>
+            DOMにある値を取得したり，値を設定したり，という方法は頻繁に行われ，主に
+          </p>
+          <ul>
+            <li>
+              ユーザーに textbox に情報を入力してもらい，その入力情報を取得する
+            </li>
+            <li>計算したデータを画面に表示する</li>
+          </ul>
+          <p>
+            などの際に利用する．いままで，input タグや textarea
+            タグに対する値の取得と設定については value プロパティを用いたが，
+            今回は，より一般のタグに対する値の取得と設定を扱う際に利用するプロパティである
+          </p>
+          <ul>
+            <li>innerText</li>
+            <li>textContent</li>
+            <li>innerHTML</li>
+          </ul>
+          <p>について学ぶ．</p>
+        </section>
+        <section>
+          <h2>innerText, textContent, innerHTML</h2>
+          <p>
+            説明をするより見たほうがわかりやすいため，実際にこのページ上で確認してみよう．
+          </p>
+          <div class="demo-box">
+<div id="sample">
+  <!-- 段落 -->
+  <p>HTMLは，<strong>タグ</strong>と呼ばれるものを利用して，<br>ページを作ります．</p>
+  <!-- 段落 -->
+  <p>
+    普通のテキストエディタと同じように，気軽にページが作れます．
+  </p>
+</div>
+          </div>
+          <pre><code class="language-html">&lt;div id="sample"&gt;
+  &lt;!-- 段落 --&gt;
+  &lt;p&gt;HTMLは，&lt;strong&gt;タグ&lt;/strong&gt;と呼ばれるものを利用して，&lt;br&gt;ページを作ります．&lt;/p&gt;
+  &lt;!-- 段落 --&gt;
+  &lt;p&gt;
+    普通のテキストエディタと同じように，気軽にページが作れます．
+  &lt;/p&gt;
+&lt;/div&gt;</code></pre>
+          ボタン<button onclick="getSampleValues()">Click</button
+          >をクリックすれば上記の html タグを HTMLElement
+          に読み込み，それぞれのプロパティでアクセスしたものが以下に表示される．
+          <p>innerText：表示されるテキストを，実際に表示される形式で取得することを目指す（画面表示優先）．ただし，ブラウザによって結果が異なることがある（ブラウザ依存）．</p>
+          <textarea id="result1_innerText" rows="5" cols="100" readonly></textarea>
+
+          <p>textContent：ソースコードからタグを除去したものを取得（ソースコード優先）</p>
+          <textarea id="result1_textContent" rows="8" cols="100" readonly></textarea>
+
+          <p>innerHTML：要素の内部HTML構造を表す文字列（≒ソースコード）を取得（ソースコード優先）</p>
+          <textarea id="result1_innerHTML" rows="8" cols="100" readonly></textarea>
+        
+          
+        <p>これらの違いや特徴は，以下のようにまとめることができる．</p>
+        <ul>
+          <li>innerText は実際にどのように表示されるのかの計算が入る関係上，速度が遅い</li>
+          <li>innerText は「実際に表示される形式で取得することを目指す」と書いてあることから，必ずしも表示される形式で文字列が取得できるわけではない．
+            （例えば，縦書き表示にしても，取得される文字列は縦書きにならない）
+          </li>
+          <li>innerText と textContent の違いは，以下のようになっている：
+          <ul>
+            <li>brタグは，innerText では改行という扱いとして文字列が取得されたが，textContent はタグの除去なので改行はされていない．</li>
+            <li>innerText は表示形式優先なのでインデントやコメント，タグのみの行は無視されるが，textContent はソースコード優先なので，
+              空行や空白，タブなどの処理は行われない．
+            </li>
+          </ul>
+          </li>
+        </ul>
+        </section>
+        
+      <section>
+        <h2>innerText, textContent, innerHTML の使い分け</h2>
+        <p>これらのプロパティの使い分けの例を以下に挙げる：</p>
+        <h3>innerText</h3>
+        <p>web上におけるコピー＆ペーストに近いため，純粋に表示されている文字列そのものを単純に取得して利用したいときに用いる．</p>
+        <h3>textContent</h3>
+        <p>タグ情報やレイアウト情報が失われてしまうが，ソースコード上のテキストノードの内容を忠実に取得することができるため，
+          自分でデータを取得して分析することを目的とするときに利用する．（例：スクレイピング，構文解析，全文検索用の前処理）</p>
+        <h3>innerHTML</h3>
+        <p>
+          タグ情報を完全に含めることができるため，凝ったレイアウト構造を実現させたいときに利用する．
+        </p>
+        <h3>注意点</h3>
+        <p>innerHTMLは，タグ構文を好きに入れられてしまうため，セキュリティ上のリスクを理解した上で使うべきである．
+          例えば，script タグを利用することで，好きな JavaScript を走らせることが可能になってしまうため，
+          <strong style="color:red">信頼できない人から入手したものを innerHTML でセットすることは推奨されない</strong>．
+        </p>
+        <h2>innerText, textContent, innerHTML を利用した値のセット</h2>
+        <p>ここでは，この3つのプロパティを通じて文字列を設定したときに，どのように振る舞うのかを視覚的に理解しよう．</p>
+        <p>以下の例では，ボタンを押したときに「div」タグの，「id="sampleDemo"」に対して値の書き換えを行うことを想定している．</p>
+          <div class="demo-box">
+<div id="sampleDemo">
+  <p>ここにはブラウザでみた結果（上）やHTMLコード（下）が表示されます．</p>
+  </div>
+  
+          </div>
+          <div class="demo-box-code">
+<div id="sampleDemoHTML">
+  <p>&lt;div id="sampleDemo"&gt;&lt;p&gt;ここにはブラウザでみた結果（上）やHTMLコード（下）が表示されます．&lt;/p&gt;&lt;div&gt;</p></div>
+          </div>
+          <p>セットしたい文字列：</p>
+<textarea id="demo-text" cols="100" rows="5">
+HTMLは，<strong>スタイル</strong>を利用することで，&lt;br&gt;
+<span style="color:red">色を付けたりする</span>ことが可能です．
+</textarea><br>
+<button onclick="setInnerText()">innerText でセット</button>
+<button onclick="setTextContent()">textContent でセット</button>
+<button onclick="setInnerHTML()">innerHTML でセット</button>
+<button onclick="resetValues()">reset</button>
+
+<p>これらのセットの仕方の違いは，以下のようにまとめられる．</p>
+<ul>
+  <li>innerHTML としてのセットは，HTML としてセットされる．具体的には，構文解釈が行われている．</li>
+<li>innerText でセットした場合，文字列情報としてセットするが，レイアウト状況が Web 表示と一致するように登録される．</li>
+<li>textContent でセットした場合，単なる文字列情報としてセットする．</li>
+</ul>
+      </section>
+      <section>
+          <h2>DOMのツリー構造モデル</h2>
+          <p>innerHTML, innerText, textContent の違いを理解するには，DOM のツリー構造を理解するのがよい．ここでは，</p>
+                    <pre><code class="language-html">&lt;div id="sample"&gt;
+  &lt;!-- 段落 --&gt;
+  &lt;p&gt;HTMLは，&lt;strong&gt;タグ&lt;/strong&gt;と呼ばれるものを利用して，&lt;br&gt;ページを作ります．&lt;/p&gt;
+  &lt;!-- 終わり --&gt;
+&lt;/div&gt;</code></pre>
+<p>を利用して疑似ツリーで把握してみよう．</p>
+<p><pre><code class="language-ts">let element = document.getElementById("sample");</code></pre></p>
+として，上記 div タグを element に取得したとき，element は以下のような DOM ツリーとして格納されると疑似的に考えることができる：
+
+
+<div class="demo-box-tree"><pre>
+Element: DIV (id="sample")
+ ├Text:"  "
+ ├Comment:"&lt;!-- 段落 --&gt;"
+ ├Text:"\n"
+ ├Text:"  "
+ ├─ Element: P
+ │  ├─ Text: "HTMLは，"
+ │  ├─ Element: STRONG
+ │  │   └─ Text: "タグ"
+ │  ├─ Text: "と呼ばれるものを利用して，"
+ │  ├─ Element: BR
+ │  ├─ Text: "ページを作ります．"
+ │  └Text:"\n"
+ ├Text:"  "
+ ├Comment:"&lt;!-- 終わり --&gt;"
+ └Text:"\n"</pre>
+</div>
+<p>このとき，<code class="language-ts">let sentences = element.textContent;</code>の正体とは，上記ツリーにおいて「Text」となっているものを
+すべて文字列結合したものを返していると判断することができる．さらに，
+<code class="language-ts">element.textContent = sentences;</code>とは，上記 Element ツリーの子要素をすべて削除した後，あらたに Text ノードとして
+sentences を追加して</p>
+<div class="demo-box-tree"><pre>
+Element: DIV (id="sample")
+ └Text:sentences</pre>
+</div>
+<p>に更新してしまうものだということが解釈できる．</p>
+<p><code class="language-ts">element.innerHTML</code>については，値をセットする際は構文解釈しながらツリーとして登録していき，
+値を取得するときは，逆にツリーをタグ情報に戻し，Textノードについてはタグと誤認しないために適切にエスケープしながら取得するものだと認識できる．</p>
+<p><code class="language-ts">element.innerText</code>については，値を取得する際は，browser にツリーを投げて仮想画面に描画させたあと，その仮想画面のテキストを
+取得しているものだと認識できる（したがって，結果はブラウザ依存となってしまう）．値を設定する際は，改行（\n, \r, \r\n など）を&lt;br&gt;ノードに置き換えて，テキストノードと交互に設定していくものだと考えることができる．</p>
+
+</section>
+
+
+      <section>
+          <h2>DOMのツリー構造</h2>
+          <p>前節で学んだ DOM のツリー構造をプログラム側で取得してみよう．</p>
+
+
+<p>HTMLElement のツリー構造を取得するプログラムとしては以下を利用する．
+  このページでは，<strong style="color:red">プログラムを自分で実装できるようにすることは目的にしていない</strong>ため，細かい説明は省略する．
+代わりに，出力結果のツリー構造が認識できればよい．</p>
+<pre><code>function getNodeTree(element, prefix, depth) {
+    let res = '';
+    const indent = ' '.repeat(depth);
+    for (let i = 0; i &lt; element.childNodes.length; i++) {
+        switch (element.childNodes[i].nodeType) {
+            case Node.TEXT_NODE:
+                res += `${indent}[${prefix}${i}] TEXT: "${element.childNodes[i].nodeValue}"\n`;
+                break;
+            case Node.COMMENT_NODE:
+                res += `${indent}[${prefix}${i}] COMMENT: "${element.childNodes[i].nodeValue}"\n`;
+                break;
+            case Node.ELEMENT_NODE:
+                let elm = element.childNodes[i];
+                res += `${indent}[${prefix}${i}] ELEMENT: ${elm.tagName}\n`;
+                if (elm.childNodes.length &gt; 0) {
+                    res += getNodeTree(elm, `${prefix}${i}-`, depth + 1);
+                }
+                break;
+            default:
+                res += `${indent}[${prefix}${i}] OtherNodes\n`;
+        }
+    }
+    return res;
+}</code></pre>
+<p>興味のある読者のために，実装のポイントを下記に述べる：</p>
+<ul>
+  <li>説明の都合上，element は HTMLElement 型の変数としておく．
+  </li>
+  <li>element.childNodes により，子ノードの配列のようなものが取得できる．</li>
+  <li>各ノードは，「nodeType」プロパティにより，ノードの種類が取得できる．</li>
+  <li>上記コードでは，Node.TEXT_NODE（テキストノード），Node.COMMENT_NODE（コメントノード），Node.ELEMENT_NODE（タグ要素）については
+    分類を行い，それ以外のノードは「その他」とまとめてある．
+  </li>
+  <li>テキストおよびコメントノードの値については，nodeValueプロパティを使って取得する．</li>
+  <li>タグ要素については，tagName プロパティをつかってタグ名を取得し，タグ要素が子要素をもつときは，getNodeTree に投げて再帰的に取得する．</li>
+  <li>可読性のため，ノードの index や indent を付けている．また， Null チェックや型チェックは外してある．</li>
+</ul>
+<p>上記コードは，HTMLElement 型の変数 elm に対して，そのツリー構造を<code>getNodeTree(elm, "", 0);</code>と指定すればツリー構造が文字列で取得できるようになっている．</p>
+<p>今回取得する対象の html 要素は以下である：</p>
+
+
+
+          <div class="demo-box">
+<div id="sampleTag">
+  <!-- 段落 -->
+  <p>HTMLは，<strong>タグ</strong>と呼ばれるものを利用して，<br>ページを作ります．</p>
+  <!-- 終わり -->
+</div>
+          </div>
+
+<pre><code class="language-html">&lt;div id="sampleTag"&gt;
+  &lt;!-- 段落 --&gt;
+  &lt;p&gt;HTMLは，&lt;strong&gt;タグ&lt;/strong&gt;と呼ばれるものを利用して，&lt;br&gt;ページを作ります．&lt;/p&gt;
+  &lt;!-- 終わり --&gt;
+&lt;/div&gt;</code></pre>
+
+<p>ボタン<button onclick="getNode()">ツリー取得</button>を押すと，</p>
+<pre><code>let elm = document.getElementById('sampleTag');
+let text = getNodeTree(elm, '', 0);
+let resultArea = document.getElementById('nodeResult');
+resultArea.value = text;</code></pre>
+<p>を実行するようになっている．</p>
+<textarea id = nodeResult cols = 100 rows = 20>ここに結果が表示されます．</textarea>
+
+<p>このノードを理解すると，textContent の挙動が理解しやすい．</p>
+          </section>
+
+          
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

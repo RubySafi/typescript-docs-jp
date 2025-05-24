@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>応用型：オブジェクト・リテラル・ユニオン型</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.dom_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.dom_table th:nth-child(1),
+      table.dom_table td:nth-child(1) {
+        min-width: 300px;
+        width: 40%;
+      }
+
+      /* 2列目（出力する値） */
+      table.dom_table th:nth-child(2),
+      table.dom_table td:nth-child(2) {
+        max-width: 400px;
+        width: 60%;
+      }
+
+      h4 {
+        position: relative;
+        padding-left: 1em;
+        margin: 1em 0 0.5em;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+
+      h4::before {
+        content: "・";
+        position: absolute;
+        left: 0;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>応用型 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="11-advanced-types.html">応用型</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="10-dom-introduction.html" class="prev">前</a> |
+        <a href="12-input-textarea.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2>応用型</h2>
+        <p>今まで扱ってきた型は，主に以下のような型であった．</p>
+        <ul>
+          <li>number型，string型，boolean型：頻繁に使われる値．</li>
+          <li>
+            null型：「値が空」であることを表す目的で明示的に代入するときに主に使用される．
+          </li>
+          <li>undefined型：JavaScriptエンジンが暗黙的に設定することが多い．</li>
+          <li>
+            void型：void型は，関数の戻り値が存在しないことを明示する目的で主に使われる．
+          </li>
+          <li>
+            配列型：特定の型を要素にもつ配列．list[3]のように，インデックスを使ってアクセスする．
+          </li>
+        </ul>
+        <pre><code class="language-ts">let value : number = 123; //number型
+let text : string = "abc";//string型
+let flag : boolean = true;//boolean型
+
+function WriteLog(text: string) : void {//戻り値は無い -> void 型
+    console.log(`ログ：${text}`);
+}
+
+let list : number[] = [1, 2, 3];// number型を要素にもつリスト： number[]型．
+                                //いろいろな型を指定でき，それらの総称が配列型．
+
+list[4] = 10;// list = [1, 2, 3, undefined, 10] となる．
+             //JavaScriptエンジンが，間の抜け空スロットとして補い，それを undefined と同様に扱った．
+</code></pre>
+        <p>
+          他にも，名前のみ登場した型として，bigint型，symbol型，関数型，HTMLElement型，HTMLCollection型があった．このうち，
+          関数型については後に詳しく学ぶ．
+        </p>
+        <p>
+          このページでは，これらを基礎として作られる応用型である，オブジェクト型，リテラル型，ユニオン型を学ぶ．
+        </p>
+        <section class="content">
+          <h3>オブジェクト型</h3>
+          <h4>オブジェクト型とは</h4>
+          <p>
+            オブジェクト型とは，指定されたキーにより値にアクセスすることが可能になるような型の総称のことである．
+            例えば，変数 data
+            に対し，「data.name」のようにアクセスして文字列を，「data.age」のようにアクセスして数値を取得するようなことが可能になる．
+            このように，dot でアクセスするときの文字列「name」や「age」のことを
+            key と呼ぶ．今回の例では， 変数 data は，key「name」に対しては
+            string 型の値が，key「age」に対しては number
+            型の値が設定されている．
+          </p>
+          <h4>オブジェクト型の定義方法</h4>
+          <p>
+            オブジェクト型を設定する際は，「key と，その key
+            に紐づける型」を任意個指定することにより行われる．具体的には，以下のように行う．
+          </p>
+          <pre><code class="language-ts">let data: { name: string; age: number } = {
+  //
+  name: 'Alice',
+  age: 23,
+};
+
+console.log(`Name: ${data.name}, Age: ${data.age}`); //Name: Alice, Age: 23
+
+data.name = 'Bob';
+data.age = 31;
+console.log(`Name: ${data.name}, Age: ${data.age}`); //Name: Bob, Age: 31
+</code></pre>
+          これをみればわかるように，上記の例の型は「<code
+            >{name: string; age: number}</code
+          >」である．オブジェクト型というのは， このような「key
+          と値のペア」からなるオブジェクトに対する総称なのであって，「オブジェクト型」という用語からは，どんな
+          key をもっているのか，
+          また，その値の型は何なのかはわからない．オブジェクト型に分類される型は，key
+          と値の型の組み合わせの数だけ存在する．
+
+          <div class="block-warning">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>オブジェクト型の変数に値をセットする方法は，</p>
+              <ul>
+                <li>変数の宣言時に，型注釈とともに同時に代入する</li>
+                <li>先に型注釈して変数のみ宣言しておき，後で値を代入する</li>
+              </ul>
+              <p>
+                の2種類が存在するが，後者の場合は注意が必要である．値の初期化時は，すべての
+                key に対して値を同時にセットしなければならず，
+                一つずつ値を設定するということは認められていないのである．
+              </p>
+              <pre><code class="language-ts">let data01: { name: string; age: number };
+let data02: { name: string; age: number };
+
+data01 = { name: 'Lobin', age: 21 }; //初期化する際は，このように，
+                                     //すべての key に対して値を同時設定しなければならない．
+data01.age = 35; //値が初期化された後ならば，自由に要素の再設定が可能である．
+
+//data02.name = 'Dog'; ← 初期化の段階で age に値をセットしていないので不可（エラーになる）
+//data02.age = 4; ← このように，初期化を何回かに分けてセットするということは認められない．
+
+data02 = { name: 'Tom', age: 40 }; //このように同時定義するしかない．
+
+console.log(`Name: ${data01.name}, Age: ${data01.age}`); //Name: Lobin, Age: 35
+
+console.log(`Name: ${data02.name}, Age: ${data02.age}`); //Name: Tom, Age: 40
+</code></pre>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>リテラル型</h3>
+          <h4>リテラル型とは</h4>
+          <p>
+            リテラル型とは，その変数に代入可能な値がリテラルを用いて有限個に制限されたような型のことである．
+            例えば，"yes"と"no"という値のみを格納したい変数があったとする．string
+            型で作ると，"yes"や"no"以外の
+            文字列が代入される可能性が生じるため，バグの原因になりかねない．そこで，代入可能な値を制限するのである．
+            似ているものとしては，boolean型があり，これは true と false
+            しか値をもたない特別な型である．
+            これと似たことを行うのがリテラル型である．
+          </p>
+          <h4>リテラル型の定義方法</h4>
+          <p>
+            リテラル型は，代入することが可能な値をリテラルで，「|」で区切る形で列挙することにより型注釈を行うことで定義できる．
+          </p>
+          <pre><code class="language-ts">let answer: 'yes' | 'no'; //'yes'と'no'しか代入できない型
+
+answer = 'yes';
+console.log(answer);//yes
+
+answer = 'no';
+console.log(answer);//no
+</code></pre>
+          <p>代入を制限する値には，様々な型のリテラルが混在していてもよい．</p>
+          <pre><code class="language-ts">let answer: 'yes' | 'no' | 1 | 0 | true | false; //左記の6種類の値のみが代入可能な型
+
+answer = 'yes';
+console.log(answer);
+
+answer = 1;
+console.log(answer);
+</code></pre>
+          <p>
+            リテラル型も，型宣言と同時に代入することもできれば，とりあえず宣言しておき，後で代入する，という方法が選択できる．
+          </p>
+        </section>
+        <section>
+          <h3>ユニオン型</h3>
+          <p>
+            リテラル型では代入可能な値を制限する記法だったが，代入する型を制限することも可能であり，それを実現するのがユニオン型である．
+            ユニオン型は，複数の型を「|」で列挙して代入可能な型を限定する仕組みであり，リテラル型はユニオン型の特別な場合になっている．
+          </p>
+          <pre><code>let value1: number | string; // number型か string型が入力可能な変数
+
+value1 = 3;
+console.log(`value: ${value1}`);
+
+value1 = 'abc';
+console.log(`value: ${value1}`);
+
+let value2: number | '未入力'; // number型か，文字列「未入力」のみが入力可能な変数
+
+value2 = 20;
+console.log(`value: ${value2}`);
+
+value2 = '未入力';
+console.log(`value: ${value2}`);</code></pre>
+        </section>
+
+        <div class="block-info">
+          <span class="icon"></span>
+          <div class="text-content">
+            <p>
+              一般的な慣習として，「未入力」のような，まだ値が存在していないことを意味する変数として，「null」を利用することが多い．
+              その場合は，
+            </p>
+            <pre><code>let inputVal : number | null = null;//number型または null型が入力可能とし，初期値として null を設定</code></pre>
+            <p>のように記述することになる．なお，</p>
+            <pre><code>let inputVal : number | "無回答" | null = null;</code></pre>
+            <p>
+              のようにすれば，システムによる値がない，という状態と，ユーザーの決定により値がない，という状態が区別できる．
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="content">
+        <section>
+          <h2>型エイリアス</h2>
+          <p>オブジェクト型やユニオン型のように，カスタムするタイプの型は，何度も利用することがあり，
+            そのたびに何度も宣言するのは面倒である．
+            また，型注釈が長くなれば長くなるほど，可読性が下がる．そのため，型注釈そのものを別の文字で代用できれば可読性があがって便利である．
+            これを実現するのが「型エイリアス」というものであり，
+          </p>
+          <pre><code class="language-ts">type typeName = typeAnnotation;//型注釈 typeAnnotation は，以後 typeName で代用できる</code></pre>
+          <p>という形で使用する．これにより，カスタム型注釈を毎回書く必要がなくなる．</p>
+          <pre><code>type UserInput = {
+  name: string;
+  age: number;
+  comment: string;
+};
+
+const input_0: UserInput = {
+  name: 'Alice',
+  age: 18,
+  comment: 'Hello world!',
+};
+
+console.log(`${input_0.name}, ${input_0.age}, ${input_0.comment}`);
+
+const input_1: UserInput = {
+  name: 'Bob',
+  age: 20,
+  comment: 'TypeScript',
+};
+console.log(`${input_1.name}, ${input_1.age}, ${input_1.comment}`);
+</code></pre>
+<p>よく使う定数があるならばなんらかの変数にまとめるように，よく使う機能があれば関数化して使用するように，よく使う型は型エイリアスを使ってまとめるわけである．</p>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

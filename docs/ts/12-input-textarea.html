@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>応用型：オブジェクト・リテラル・ユニオン型</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.dom_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.tag_explanation th:nth-child(1),
+      table.tag_explanation td:nth-child(1) {
+        min-width: 100px;
+        width: 10%;
+      }
+      /* 1列目（渡す値） */
+      table.tag_explanation th:nth-child(2),
+      table.tag_explanation td:nth-child(2) {
+        min-width: 220px;
+        width: 25%;
+      }
+      /* 1列目（渡す値） */
+      table.tag_explanation th:nth-child(3),
+      table.tag_explanation td:nth-child(3) {
+        min-width: 220px;
+        width: 25%;
+      }
+      /* 1列目（渡す値） */
+      table.tag_explanation th:nth-child(4),
+      table.tag_explanation td:nth-child(4) {
+        min-width: 300px;
+        width: 50%;
+      }
+
+      /* 1列目（渡す値） */
+      table.table-other-attr th:nth-child(1),
+      table.table-other-attr td:nth-child(1) {
+        min-width: 290px;
+        width: 10%;
+      }
+
+      h4 {
+        position: relative;
+        padding-left: 1em;
+        margin: 1em 0 0.5em;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+
+      h4::before {
+        content: "・";
+        position: absolute;
+        left: 0;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>応用型 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="12-input-textarea.html">inputとtextarea</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="11-advanced-types.html" class="prev">前</a> |
+        <a href="13-dom-input-textarea.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>labelタグ</h2>
+          <p>
+            labelタグ&lt;label&gt;～&lt;/label&gt;は，主に input
+            タグなどのテキストボックスを挟み，説明文を付ける際に使用する． label
+            タグを利用した場合，挟まれた説明文をクリックすると，テキストボックスにフォーカスが移る，という仕様がある．
+          </p>
+          <p>例：</p>
+          <table>
+            <tr>
+              <th>コード</th>
+              <th>外観</th>
+            </tr>
+            <tr>
+              <td>
+                <label>Click me! <input /></label><br />
+                <label>Click me! <input /></label>
+              </td>
+              <td>
+                <strong style="color: red">&lt;label&gt;</strong>Click
+                me!&lt;input&gt;<strong style="color: red"
+                  >&lt;/label&gt;</strong
+                ><br />
+                <strong style="color: red">&lt;label&gt;</strong>Click
+                me!&lt;input&gt;<strong style="color: red"
+                  >&lt;/label&gt;</strong
+                ><br />
+              </td>
+            </tr>
+          </table>
+          <p>
+            このページでは，label タグを用いながら input タグおよび textarea
+            タグについて学ぶ．
+          </p>
+        </section>
+        <section>
+          <h2>input</h2>
+          <h3>type="text"</h3>
+          <p>
+            <a href="08-html-introduction.html">htmlタグ入門のページ</a>では
+            input タグを紹介した．input
+            タグには色々な属性があり，入力する値を制限したり外観を変えるなど，いろいろなカスタマイズが可能である．
+            属性を設定するときは，（仮に数値のような情報であったとしても）文字列で設定することになる．
+          </p>
+          <p>以下は，type 属性に text をセットするときによく使う属性である．</p>
+          <table class="tag_explanation">
+            <tr>
+              <th>属性</th>
+              <th>コード</th>
+              <th>外観</th>
+              <th>説明</th>
+            </tr>
+            <tr>
+              <td>type</td>
+              <td>
+                &lt;input <strong style="color: red">type="text"</strong>&gt;
+              </td>
+              <td><input type="text" /></td>
+              <td>type属性の初期値．テキストが入力できる．</td>
+            </tr>
+            <tr>
+              <td>placeholder</td>
+              <td>
+                &lt;input type="text"
+                <strong style="color: red"
+                  ><br />
+                  &nbsp;&nbsp;placeholder="your name"</strong
+                >&gt;
+              </td>
+              <td><input type="text" placeholder="your name" /></td>
+              <td>
+                placeholder属性をセットすると，textbox
+                に薄い説明文を表示できる（入力を始めると自動で消える）．
+              </td>
+            </tr>
+            <tr>
+              <td>value</td>
+              <td>
+                &lt;input type="text"
+                <strong style="color: red"
+                  ><br />
+                  &nbsp;&nbsp;value="guest"</strong
+                >&gt;
+              </td>
+              <td><input type="text" value="guest" /></td>
+              <td>
+                value属性をセットすると，textbox 初期値を設定できる．また，この
+                value 属性は，javascript から
+                値を取得したり設定したりするときに使用される．
+              </td>
+            </tr>
+            <tr>
+              <td>readonly</td>
+              <td>
+                &lt;input type="text"<br />
+                &nbsp;&nbsp;value="編集不可"
+                <strong style="color: red"
+                  ><br />
+                  &nbsp;&nbsp;readonly</strong
+                >&gt;
+              </td>
+              <td><input type="text" value="編集不可" /></td>
+              <td>
+                readonly 属性をセットすると，編集不可の textbox
+                になる．この属性は，他の属性とは異なり「単に記載するだけ」であり，true/false
+                などの値を設定するわけではない．
+              </td>
+            </tr>
+            <tr>
+              <td>disabled</td>
+              <td>
+                &lt;input type="text"<br />
+                &nbsp;&nbsp;value="利用不可"
+                <strong style="color: red"
+                  ><br />
+                  &nbsp;&nbsp;disabled</strong
+                >&gt;
+              </td>
+              <td><input type="text" value="利用不可" disabled /></td>
+              <td>
+                disabled 属性をセットすると，textbox 自体が利用不可となる．
+                この属性も，readonly
+                属性と同様に「単に記載するだけ」であり，true/false
+                などの値を設定するわけではない．
+              </td>
+            </tr>
+            <tr>
+              <td>size</td>
+              <td>
+                &lt;input type="text"
+                <strong style="color: red"
+                  ><br />
+                  &nbsp;&nbsp;size="10"</strong
+                >&gt;
+              </td>
+              <td><input type="text" size="10" /></td>
+              <td>
+                size属性をセットすると，textbox の横幅を変えることができる．
+                sizeは横幅の目安なので実験して微調整するしかない．
+              </td>
+            </tr>
+            <tr>
+              <td>maxlength</td>
+              <td>
+                &lt;input type="text"
+                <strong style="color: red"
+                  ><br />
+                  &nbsp;&nbsp;maxlength="7"</strong
+                >&gt;
+              </td>
+              <td><input type="text" maxlength="7" /></td>
+              <td>
+                maxlength属性をセットすると，入力できる最大文字数を設定できる．
+              </td>
+            </tr>
+          </table>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                type 属性に設定できるものは，type="text"以外にも色々とある．
+              </p>
+              <ul>
+                <li>type="password" (パスワード入力．値がマスクされる．)</li>
+                <li>type="number" （数値のみが入力可能になる）</li>
+                <li>
+                  type="checkbox" (チェックボックスができる．labelタグと css
+                  技術を併用することになる．)
+                </li>
+                <li>
+                  type="radio" (ラジオボタンができる．labelタグと css
+                  技術を併用することになる．)
+                </li>
+              </ul>
+              <p>など多岐にわたるが，これらは必要になったら紹介する．</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <section>
+            <h2>textarea</h2>
+            <h3>type="textarea"</h3>
+            <p>
+              input タグを利用した場合は，一行入力可能な textbox が表示された．
+              これの複数行に対応するタグが textarea である． input タグは void
+              element であり，textbox への表示には value 属性を使うのに対し，
+              textarea タグは，開始タグおよび終了タグがついた形で使用し，
+              textarea への表示は，それらのタグで挟む形で行われる．
+            </p>
+            <p>以下は，textarea においてよく使う属性である．</p>
+            <table class="tag_explanation">
+              <tr>
+                <th>属性</th>
+                <th>コード</th>
+                <th>外観</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>-</td>
+                <td>
+                  <strong style="color: red">&lt;textarea&gt;</strong><br />
+                  &nbsp;&nbsp;複数行の&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;テ<br />
+                  キ&nbsp;&nbsp;&nbsp;スト<strong style="color: red"
+                    ><br />&lt;textarea&gt;</strong
+                  >
+                </td>
+                <td>
+                  <textarea>
+  複数行の      テ
+キ   スト
+</textarea
+                  >
+                </td>
+                <td>
+                  複数行のテキストが表示できる．textarea
+                  で挟まれた部分は，改行やスペースも反映されることに注意．ドラッグで，
+                  textbox の大きさは変更できる．
+                </td>
+              </tr>
+              <tr>
+                <td>placeholder</td>
+                <td>
+                  &lt;textarea
+                  <strong style="color: red"
+                    ><br />
+                    &nbsp;&nbsp;placeholder="write here"</strong
+                  ><br />&gt;&lt;/textarea&gt;
+                </td>
+                <td>
+                  <textarea placeholder="write here"></textarea>
+                </td>
+                <td>
+                  placeholder属性をセットすると，textbox
+                  に薄い説明文を表示できる（入力を始めると自動で消える）．
+                </td>
+              </tr>
+              <tr>
+                <td>rows, cols</td>
+                <td>
+                  &lt;textarea
+                  <strong style="color: red"
+                    ><br />
+                    &nbsp;&nbsp;rows="3" cols="10"</strong
+                  ><br />&gt;&lt;/textarea&gt;
+                </td>
+                <td>
+                  <textarea rows="3" cols="10"></textarea>
+                </td>
+                <td>
+                  rowsを設定すると，表示する行数が設定できる．
+                  colsを設定すると，横幅が調整できる．colsは横幅の目安なので実験して微調整するしかない．
+                </td>
+              </tr>
+              <tr>
+                <td>readonly</td>
+                <td>
+                  &lt;textarea<br />
+                  <strong style="color: red"> &nbsp;&nbsp;readonly</strong
+                  ><br />&gt;編集不可&lt;/textarea&gt;
+                </td>
+                <td><textarea readonly>編集不可</textarea></td>
+                <td>
+                  readonly 属性をセットすると，編集不可の textbox
+                  になる．この属性は，他の属性とは異なり「単に記載するだけ」であり，true/false
+                  などの値を設定するわけではない．
+                </td>
+              </tr>
+              <tr>
+                <td>disabled</td>
+                <td>
+                  &lt;textarea<br />
+                  <strong style="color: red"> &nbsp;&nbsp;disabled</strong
+                  ><br />&gt;利用不可&lt;/textarea&gt;
+                </td>
+                <td>
+                  <textarea disabled>
+利用不可
+                </textarea
+                  >
+                </td>
+                <td>
+                  disabled 属性をセットすると，textbox
+                  自体が利用不可となる．ただし，サイズの手動変更はできる．
+                </td>
+              </tr>
+              <tr>
+                <td>maxlength</td>
+                <td>
+                  &lt;textarea
+                  <strong style="color: red"
+                    ><br />
+                    &nbsp;&nbsp;maxlength="50"</strong
+                  ><br />&gt;50文字まで入力可&lt;/textarea&gt;
+                </td>
+                <td><textarea maxlength="50">50文字まで入力可</textarea></td>
+                <td>
+                  maxlength属性をセットすると，入力できる最大文字数を設定できる．
+                </td>
+              </tr>
+            </table>
+          </section>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>textarea タグは，input タグとは異なり，value 属性はない．</p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

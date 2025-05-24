@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOM操作の基礎</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.dom_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.dom_table th:nth-child(1),
+      table.dom_table td:nth-child(1) {
+        min-width: 300px;
+        width: 40%;
+      }
+
+      /* 2列目（出力する値） */
+      table.dom_table th:nth-child(2),
+      table.dom_table td:nth-child(2) {
+        max-width: 400px;
+        width: 60%;
+      }
+
+      .demo-box {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      ul.toc {
+  list-style-type: disc;
+  margin-left: 1.5em;
+  padding-left: 0.5em;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+ul.toc li a {
+  color: #004080;
+  text-decoration: none;
+}
+
+ul.toc li a:hover {
+  text-decoration: underline;
+  color: #0066cc;
+}
+
+
+h1.abstract {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #2c3e50;               /* 落ち着いた濃いグレー */
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 0.3em;
+  margin-bottom: 1em;
+  margin-top: 1.5em;
+}
+
+
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>値の取得と設定- TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="13-dom-input-textarea.html">値の取得と設定</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="12-input-textarea.html" class="prev">前</a> |
+        <a href=".html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h1 class="abstract">値の取得と設定</h1>
+        <p>
+          このページでは，input タグおよび textarea
+          タグに入力された値の取得および，設定の方法を学ぶ．
+        </p>
+        <ul class="toc">
+          <li><a href="#input-tag">input タグの値の取得と設定</a></li>
+          <li><a href="#textarea-tag">textarea タグの値の取得と設定</a></li>
+        </ul>
+        <section>
+          <h2 id="input-tag">input タグ</h2>
+          <h3>値の取得と設定</h3>
+          <p>
+            getElementById により input タグを取得した場合，textbox
+            の値の取得および設定は「value」プロパティを利用する． しかし，value
+            プロパティは型 HTMLElement には存在しないため，型 HTMLInputElement
+            に型変換（cast）する必要がある．
+            その際に役に立つのが<code>as</code>演算子である．以下のコードは， id
+            = 'test' の input タグが存在するという前提のもとでの説明である．
+          </p>
+          <pre><code class="language-ts">let elm = document.getElementById('test')//HTMLElement 型として変数 elm により取得
+let elm_input = elm as HTMLInputElement;// value プロパティを利用するため，型 HTMLInputElement に cast する．
+let value : string = elm_input.value;//elm_input の入力値を取得．string 型として取得できる．
+elm_input.value = "read";// input タグの表示文字列を`read`に変更</code></pre>
+          <p>
+            上記コードはコア部分を取り出しただけなので，実際には動かない．実際にコードを書く際は，次のことに気を付けて書くことになる．
+          </p>
+          <ul>
+            <li>
+              getElementById で取得される型は，<code>HTMLElement ｜ null</code
+              >である．存在しないときは null を返すため， cast をする前に null
+              でないことを確認する癖を付ける．
+            </li>
+          </ul>
+          <p>
+            確実に存在することがわかっているのならば null
+            チェックを外すことができるが，強固なプログラムを組む癖をつけるため，普段から判定を入れるようにしておくのが大切である．
+          </p>
+
+          <h3>サンプル</h3>
+          <p>値の取得と設定の例として，次のような処理を実装してみよう．</p>
+          <div class="demo-box">
+            <script src="js/13_1.js"></script>
+
+            <label
+              >Name: <input id="NameInput" type="text" value="Emily"
+            /></label>
+            <label
+              >Greet:
+              <input id="NameOutput" type="text" value="" readonly /></label
+            ><br />
+            <button onclick="getSetValue()">Greet</button>
+            <button onclick="clearFields()">Clear</button>
+          </div>
+          <p>実装内容：</p>
+          <ul>
+            <li>
+              Greetボタンを押すと，Name に入力された内容を用いて，Greet の
+              textbox にあいさつ文として表示する．
+            </li>
+            <li>Clearボタンを押すと，両方の textbox の内容が消去される．</li>
+            <li>Name の textbox の初期値は Emily とする．</li>
+            <li>Name の textbox が未入力ならば，alert で入力を促す．</li>
+            <li>
+              Greet の textbox は，readonly であり，ユーザーは編集できない．
+            </li>
+          </ul>
+          <p>これを実現するコードが以下である．</p>
+          <pre><code class="language-html">&lt;script src="js/13_1.js"&gt;&lt;/script&gt;
+
+&lt;label&gt;
+  Name: &lt;input id="NameInput" type="text" value="Emily"/&gt;
+&lt;/label&gt;
+&lt;label&gt;
+  Greet: &lt;input id="NameOutput" type="text" value="" readonly/&gt;
+&lt;/label&gt;
+&lt;br&gt;
+&lt;button onclick="getSetValue()"&gt;Greet&lt;/button&gt;
+&lt;button onclick="clearFields()"&gt;Clear&lt;/button&gt;</code></pre>
+          <p>実装のポイント[UIの作成]：</p>
+          <ul>
+            <li>labelタグを利用して，NameエリアとGreetエリアを用意</li>
+            <li>Name textbox は，初期値の設定として value="Emily"を利用</li>
+            <li>Greet textbox は，編集不可のため，readonly を設定</li>
+            <li>挨拶ロジック getSetValue() を Greet ボタンに紐づける</li>
+            <li>初期化ロジック clearFields() を Clear ボタンに紐づける</li>
+          </ul>
+          <pre><code class="language-ts index-ts">function getSetValue(): void {
+  let elm_from = document.getElementById('NameInput');
+  let elm_to = document.getElementById('NameOutput');
+  if (elm_from !== null) {
+    let elm_input = elm_from as HTMLInputElement;
+    let yourName: string = elm_input.value;
+    if (yourName === '') {
+      alert('Input your name.');
+    } else if (elm_to !== null) {
+      let elm_output = elm_to as HTMLInputElement;
+      elm_output.value = `Hello, ${yourName}!`;
+    }
+  }
+}
+
+function clearFields(): void {
+  let elm_from = document.getElementById('NameInput');
+  let elm_to = document.getElementById('NameOutput');
+  if (elm_from !== null) {
+    let elm_input = elm_from as HTMLInputElement;
+    elm_input.value = '';
+  }
+  if (elm_to !== null) {
+    let elm_output = elm_to as HTMLInputElement;
+    elm_output.value = '';
+  }
+}</code></pre>
+          <p>実装のポイント[ロジックの作成]：</p>
+          <ul>
+            <li>
+              getElementById により，タグ領域を取得．安全性のため，null
+              かどうかのチェックを行う．
+            </li>
+            <li>
+              null でないときは，value プロパティにアクセスするため，as
+              演算子を用いて，HTMLInputElement 型に cast する．
+            </li>
+            <li>
+              [getSetValue] 入力値を，変数 yourName
+              に取得しておき，空文字かの判定を行う．空文字なら alert
+              し，空文字でないなら，これを利用して処理
+            </li>
+            <li>[clearFields] 両方の value プロパティの値を空文字にセット．</li>
+          </ul>
+          <p>
+            null チェックがくどく見えると思うが，安全性の高い code
+            を書くのに必要不可欠である． なお，null
+            チェックを関数化することで，多少は長くなるが，次のように見通しの良いコードにできる．
+          </p>
+          <pre><code class="language-ts index-ts">function getSetValue(): void {
+  if (isValid()) {
+    let elm_input = document.getElementById('NameInput') as HTMLInputElement;
+    let elm_output = document.getElementById('NameOutput') as HTMLInputElement;
+
+    let yourName: string = elm_input.value;
+    if (yourName === '') {
+      alert('Input your name.');
+    } else {
+      elm_output.value = `Hello, ${yourName}!`;
+    }
+  }
+}
+
+function clearFields(): void {
+  if (isValid()) {
+    let elm_input = document.getElementById('NameInput') as HTMLInputElement;
+    let elm_output = document.getElementById('NameOutput') as HTMLInputElement;
+
+    elm_input.value = '';
+    elm_output.value = '';
+  }
+}
+
+function isValid(): boolean {
+  const flag =
+    document.getElementById('NameInput') !== null &&
+    document.getElementById('NameOutput') !== null;
+
+  if (!flag) {
+    alert('指定した id のタグが見つかりません．');
+  }
+  return flag;
+}</code></pre>
+          <p>実装のポイント：</p>
+          <ul>
+            <li>
+              タグが null かどうかを isValid()
+              で関数化し，タグが見つからないときは alert で警告する．
+            </li>
+            <li>
+              isValid() が true を返すときのみ処理を実行する -> null
+              チェックが不要になる．
+            </li>
+          </ul>
+          <p>
+            このように関数化することで，null チェックを関数 isValid()
+            内で行えることから，保守性があがる．
+          </p>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              本当は，HTMLInputElement への cast も関数化したほうが，id
+              の変更に対して強固なプログラムになるが，それについては省略する．
+              また，今回は id が見つからないものを alert
+              で警告にしたが，これは利用者（エンドユーザー）に影響を与えるため，
+              本来は避けるべき行為である．その際は，throw
+              を利用して例外を投げたほうが良いが，throw 関数の導入は後のページで行うため，
+              そのページで改めて紹介することになる．
+            </div>
+          </div>
+
+          <div class="block-warning">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                今回の関数における関数を，<code>function clearFields()</code
+                >ではなく<code>function clear()</code>として
+                実装してみると，Clear ボタンを押しても textbox
+                の文字が消去されず，思った通りの挙動をしない．
+                この原因は，console.clear()
+                のようにすでに存在している関数と変数の衝突が発生しているからである．
+                タチの悪いことに，これは<strong
+                  >コンパイルエラーも起こさず，また，開発者モードの console
+                  にも表示されない</strong
+                >点は
+                注意すべきことである．つまり，思った通りの挙動をしないということに気がついて初めて修正の必要性が発覚するため，
+                バグの原因になりかねない．変数を長めに設定することで，発生可能性を劇的に減らすことができる．
+              </p>
+            </div>
+          </div>
+        </section>
+        <section class="content">
+          <h2 id="textarea-tag">textarea タグ</h2>
+          <section>
+            <h3>値の取得と設定</h3>
+            <p>
+              getElementById により textarea タグを取得した場合も，textbox
+              の値の取得および設定は「value」プロパティを利用する． input
+              のときと同様に cast しなければならないが，
+              その際に利用する型が，HTMLTextAreaElement である．
+              以下のコードは， id = 'test' の textarea
+              タグが存在するという前提のもとでの説明である．
+            </p>
+
+            <pre><code class="language-ts">let elm = document.getElementById('test')//HTMLElement 型として取得
+let elm_textarea = elm as HTMLTextAreaElement;// value プロパティを利用するため，HTMLTextAreaElement 型に cast する．
+let value : string = elm_textarea.value;//elm_textarea の入力値を取得．string 型として取得できる．
+elm_textarea.value = "read";// 表示内容を`read`に変更</code></pre>
+          </section>
+
+          <section>
+            <h3>サンプル</h3>
+            <p>値の取得と設定の例として，次のような処理を実装してみよう．</p>
+            <div class="demo-box">
+              <script src="js/13_2.js"></script>
+
+              <label
+                >Input:
+                <textarea id="TextInput" rows="5">Write any messages.</textarea>
+              </label>
+              <label
+                >Output:
+                <textarea id="TextOutput" rows="7" readonly></textarea></label
+              ><br />
+              <button onclick="getSetValue()">SetValue</button>
+              <button onclick="clearFields()">Clear</button>
+            </div>
+            <p>実装内容：</p>
+            <ul>
+              <li>
+                SetValue ボタンを押すと，Input に入力された内容を用いて，Output
+                に「入力した文字」「入力した文字数」を出力する．
+              </li>
+              <li>Clearボタンを押すと，両方の textbox の内容が消去される．</li>
+              <li>
+                Input の textbox の初期値は 「Write any messages.」 とする．
+              </li>
+              <li>Input の textbox が未入力ならば，alert で入力を促す．</li>
+              <li>
+                Output の textbox は，readonly であり，ユーザーは編集できない．
+              </li>
+              <li>
+                初期表示行数確保のため，Input は 5 行表示，Output は 7
+                行表示をデフォルトとする．
+              </li>
+            </ul>
+            <p>これを実現するコードが以下である．</p>
+            <pre><code class="language-html">&lt;script src="dist/index.js"&gt;&lt;/script&gt;
+
+&lt;label&gt;Input: &lt;textarea id="TextInput" rows="5"&gt;Write any messages.&lt;/textarea&gt;&lt;/label&gt;
+&lt;label&gt;Output:
+  &lt;textarea id="TextOutput" rows="7" readonly&gt;&lt;/textarea&gt;
+&lt;/label&gt;
+&lt;br&gt;
+&lt;button onclick="getSetValue()"&gt;SetValue&lt;/button&gt;
+&lt;button onclick="clearFields()"&gt;Clear&lt;/button&gt;</code></pre>
+            <p>実装のポイント[UIの作成]：</p>
+            <ul>
+              <li>原則，input タグのときと同様である．</li>
+              <li>
+                「void
+                element」が「開始タグ・終了タグ」に変化したため，初期値「Write
+                any messages.」はタグで挟むことで表現する．
+              </li>
+              <li>初期表示行数の設定のため，rows 属性を利用する．</li>
+            </ul>
+            <pre><code class="language-ts index-ts">function getSetValue(): void {
+  if (isValid()) {
+    let elm_input = document.getElementById('TextInput') as HTMLTextAreaElement;
+    let elm_output = document.getElementById(
+      'TextOutput'
+    ) as HTMLTextAreaElement;
+
+    let yourText: string = elm_input.value;
+    if (yourText === '') {
+      alert('Input your message.');
+    } else {
+      elm_output.value = `Your Message:  \n ${yourText} \n 文字カウント：${yourText.length}`;
+    }
+  }
+}
+
+function clearFields(): void {
+  if (isValid()) {
+    let elm_input = document.getElementById('TextInput') as HTMLTextAreaElement;
+    let elm_output = document.getElementById(
+      'TextOutput'
+    ) as HTMLTextAreaElement;
+
+    elm_input.value = '';
+    elm_output.value = '';
+  }
+}
+
+function isValid(): boolean {
+  const flag =
+    document.getElementById('TextInput') !== null &&
+    document.getElementById('TextOutput') !== null;
+
+  if (!flag) {
+    alert('指定した id のタグが見つかりません．');
+  }
+  return flag;
+}</code></pre>
+            <p>実装のポイント[ロジックの作成]：</p>
+            <ul>
+              <li>
+                原則，textarea タグのときと同様である．ただし，null
+                チェックは関数化している．
+              </li>
+              <li>cast は，HTMLTextAreaElement に変化させていることに注意．</li>
+              <li>表示文字列について，改行には「\n」を利用する．</li>
+              <li>
+                文字数は，String クラスのプロパティである「.length」を利用する．
+              </li>
+            </ul>
+
+            <div class="block-info">
+              <span class="icon"></span>
+              <div class="text-content">
+                <p>
+                  textarea タグには，input タグのようなvalue
+                  属性は存在しない（HTML言語での話）が，値へのアクセスには value
+                  プロパティ（TypeScript言語での話）を用いる．
+                  使用している言語によって，何が用意されているのかが変わっているわけである．
+                </p>
+              </div>
+            </div>
+
+            <div class="block-warning">
+              <span class="icon"></span>
+              <div class="text-content">
+                <p>
+                  textarea タグの取得を，as HTMLInputElement への cast
+                  として記述しても，エラーを起こすことなく機能してしまう．
+                  この理由は，
+                </p>
+                <ul>
+                  <li>
+                    HTMLInputElement も HTMLTextAreaElement
+                    も，ともにプロパティ「.value」をもつため，現段階では不都合は生じていない
+                  </li>
+                  <li>
+                    「as」はコンパイラに「開発者が信じる型」を教えるものであり，教えられた型が正しいか検証する機能がついているわけではない
+                  </li>
+                </ul>
+                <p>
+                  であることによる．つまり，そもそも開発者が間違えていたらアウトな為，正しく使うことを意識しておくべきである．
+                  この場合，HTMLTextAreaElement
+                  にしか存在しない機能を利用しようとしたときに，初めてミスに気が付くことになる．
+                </p>
+              </div>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

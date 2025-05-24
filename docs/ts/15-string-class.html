@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>文字列操作</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/short-table.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+
+    <style>
+      .toc {
+        display: grid;
+        grid-template-columns: 0.7fr 0.7fr 1fr;
+        gap: 20px;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .toc ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+
+      .toc li {
+        margin-bottom: 5px;
+      }
+
+      .toc a {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+        font-size: 1.05rem;
+      }
+
+      .toc a:hover {
+        color: #0056b3;
+      }
+
+      .toc li.section-label {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-top: 0px;
+        margin-bottom: 5px;
+        padding-bottom: 3px;
+        border-bottom: 1px solid #ccc;
+        color: #333;
+        cursor: default;
+      }
+
+      @media (max-width: 600px) {
+        .toc {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.dom_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.dom_table th:nth-child(1),
+      table.dom_table td:nth-child(1) {
+        min-width: 300px;
+        width: 40%;
+      }
+
+      /* 2列目（出力する値） */
+      table.dom_table th:nth-child(2),
+      table.dom_table td:nth-child(2) {
+        max-width: 400px;
+        width: 60%;
+      }
+
+      .demo-box {
+        position: relative; /* 相対位置指定で ::before を正しく配置 */
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ::before でラベルを追加 */
+      .demo-box::before {
+        content: "Web表示";
+        font-size: 0.7em;
+        color: #666;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px 0 4px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+      }
+
+      .demo-box-tree {
+        position: relative; /* 相対位置指定で ::before を正しく配置 */
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ::before でラベルを追加 */
+      .demo-box-tree::before {
+        content: "疑似ツリー";
+        font-size: 0.7em;
+        color: #666;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px 0 4px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+      }
+
+      .demo-box-code {
+        position: relative; /* 相対位置指定で ::before を正しく配置 */
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ::before でラベルを追加 */
+      .demo-box-code::before {
+        content: "HTMLコード";
+        font-size: 0.7em;
+        color: #666;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px 0 4px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+      }
+
+      ul.toc {
+        list-style-type: disc;
+        margin-left: 1.5em;
+        padding-left: 0.5em;
+        line-height: 1.6;
+        font-size: 1rem;
+      }
+
+      ul.toc li a {
+        color: #004080;
+        text-decoration: none;
+      }
+
+      ul.toc li a:hover {
+        text-decoration: underline;
+        color: #0066cc;
+      }
+
+      h1.section-title {
+        font-size: 1.8rem; /* 適度に大きな文字サイズ */
+        font-weight: 700; /* 太字で強調 */
+        margin-top: 1em; /* 上余白を確保 */
+        color: #222222; /* 読みやすい濃いグレー */
+        border-bottom: 2px solid #ccc; /* 下線でセクション区切りを強調 */
+        padding-bottom: 0.1em; /* 下線と文字の間に余白 */
+      }
+
+      h4::before {
+        content: "・"; /* 「・」を挿入 */
+        margin-right: 0.5em; /* テキストとの間に余白 */
+        color: #666666; /* 色はお好みで調整 */
+        font-weight: bold; /* 必要に応じて強調 */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>文字列操作 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="15-string-class.html">文字列操作</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="14-dom-inner-properties.html" class="prev">前</a> |
+        <a href=".html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h1 class="section-title">String クラスと文字列操作</h1>
+        <p>文字列は，</p>
+        <ul>
+          <li>リテラル表示<code>"abc"</code>や<code>'abc'</code></li>
+          <li>テンプレートリテラル<code>`Hello, ${name}!`</code></li>
+          <li>文字列の結合<code>"abc" + "XYZ"</code></li>
+        </ul>
+        <p>
+          の他にも，便利な機能が色々とある．このページでは，String
+          クラスを中心として文字列操作に関係するメソッドやテクニック等を紹介する．
+        </p>
+        <div class="toc">
+          <ul>
+            <li class="section-label">String クラスの基本</li>
+            <li><a href="#string-property">プロパティ</a></li>
+            <li><a href="#string-processing">整形・加工</a></li>
+            <li><a href="#string-search">抽出・検索</a></li>
+            <li><a href="#string-split-concat">分割・結合</a></li>
+            <li><a href="#string-regexp">正規表現操作</a></li>
+          </ul>
+          <ul>
+            <li class="section-label">その他の文字列操作</li>
+            <li><a href="#other-idx">インデックスアクセス</a></li>
+            <li><a href="#other-iter">イテレーション</a></li>
+            <li><a href="#other-sprd">スプレッド構文</a></li>
+          </ul>
+        </div>
+        <section>
+          <h2 id="string-property">String クラスのプロパティ</h2>
+
+          <table class="string-methods">
+            <colgroup>
+              <col class="method-name" />
+              <col class="description" />
+              <col class="example" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>名前</th>
+                <th>説明</th>
+                <th>使用例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>.length</td>
+                <td>文字列の長さ（文字数）を返す</td>
+                <td class="code">"abc".length // → 3</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                ここでいう文字とは，「UTF-16」単位における 1
+                文字のことであり，0x0000～0xFFFF で表現される文字のことである．
+                絵文字などはこの UTF-16
+                の範囲外にあるため，そのような文字を含む文字列に対して length
+                プロパティを用いても，
+                取得できる値は，見た目の文字数とは一致しない．
+              </p>
+              <p>例：</p>
+              <code class="code">'a👨‍👩‍👧‍👦bc👨‍👩‍👧‍👦あい👨‍👩‍👧‍👦う'.length // → 39 </code>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>String クラスのメソッド</h2>
+          <p>
+            以下に挙げる String
+            クラスのメソッドは，すべて非破壊的である．（非破壊的であるとは、元の文字列を変更せずに新しい結果を返すことを意味する）
+          </p>
+          <section id="string-processing">
+            <h3>整形・置換</h3>
+            <table class="string-methods">
+              <colgroup>
+                <col class="method-name" />
+                <col class="description" />
+                <col class="example" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>名前</th>
+                  <th>説明</th>
+                  <th>使用例</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>.toUpperCase()</td>
+                  <td>すべての英字を大文字に変換</td>
+                  <td class="code">"Abc".toUpperCase() // → "ABC"</td>
+                </tr>
+
+                <tr>
+                  <td>.toLowerCase()</td>
+                  <td>すべての英字を小文字に変換</td>
+                  <td class="code">"ABC".toLowerCase() // → "abc"</td>
+                </tr>
+
+                <tr>
+                  <td>.trim()</td>
+                  <td>前後の空白文字を除去</td>
+                  <td class="code">" a b ".trim() // → "a b"</td>
+                </tr>
+
+                <tr>
+                  <td>.trimStart()</td>
+                  <td>先頭の空白文字を除去</td>
+                  <td class="code">" abc".trimStart() // → "abc"</td>
+                </tr>
+
+                <tr>
+                  <td>.trimEnd()</td>
+                  <td>末尾の空白文字を除去</td>
+                  <td class="code">"abc ".trimEnd() // → "abc"</td>
+                </tr>
+
+                <tr>
+                  <td>.replace(p1, p2)</td>
+                  <td>最初に p1 に一致する部分を別の文字列 p2 で置換</td>
+                  <td class="code">"abcabc".replace("b", "X") // → "aXcabc"</td>
+                </tr>
+                <tr>
+                  <td>.replaceAll(p1, p2)</td>
+                  <td>p1 に一致する全部分を別の文字列 p2 で置換</td>
+                  <td class="code">
+                    "abcabc".replaceAll("b", "X") // → "aXcaXc"
+                  </td>
+                </tr>
+                <tr>
+                  <td>.padStart(p1, p2)</td>
+                  <td>長さが p1 になるまで，p2 で前部分を埋める</td>
+                  <td class="code">"abc".padStart(6, "0") // → "000abc"</td>
+                </tr>
+                <tr>
+                  <td>.padEnd(p1, p2)</td>
+                  <td>長さが p1 になるまで，p2 で後部分を埋める</td>
+                  <td class="code">"abc".padEnd(6, "0") // → "abc000"</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <section>
+            <h3 id="string-search">抽出・検索</h3>
+            <table class="string-methods">
+              <colgroup>
+                <col class="method-name" />
+                <col class="description" />
+                <col class="example" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>名前</th>
+                  <th>説明</th>
+                  <th>使用例</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>.at(p1)</td>
+                  <td>p1 番目の位置の文字を返す（負の数対応）</td>
+                  <td class="code">
+                    "abcABC".at(3) // → "A"<br />"abcABC".at(-2) // → "B"
+                  </td>
+                </tr>
+                <tr>
+                  <td>.charCodeAt(p1)</td>
+                  <td>
+                    p1 番目の位置の文字の Unicode
+                    番号を返す．（UTF-16単位で取得するため，絵文字のコード取得は
+                    codePointAt を利用する）
+                  </td>
+                  <td class="code">
+                    "A".charCodeAt(0) // → 65 (A)<br />"ABCabc".charCodeAt(3) //
+                    → 97 (a)
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>.slice(p1, p2)<br />.slice(p1)</td>
+                  <td>
+                    index が p1 から p2 - 1
+                    までの文字列を返す．p2を省略した場合は末尾までとなる．（負の数対応）
+                  </td>
+                  <td class="code">
+                    "abcdefgh".slice(2,5) // → "cde"<br />"abcdef".slice(-3) //
+                    → "def"
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>.indexOf(p1, p2)<br />.indexOf(p1)</td>
+                  <td>
+                    p1：検索文字列，p2：検索開始インデックス<br />最初に p1
+                    に一致した位置のインデックスを返す．
+                  </td>
+                  <td class="code">
+                    "abcabc".indexOf("b") // → 1<br />"abcabc".indexOf("ca") //
+                    → 2
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>.lastIndexOf(p1, p2)<br />.lastIndexOf(p1)</td>
+                  <td>
+                    p1：検索文字列，p2：検索開始インデックス<br />最後に一致した位置のインデックスを返す
+                  </td>
+                  <td class="code">
+                    "abcabc".lastIndexOf("b") // → 4<br />"abcabc".lastIndexOf("ab")
+                    // → 3
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>.includes(p1, p2)<br />.includes(p1)</td>
+                  <td>
+                    p1：検索文字列，p2：検索開始インデックス<br />部分文字列 p1
+                    を含むかどうかを判定
+                  </td>
+                  <td class="code">
+                    "abc".includes("b") // → true<br />"abcabc".includes("ca")
+                    // → true
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>.startsWith(p1, p2)<br />.startsWith(p1)</td>
+                  <td>
+                    p1：文字列，p2：検索開始インデックス<br />指定文字列で開始するかを判定
+                  </td>
+                  <td class="code">
+                    "abc".startsWith("a") // → true<br />"abcABC".startsWith("ab")
+                    // → true
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>.endsWith(p1, p2)<br />.endsWith(p1)</td>
+                  <td>
+                    p1：文字列，p2：検索開始インデックス<br />指定文字列で終了するかを判定
+                  </td>
+                  <td class="code">
+                    "abc".endsWith("c") // → true<br />"abcXYZ".endsWith("YZ")
+                    // → true
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <section>
+            <h3 id="string-split-concat">分割・結合</h3>
+            <table class="string-methods">
+              <colgroup>
+                <col class="method-name" />
+                <col class="description" />
+                <col class="example" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>名前</th>
+                  <th>説明</th>
+                  <th>使用例</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>.split(p1, p2)<br />.split(p1)</td>
+                  <td>
+                    p1：区切り文字，p2：分割要素数の最大<br />区切り文字 p1
+                    で分割し配列で返す．p2 を指定した場合は，最大 p2
+                    個まで取得し，残りは破棄される．
+                  </td>
+                  <td class="code">
+                    "a,b,c".split(",") // → ["a", "b", "c"]<br />
+                    "a,b,c".split(",", 8) // → ["a", "b", "c"]<br />
+                    "abbcabc".split("b") // → ["a", "", "ca", "c"]<br />
+                    "a,b,c,d,e".split(",", 3) // → ["a", "b", "c"]
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>.repeat(p1)</td>
+                  <td>文字列を指定回数 p1 だけ繰り返して結合</td>
+                  <td class="code">"ab".repeat(3) // → "ababab"</td>
+                </tr>
+
+                <tr>
+                  <td>.concat(p1)</td>
+                  <td>文字列 p1 を後ろに結合する</td>
+                  <td class="code">"abc".concat("XYZ") // → "abcXYZ"</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section>
+            <h3 id="string-regexp">正規表現操作</h3>
+            <p>
+              ここでは，正規表現を利用したメソッドを紹介するが，正規表現の説明はこの段階では行わない．（必要になってから行う）
+            </p>
+            <p>
+              以下のサンプルで使用している正規表現で使用しているものは，<code>/[0-9]/</code>が一桁の整数を意味する，ということだけである．
+              なお，JavaScript
+              においては，<code>/[0-9]/g</code>と書くことで，「一桁の整数に該当する部分すべて検索」という意味に変わる．
+            </p>
+            <table class="string-methods">
+              <colgroup>
+                <col class="method-name" />
+                <col class="description" />
+                <col class="example" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>名前</th>
+                  <th>説明</th>
+                  <th>使用例</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>.match(p1)</td>
+                  <td>
+                    p1：正規表現<br />最初に一致した部分を配列または null
+                    で返す<br />通常は最初の一件の詳細情報を返す<br />
+                    gフラグを付けると全件簡易取得する
+                  </td>
+                  <td class="code">
+                    "A3bc7あい".match(/[0-9]/) // 一桁の数字
+                    <br />&nbsp;&nbsp;&nbsp;&nbsp; // → ["3", index: 1, ...]
+                    (最初の一致．一部配列は省略)<br />
+                    "A3bc7あい".match(/[0-9]/g) // → ["3", "7"] （全ての一致）<br />
+                    "ABcdあい".match(/[0-9]/) // → null （一致無し）
+                  </td>
+                </tr>
+                <tr>
+                  <td>.matchAll(p1)</td>
+                  <td>
+                    p1：正規表現<br />すべての一致を反復可能オブジェクトで返す<br />
+                    .match(p1)で詳細取得をするという行為を，全件に対して適用したものに対応する
+                  </td>
+                  <td class="code">
+                    let regIter = 'Ab3cあ7い'.matchAll(/[0-9]/g);<br />
+                    for (const elm of regIter)<br />
+                    {<br />
+                    &nbsp;&nbsp;console.log(elm);<br />
+                    }<br />
+                    // ["3", index: 2, ...] (1件目詳細)<br />
+                    // ["7", index: 5, ...] (2件目詳細)
+                  </td>
+                </tr>
+                <tr>
+                  <td>.search(p1)</td>
+                  <td>
+                    p1：正規表現<br />最初の一致位置のインデックスを返す．見つからなければ
+                    -1 を返す．
+                  </td>
+                  <td class="code">
+                    'A9bc4あ7い'.search(/[0-9]/) // → 1<br />
+                    'Abcあい'.search(/[0-9]) // → -1<br />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <section>
+          <h2>その他の文字列操作</h2>
+          <h3 id="other-idx">インデックスアクセス</h3>
+          <p>文字列は，配列のように添字でアクセスが可能である．ただし，index は 0 から始まる．</p>
+          <pre><code cass="language-ts">const text = "abcdef";
+console.log(text[3]);// "d"</code></pre>
+<p>ただし，文字列をインデックスアクセスにより書き換えることはできない．たとえば，<code>text[3]="X";</code>はできない．</p>
+          <h3 id="other-iter">イテレーション</h3>
+          <p>文字列は，配列のように for...of によるアクセスが可能である．</p>
+          <pre><code class="language-ts">let text = '123';
+let total = 0;
+for (const c of text) {
+  total += Number(c);
+}
+console.log(total); //1 + 2 + 3 により，6 が出力される．
+</code></pre>
+          <h3 id="other-sprd">スプレッド構文</h3>
+          <p>
+            文字列は，スプレッド構文<code>...p1</code>を利用することにより，文字列<code>p1</code>を，一文字ずつにバラした形に展開できる．
+          </p>
+          <h4>配列への利用</h4>
+          <p>[]でくくることにより，配列になる．</p>
+          <pre><code class="language-ts">let text = 'abcd';
+let chars = [...text];
+console.log(chars); // ["a", "b", "c", "d"]
+</code></pre>
+          <h4>関数への利用</h4>
+          <p>
+            下記のコードは，設定によってはエラーを吐くが，このようなスプレッド構文による指定の仕方ができることは知っておくとよい．
+            関数の引数へのスプレッド構文による指定は，文字列に限らず他のものに対しても使われることがあるため，
+            類似のものを学ぶ際に理解しやすい．
+          </p>
+          <pre><code class="language-ts">let text = 'xyz';
+sample(...text);
+
+function sample(a: string, b: string, c: string) {
+  console.log(`${a}->${b}->${c}`);
+}</code></pre>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
