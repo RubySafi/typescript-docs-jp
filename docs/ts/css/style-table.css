@@ -1,0 +1,61 @@
+table.style-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 14px;
+  table-layout: fixed;
+}
+
+table.style-table th,
+table.style-table td {
+  border: 1px solid #aaa;
+  padding: 0.5em;
+  text-align: left;
+  vertical-align: top;
+}
+
+table.style-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* 使用例のコード表示用 */
+table.style-table td.code {
+  font-family: Consolas, monospace;
+  white-space: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+  display: block;
+}
+
+/* value列で改行を許容する場合 */
+table.style-table td.wrap {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* 列幅の指定 */
+table.style-table colgroup col.style-key   { width: 20%; }
+table.style-table colgroup col.style-value { width: 45%; }
+table.style-table colgroup col.example     { width: 35%; }
+
+/* ストライプ背景 */
+table.style-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+table.style-table tbody tr:nth-child(even) {
+  background-color: #d0d0d0;
+}
+
+/* モバイル対応 */
+@media (max-width: 600px) {
+  table.style-table {
+    font-size: 12px;
+  }
+
+  table.style-table td.code {
+    white-space: normal;
+    word-break: break-all;
+  }
+}

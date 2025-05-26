@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>関数型とアロー関数</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/short-table.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+
+    <style>
+      .toc {
+        display: grid;
+        grid-template-columns: 0.7fr 0.7fr 1fr;
+        gap: 20px;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .toc ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+
+      .toc li {
+        margin-bottom: 5px;
+      }
+
+      .toc a {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+        font-size: 1.05rem;
+      }
+
+      .toc a:hover {
+        color: #0056b3;
+      }
+
+      .toc li.section-label {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-top: 0px;
+        margin-bottom: 5px;
+        padding-bottom: 3px;
+        border-bottom: 1px solid #ccc;
+        color: #333;
+        cursor: default;
+      }
+
+      @media (max-width: 600px) {
+        .toc {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.dom_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.dom_table th:nth-child(1),
+      table.dom_table td:nth-child(1) {
+        min-width: 300px;
+        width: 40%;
+      }
+
+      /* 2列目（出力する値） */
+      table.dom_table th:nth-child(2),
+      table.dom_table td:nth-child(2) {
+        max-width: 400px;
+        width: 60%;
+      }
+
+      .demo-box {
+        position: relative; /* 相対位置指定で ::before を正しく配置 */
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ::before でラベルを追加 */
+      .demo-box::before {
+        content: "Web表示";
+        font-size: 0.7em;
+        color: #666;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px 0 4px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+      }
+
+      .demo-box-tree {
+        position: relative; /* 相対位置指定で ::before を正しく配置 */
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ::before でラベルを追加 */
+      .demo-box-tree::before {
+        content: "疑似ツリー";
+        font-size: 0.7em;
+        color: #666;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px 0 4px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+      }
+
+      .demo-box-code {
+        position: relative; /* 相対位置指定で ::before を正しく配置 */
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ::before でラベルを追加 */
+      .demo-box-code::before {
+        content: "HTMLコード";
+        font-size: 0.7em;
+        color: #666;
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px 0 4px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+      }
+
+      ul.toc {
+        list-style-type: disc;
+        margin-left: 1.5em;
+        padding-left: 0.5em;
+        line-height: 1.6;
+        font-size: 1rem;
+      }
+
+      ul.toc li a {
+        color: #004080;
+        text-decoration: none;
+      }
+
+      ul.toc li a:hover {
+        text-decoration: underline;
+        color: #0066cc;
+      }
+
+      h1.section-title {
+        font-size: 1.8rem; /* 適度に大きな文字サイズ */
+        font-weight: 700; /* 太字で強調 */
+        margin-top: 1em; /* 上余白を確保 */
+        color: #222222; /* 読みやすい濃いグレー */
+        border-bottom: 2px solid #ccc; /* 下線でセクション区切りを強調 */
+        padding-bottom: 0.1em; /* 下線と文字の間に余白 */
+      }
+
+      h4::before {
+        content: "・"; /* 「・」を挿入 */
+        margin-right: 0.5em; /* テキストとの間に余白 */
+        color: #666666; /* 色はお好みで調整 */
+        font-weight: bold; /* 必要に応じて強調 */
+      }
+
+      .math-definition {
+        background-color: #f3f3ff;
+        border-left: 4px solid #5b5bd6;
+        padding: 0.8em 1em;
+        margin: 1em 0;
+        border-radius: 4px;
+        font-style: normal;
+        font-size: 1em;
+        line-height: 1.6;
+      }
+
+      .math-example {
+        border-left-color: #009688;
+        background-color: #f1f9f9;
+      }
+
+      .math-label {
+        font-weight: bold;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>関数型とアロー関数 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="16-arrow-function.html">関数型とアロー関数</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="15-string-class.html" class="prev">前</a> |
+        <a href="17-html-style-list-table.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h2 class="section-title">関数型とアロー関数</h2>
+
+        <section>
+          <h3>集合と写像</h3>
+          <p>
+            数学における集合論を理解すると，関数型がとても理解できるようになる．
+          </p>
+          <div class="math-box math-definition">
+            <span class="math-label">定義（集合，元）．</span
+            >範囲のはっきりと決まったモノの集まりのことを<strong>集合</strong>と呼ぶ．集合の要素のことを<strong>元</strong>と呼ぶ．
+            \(x\) が集合 \(X\) の元であることを，in 記号「\(\in\)」を用いて
+            \(x\in X\) で表す．
+          </div>
+          <div class="math-box math-definition">
+            <span class="math-label">定義（写像）．</span>集合 \(X\) から集合
+            \(Y\) への<strong>写像</strong>とは， 任意の \(X\)
+            の元に対し，一意的に \(Y\) の元を対応させる規則のことをいう．\(f\)
+            が集合 \(X\) から集合 \(Y\) への写像であることを， 記号 \(f: X \to
+            Y\) で表す．また，集合 \(X\) から集合 \(Y\)
+            への写像全体のなす集合のことを，記号 \(Map(X, Y)\) と表す．写像
+            \(f\) により，\(x \in X\) が対応する \(Y\) の元のことを， 記号 \(
+            f(x) \) で表す．
+          </div>
+
+          <p>
+            このページでは，写像のことを関数ともいうことにする．（関数の定義は，文献によって異なるため注意が必要である．例えば，写像のうち特別な条件を満たすもののみ関数と呼ぶ人もいる．）
+          </p>
+
+          <div class="math-box math-definition">
+            <span class="math-label">記号．</span>実数全体のなす集合を
+            \(\mathbb{R}\) と表す．
+          </div>
+          <div class="math-box math-example">
+            <span class="math-label">例．</span>「2倍する」というルール twice
+            を考える．これは，各実数 \( x \) に対し，実数 \( 2x \)
+            を対応させるものである． したがって，このルールは写像 \(
+            \mathrm{twice} : \mathbb{R} \to \mathbb{R} \) を定める．例えば，\(
+            \mathrm{twice}(3) = 6 \) のように計算できる．
+          </div>
+
+          <p>
+            集合 \(X\) や集合 \(Y\)
+            がはっきりとしているときは，元の対応ルールだけ記述すれば誤解なく写像を説明できる．
+          </p>
+          <div class="math-box math-definition">
+            <span class="math-label">定義（写像の記法）．</span>
+            \(f\) が，「\(x\) を \( y \)
+            に対応させる」というルールにより定まる写像であることを，\(f : x
+            \mapsto y\) と表す．
+          </div>
+          <div class="math-box math-example">
+            <span class="math-label">例．</span>\(\mathbb{R}\) から
+            \(\mathbb{R}\) への写像について考える．
+            <ul>
+              <li>
+                「1を足す」というルール suc により定まる写像は，\( \mathrm{suc}:
+                x \mapsto x+1\) と書くことができる．
+              </li>
+              <li>
+                「2で割る」というルール half により定まる写像は，\(
+                \mathrm{half}: x \mapsto x/2 \) と書くことができる．
+              </li>
+              <li>
+                「2乗する」というルール squared により定まる写像は，\(
+                \mathrm{squared}: x \mapsto x^2\) と書くことができる．
+              </li>
+              <li>
+                「絶対値をとる」というルール abs により定まる写像は，\(
+                \mathrm{abs}: x \mapsto |x|\) と書くことができる．
+              </li>
+            </ul>
+          </div>
+        </section>
+        <section>
+          <h3 id="string-property">集合と型注釈</h3>
+          <p>集合と型注釈は，以下にみるように非常に似ている：</p>
+          <ul>
+            <li>
+              集合論では，例えば元 \(x\) が集合 \( \mathbb{R} \)
+              に属するときは，in 記号を用いて \( x \in \mathbb{R} \)
+              を利用して表現する．<br />
+              より一般に，元 \(x\) が集合 \(X\) に属するときは \(x\in X\)
+              と表す．
+            </li>
+            <li>
+              TypeScript では，例えば変数 x が number 型のときは，型注釈を用いて
+              <code>x : number</code> と記述する．<br />
+              より一般に，変数 x が型 T であるときは，型注釈を用いて
+              <code>x : T</code> と記述する．
+            </li>
+          </ul>
+          <p>
+            上記の比較から明らかなように，型注釈とは，与えられた変数がどんな集合に所属しているのかを記載しているだけに過ぎない．型とは，集合の名前であるともいえる．
+            例えば，number 型とは，TypeScript
+            が定義する「数値」全体のなす集合のことであり，string
+            型とは，TypeScript
+            が定義する「文字列」全体のなす集合であると認識できる．
+          </p>
+          <p>
+            さて，このページの導入目的は，<strong>関数の型注釈</strong>のやり方を学ぶ，という点であるが，上記の対比から
+            TypeScript
+            が定める関数全体のなす集合を表す記号を導入すればすぐにわかる．
+          </p>
+
+          <div class="math-box math-definition">
+            <span class="math-label">定義（関数型）．</span>
+            型 <code>T1</code> から型 <code>T2</code> への関数を表す型を，<code
+              >(x: T1) => T2</code
+            >と表す．引数が複数あるときは，同様に
+            <code>(x1: T1, x2: T2, ...) => T</code>のようにして表す．
+          </div>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              上記定義の T1 の前にある「x:」は，「型 T1 の要素 x
+              を引数にもつ」という開発者向けの説明（コメントのようなもの）であり，x
+              という文字そのものには意味がないダミー変数である． 例えば，「<code
+                >name: string</code
+              >」と書けば，引数には名前を渡すことが推測できるため，この記法は可読性を挙げるための措置にすぎない．名前を付けることに意味がないときは，
+              <code>_ : string</code>のように，underscore がよく使われる．
+            </div>
+          </div>
+          <p>
+            すなわち，集合 \(Map(X, Y)\) に対応する TypeScript の記号が
+            <code>(x: X) => Y</code> なのである．
+          </p>
+          <p>
+            つまり，\( f\in Map(X, Y)\) に対応する TypeScript の型注釈が
+            <code> f : (x: X) => Y </code> になる．
+          </p>
+          <p>
+            このように，型注釈は集合論的に考えると非常にわかりやすいものになっている．
+          </p>
+        </section>
+        <section>
+          <h3>写像とアロー関数</h3>
+          <p>
+            集合では，誤解の恐れがないときは，元の対応ルールのみを用いて写像を記述できた．例えば，2
+            倍するというルール「twice」が定める写像は， \(\mathrm{twice} : x
+            \mapsto 2x \)
+            と表すことができた．ルール部分だけ抽出すれば，単に「\(x \mapsto
+            2x\)」と書くだけで伝わる．
+          </p>
+          <p>TypeScript でも，これと同様の記法を用いる．</p>
+          <div class="math-box math-definition">
+            <span class="math-label">定義（関数式）．</span>
+            <code>x</code> が
+            <code>y</code> に対応する，という規則が表す関数を，<code
+              >x => y</code
+            >と表す．
+          </div>
+          <ul>
+            <li>
+              集合論におけるルール「\(x \mapsto 2x\)」に対応する TypeScript
+              記法は <code> x => 2*x </code>である．
+            </li>
+            <li>
+              集合論におけるルール「\(x \mapsto x^2\)」に対応する TypeScript
+              記法は <code> x => x*x </code>である．
+            </li>
+            <li>
+              集合論におけるルール「\(x \mapsto x+1\)」に対応する TypeScript
+              記法は <code> x => x + 1 </code>である．
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h3>関数式表記</h3>
+          <p>
+            上記の概念を合わせれば，TypeScript
+            において関数を定義する際，<code>function</code>を利用しない方法が得られる．
+          </p>
+          <p>
+            集合論において，\(X\) から \(Y\) への写像であって，元の対応は \(x\)
+            を \(y\) に対応させるとき，<br />
+            \(f : X \to Y; \quad x \mapsto y \)<br />
+            のように一行で表すことがある．\(x\mapsto y\) の記法は，\(X\) や
+            \(Y\)
+            が文脈から明らかな時しか使えないため，それを補足している表現である．
+            <br />これに対応する TypeScript における記法が以下である：
+          </p>
+
+          <div class="math-box math-definition">
+            <span class="math-label">定義（関数式）．</span>
+            型が <code>(x:X)=>Y</code> の関数であって，元の対応が
+            <code>x => y</code> であるような
+            関数が<code>f</code>である，ということを，
+            <pre><code class="language-ts">f : (x:X) => Y = x => y;
+</code></pre>
+            <pre><code class="language-ts">f : (x:X) => Y = (x) => y;
+</code></pre>
+            などと表す．
+          </div>
+          <p>
+            上記表現は，「=」を色々な箇所で用いているため，慣れないと非常に読みにくい．そのため，
+          </p>
+          <div style="background-color: #333; width: 250px">
+            <code style="border-radius: 0"
+              >f : (x: X) => Y &#8201; = &nbsp;x => y;</code
+            ><br />
+            <div style="background-color: #333; color: #ccc">
+              \(f \in Map(X,Y)\ \ \ \ ; \ \ \ x \mapsto y\)
+            </div>
+          </div>
+          <p>
+            上記のように集合論における表現と必要に応じて対比させることで，とても理解しやすくなる．以下では，
+          </p>
+
+          <p>例：</p>
+          <pre><code class="language-ts">const squared: (x: number) => number = (x) => x * x;
+
+console.log(squared(3));//9
+</code></pre>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              関数型は，複雑になってくると可読性がとても下がる．その際は，型エイリアスを利用すると便利である．
+              例えば，<code
+                >type Binary = (a: number, b: number) => number;</code
+              >とすれば，以後，
+              <code>(a: number, b: number) => number;</code
+              >に該当する部分はすべて<code>Binary</code>に置き換えることができるため，可読性が上がる．
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>アロー関数の応用</h2>
+          <p>
+            アロー関数の大きなメリットは，関数変数を用意することなく関数が定義できるという点であり，無名関数と呼ばれている．
+            関数を引数としてもつようなメソッドとして，配列メソッドの<a
+              href="07-basic-utils.html#array-map"
+              >.map(f)メソッド</a
+            >，
+            <a href="07-basic-utils.html#array-filter">.filter(f)メソッド</a>，
+            <a href="07-basic-utils.html#array-forEach">.forEach(f)</a
+            >メソッドを思い出そう．
+          </p>
+          <p>
+            これらのメソッドの使用例を紹介した際は，functionを用いて関数を外部で定義してから渡す，ということを行っていた．
+            しかし，もしもこの加工が簡易的であり，かつその場限りの処理の場合は，関数定義をすることで変数汚染がされたり，かえって可読性が下がる．
+            しかし，アロー関数を用いることで簡単に処理できるようになる．以下で，それぞれの例を見てみよう．
+          </p>
+          <p>例：array.map(f); 加工した配列の新規出力</p>
+          <p>利用する関数：<code>x => x*10;</code>「10倍する」という規則</p>
+          <pre><code class="language-ts">console.log([1, 2, 3].map((x) => x * 10));//[10, 20, 30]</code></pre>
+          <p>例：array.filter(f); 抽出した配列の新規出力</p>
+          <p>
+            利用する関数：<code>x => (x % 2 === 1);</code>「2で割った余りが 1
+            なら true を返す」という規則
+          </p>
+          <pre><code class="language-ts">console.log([1, 2, 3, 4, 5].filter((x) => x % 2 === 1));//[1, 3, 5]</code></pre>
+          <p>例：array.forEach(f); 加工した配列の新規出力</p>
+          <p>
+            利用する関数：<code>x => console.log(`Hello, ${x}!`)</code> x
+            に対して，「Hello,
+            x!」という文字列を出力し，値としては何も返さない(void)，という規則
+          </p>
+          <pre><code class="language-ts">['Tom', 'Alice'].forEach((x) => console.log(`Hello, ${x}!`)); //Hello, Tom! および Hello, Alice! を出力</code></pre>
+        </section>
+
+        <section>
+          <h2>関数型の応用</h2>
+          <p>
+            関数の型が定義できたということは，関数を定義するときの引数に関数をとることもできれば，オブジェクト型を定義する際にプロパティとして関数を設定したり，
+            戻り値として関数を返すようなことができることを意味するため，表現の幅が爆発的に広がる．
+          </p>
+          <h3>関数を返す関数</h3>
+          <p>
+            以下の例では，mult という関数を定義している．number
+            型に対応する集合を Num とすれば，
+          </p>
+          <p>
+            \(\mathrm{mult} \in Map(\mathrm{Num}, Map(\mathrm{Num},
+            \mathrm{Num}))\)
+          </p>
+          <p>
+            を定めていることに対応し，x を入れると，「x
+            倍するという関数」を返すものになっている．<br />関数 mult
+            は，より詳しくいうと「\(x \mapsto (a \mapsto
+            x*a)\)」という構造である．
+          </p>
+          <pre><code class="language-ts">function mult(x: number): (a: number) => number {
+  return (a: number) => x * a;
+}
+
+const twice = mult(2);
+console.log(twice(5)); //10
+
+const thrice = mult(3);
+console.log(thrice(5)); //15
+</code></pre>
+          <h3>関数プロパティ</h3>
+          <p>
+            以下の例では，関数をプロパティにもつ<a
+              href="11-advanced-types.html#object-type"
+              >オブジェクト型</a
+            >を定義してある． また，型の可読性を上げるため，<a
+              href="11-advanced-types.html#alias"
+              >型エイリアス</a
+            >を利用している．
+          </p>
+          <pre><code class="language-ts">type Binary = (a: number, b: number) => number;
+
+type MathOp = {
+  name: string;
+  op: Binary;
+};
+
+const sum: MathOp = {
+  name: 'addition',
+  op: (a: number, b: number) => a + b,
+};
+
+console.log(sum.name); //"addition"
+console.log(sum.op(12, 35)); //47 (12+35)
+</code></pre>
+        </section>
+        <section>
+          <h3 id="callback-intro">コールバック関数</h3>
+          <p>
+            関数の引数として関数を渡すとき，その渡された関数を「コールバック関数（callback
+            function）」と呼ぶ． たとえば，ここで紹介した map, filter, forEach
+            に渡される関数が，それに該当する．
+            実際には，後から呼び出される処理や，特定の動作をカスタマイズするために使われる．
+            本ページでは名前の導入のみにとどめ，その応用は今後 DOM
+            操作の章で順次紹介する予定である．
+          </p>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

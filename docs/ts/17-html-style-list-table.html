@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction to HTML</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/style-table.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.tag-table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.tag-table th:nth-child(1),
+      table.tag-table td:nth-child(1) {
+        max-width: 200px;
+        width: 20%;
+      }
+
+      /* 2列目（出力する値） */
+      table.tag-table th:nth-child(2),
+      table.tag-table td:nth-child(2) {
+        width: 80%;
+      }
+
+      .demo-box {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>Introduction to HTML - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="08-html-introduction.html">HTML 入門</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="07-basic-utils.html" class="prev">前</a> |
+        <a href="09-html-with-javascript.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2 id="h2-style">style 属性</h2>
+          <p>
+            HTML では，各タグは style という属性をもつ．style
+            属性を設定すると，そのタグ内に対し，
+          </p>
+          <ul>
+            <li>文字の大きさを変更する</li>
+            <li>文字に色を付ける</li>
+            <li>背景色を設定する</li>
+          </ul>
+          <p>
+            など，様々な装飾を付与することが可能になる．style
+            の付与の仕方は，style 属性を利用する以外にも色々な方法があるが，
+            ここでは入門的な方法として，style
+            属性を直接使う方法を紹介する．また，すべての style
+            を紹介するのは分量的に困難なため， DOM
+            操作において使いうる，有用で分かりやすいもののみ紹介することにとどめておく．
+          </p>
+          <p>
+            style は，<code>style = "color: red;"</code
+            >のように，プロパティ名(=key)とその値(=value)の組み合わせで設定し，最後にセミコロンを付与しなければならない．
+            複数の style を同時に設定する場合は，<code
+              >style = "color: red; background-color:white;"</code
+            >のように複数並べるだけでよい．
+          </p>
+          <p>さて，以下に代表的な style を列挙しよう．</p>
+
+          <table class="style-table">
+            <colgroup>
+              <col class="style-key" />
+              <col class="style-value" />
+              <col class="example" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>key</th>
+                <th>value，説明</th>
+                <th>使用例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>color</td>
+                <td>
+                  文字色を名前(red, etc.)やコード(#rgb, #rrggbb,
+                  #rrggbbaa)で指定する．<br />
+                  r,g,b, aはそれぞれ赤，緑，青，不透明度を 0～f で指定する．<br />
+                  #000000 が黒，#ffffff が白である．
+                </td>
+                <td class="code">
+                  <span style="color: red">color: red;//赤色</span><br />
+                  <span style="color: #00ff00">color: #00ff00;//緑色</span
+                  ><br />
+                  <span style="color: #00f">color: #00f;//青色</span><br />
+                  <span style="color: #110055cc"
+                    >color: #110055cc;//やや透明</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td>background-color</td>
+                <td>
+                  背景色を名前(red, etc.)やコード(#rgb, #rrggbb,
+                  #rrggbbaa)で指定する．<br />
+                  r, g, b, a はそれぞれ赤，緑，青，不透明度を 0～f
+                  で指定する．<br />
+                  #000000 が黒，#ffffff が白である．
+                </td>
+                <td class="code">
+                  <span style="background-color: red">color: red;//赤色</span
+                  ><br />
+                  <span style="background-color: #00ff00"
+                    >color: #00ff00;//緑色</span
+                  ><br />
+                  <span style="background-color: #00f">color: #00f;//青色</span
+                  ><br />
+                  <span style="background-color: #11005533"
+                    >color: #110055cc;//そこそこ透明</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td>font-family</td>
+                <td>
+                  文字の font 名を指定する．文字の font を変更することができる．
+                  font
+                  は複数指定することができる．その場合，は優先順位が高い順に並べ，
+                  font が存在しない時に下位の font
+                  が代用として使われる．すべて存在しない場合は OS
+                  依存となる．<br />
+                  font名に space が含まれる場合は，'Courier New'のように quote
+                  で囲まなければならない．
+                </td>
+                <td class="code">
+                  <span style="font-family: 'Courier New'"
+                    >font-family:'Courier New';</span
+                  ><br />
+                  <span style="font-family: Consolas, monospace"
+                    >font-family:Consolas, monospace;</span
+                  ><br />
+                  <span style="font-family: sans-serif"
+                    >font-family:sans-serif;</span
+                  ><br />
+                  <span style="font-family: 'Arial Rounded MT Bold'"
+                    >font-family:'Arial Rounded MT Bold';</span
+                  ><br />
+                  <span style="font-family: Georgia">font-family:Georgia;</span
+                  ><br />
+                  <span style="font-family: 'Times New Roman'"
+                    >font-family:'Times New Roman';</span
+                  ><br />
+                </td>
+              </tr>
+              <tr>
+                <td>font-size</td>
+                <td>
+                  文字の font size
+                  を指定する．色々な単位を使用することができる．
+                </td>
+                <td class="code">
+                  <span style="font-size: 1rem">font-size: 1rem;</span><br />
+                  <span style="font-size: 13pt">font-size: 13pt;</span><br />
+                  <span style="font-size: 1.1em">font-size: 1.1em;</span><br />
+                </td>
+              </tr>
+              <tr>
+                <td>font-style</td>
+                <td>文字の傾き（斜体など）を指定する．normal, italic など．</td>
+                <td class="code">
+                  <span style="font-style: normal">font-style: normal;</span
+                  ><br />
+                  <span style="font-style: italic">font-style:italic;</span
+                  ><br />
+                </td>
+              </tr>
+              <tr>
+                <td>font-weight</td>
+                <td>文字の太さ（太字など）を指定する．normal, bold など．</td>
+                <td class="code">
+                  <span style="font-weight: normal">font-weight: normal;</span
+                  ><br />
+                  <span style="font-weight: bold">font-weight:bold;</span><br />
+                </td>
+              </tr>
+              <tr>
+                <td>text-decoration</td>
+                <td>
+                  文字の装飾を指定する．none（なし），underline（下線），line-through（取り消し線），overline（上線）など．
+                </td>
+                <td class="code">
+                  <span style="text-decoration: underline"
+                    >text-decoration: underline;</span
+                  ><br />
+                  <span style="text-decoration: line-through"
+                    >text-decoration: line-through;</span
+                  ><br />
+                </td>
+              </tr>
+              <tr>
+                <td>text-align</td>
+                <td>
+                  テキストの水平位置を指定する．left（左揃え），right（右揃え），center（中央ぞろえ），justify（両端揃え）など．
+                </td>
+                <td class="code">
+                  <div style="text-align: left">text-align: left;</div>
+                  <div style="text-align: right">text-align: right;</div>
+                </td>
+              </tr>
+              <tr>
+                <td>border-style</td>
+                <td>
+                  罫線を設定する．solid（実線），dashed（破線），dotted（点線）など．
+                </td>
+                <td class="code">
+                  <div style="border-style: solid; margin-bottom: 2px">
+                    border-style: solid;
+                  </div>
+                  <div style="border-style: dashed; margin-bottom: 2px">
+                    border-style: dashed;
+                  </div>
+                  <div style="border-style: dotted">border-style: dotted;</div>
+                </td>
+              </tr>
+              <tr>
+                <td>border-width</td>
+                <td>
+                  罫線の太さを設定する．border-style
+                  を設定しなければ，罫線が引かれないため意味がない． 例では
+                  border-style:solid; も指定してある．
+                </td>
+                <td class="code">
+                  <div
+                    style="
+                      border-style: solid;
+                      border-width: 1px;
+                      margin-bottom: 2px;
+                    "
+                  >
+                    border-width: 1px;
+                  </div>
+                  <div
+                    style="
+                      border-style: solid;
+                      border-width: 2px;
+                      margin-bottom: 2px;
+                    "
+                  >
+                    border-width: 2px;
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>border-color</td>
+                <td>
+                  罫線の色を設定する．名前(red, etc.)やコード(#rgb, #rrggbb,
+                  #rrggbbaa)で指定する．<br />
+                  r, g, b, aはそれぞれ赤，緑，青，不透明度を0～fで指定する．
+                  #000000が黒，#ffffffが白である．border-style
+                  を設定しなければ，罫線が引かれないため意味がない． 例では
+                  border-style:solid; も指定してある．
+                </td>
+                <td class="code">
+                  <div
+                    style="
+                      border-color: green;
+                      border-style: solid;
+                      margin-bottom: 2px;
+                    "
+                  >
+                    border-color: green;
+                  </div>
+                  <div
+                    style="
+                      border-color: blue;
+                      border-style: solid;
+                      margin-bottom: 2px;
+                    "
+                  >
+                    border-color: blue;
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>list-style-type</td>
+                <td>
+                  リスト表示の記号（項目番号）を変える．リストは，このページで紹介する&lt;li&gt;タグにより利用できる．
+                  リストの種類によって指定できるものは変わるが，指定可能な代表的なものは，
+                  none（記号なし），disc（黒丸），circle（白丸），decimal（1, 2,
+                  3, ...），lower-alpha（a, b, c, ...），lower-roman（i, ii, iii
+                  ,...）などがある． カスタム書式は標準ではできない．
+                </td>
+                <td class="code">
+                  <ul>
+                    <li style="list-style-type: none">
+                      list-style-type: none;
+                    </li>
+                    <li style="list-style-type: disc">
+                      list-style-type: disc;
+                    </li>
+                    <li style="list-style-type: circle">
+                      list-style-type: circle;
+                    </li>
+                  </ul>
+                  <ol>
+                    <li style="list-style-type: decimal">
+                      list-style-type: decimal;
+                    </li>
+                    <li style="list-style-type: lower-alpha">
+                      list-style-type: lower-alpha;
+                    </li>
+                    <li style="list-style-type: lower-roman">
+                      list-style-type: lower-roman;
+                    </li>
+                  </ol>
+                </td>
+              </tr>
+              <tr>
+                <td>display</td>
+                <td>
+                  タグの表示非表示を切り替えられる．none（非表示），block（ブロック要素として表示），inline（インライン要素として表示）などの値が設定できる．
+                  none を設定すると，web
+                  画面から<strong>消える</strong>ためコメント的な使い方ができる．動的な web
+                  を作る DOM 操作と相性がよい．<br />
+                  非表示にした部分は詰めて表示される（cf. visibility）．
+                </td>
+                <td class="code">
+                  &lt;div&gt;赤&lt;/div&gt;<br>
+                  &lt;div style="display: none;"&gt;青&lt;/div&gt;<br>
+                  &lt;div&gt;緑&lt;/div&gt;
+                </td>
+                <td class="code">
+                  <div>赤</div>
+                  <div style="display: none">青</div>
+                  <div>緑</div>
+                </td>
+              </tr>
+              <tr>
+                <td>visibility</td>
+                <td>
+                  タグの表示非表示を切り替えられる．hidden（非表示），visible（表示）などの値が設定できる．
+                  hidden を設定すると，web
+                  画面から<strong>見えなくなる</strong>ためコメント的な使い方ができる．動的な web
+                  を作る DOM 操作と相性がよい．<br />
+                  非表示にした部分は詰められずに表示される（cf. display）．
+                </td>
+                <td class="code">
+                <td class="code">
+                  &lt;div&gt;赤&lt;/div&gt;<br>
+                  &lt;div style="visibility: hidden;"&gt;青&lt;/div&gt;<br>
+                  &lt;div&gt;緑&lt;/div&gt;
+                </td>
+                <td class="code">
+                  <div>赤</div>
+                  <div style="visibility: hidden">青</div>
+                  <div>緑</div>
+                </td>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section>
+          <h2 id="h2-list">リスト</h2>
+          <p>
+            複数の項目を箇条書き式に並べることを実現させるときに用いるのがリストである．主に使われるリストは，以下の2種類である：
+          </p>
+          <ul>
+            <li>
+              番号無しリスト（<span style="color: red">u</span>nordered
+              <span style="color: red">l</span
+              >ist）．列挙することを目的とし，項目の順は無関係である．
+            </li>
+            <li>
+              順序付きリスト（<span style="color: red">o</span>rdered
+              <span style="color: red">l</span
+              >ist）．既定の順に列挙することを目的とし，項目の順が重要である．
+            </li>
+          </ul>
+          <section>
+            <h3 id="h3-ul">Unordered List</h3>
+            <p>
+              「番号無しリスト」環境を作るには，まずは&lt;ul&gt;タグで囲む必要がある．そのタグ領域内に，&lt;li&gt;タグで，表示したい項目を囲む．
+            </p>
+            <div class="demo-box">
+              <div id="sampleDemo">
+                <ul>
+                  <li>項目1</li>
+                  <li>項目2</li>
+                  <li>項目3</li>
+                </ul>
+              </div>
+            </div>
+            <pre><code class="language-html">&lt;ul&gt;
+  &lt;li&gt;項目1&lt;/li&gt;
+  &lt;li&gt;項目2&lt;/li&gt;
+  &lt;li&gt;項目3&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+          </section>
+          <section>
+            <h3 id="h3-ol">Ordered List</h3>
+            <p>
+              「順序付きリスト」環境を作るには，まずは&lt;ol&gt;タグで囲む必要がある．そのタグ領域内に，&lt;li&gt;タグで，表示したい項目を囲む．
+            </p>
+            <div class="demo-box">
+              <div id="sampleDemo">
+                <ol>
+                  <li>項目1</li>
+                  <li>項目2</li>
+                  <li>項目3</li>
+                </ol>
+              </div>
+            </div>
+            <pre><code class="language-html">&lt;ol&gt;
+  &lt;li&gt;項目1&lt;/li&gt;
+  &lt;li&gt;項目2&lt;/li&gt;
+  &lt;li&gt;項目3&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+          </section>
+
+          <section>
+            <h3 id="h3-list-style">スタイル適用例</h3>
+            <p>style を適用することで，表示を切り替えることができる．</p>
+            <div class="demo-box">
+              <div id="sampleDemo">
+                <ol style="list-style-type: circle">
+                  <li>項目1</li>
+                  <li style="color: green; font-size: 20px">項目2</li>
+                  <li>項目3</li>
+                </ol>
+              </div>
+            </div>
+            <pre><code class="language-html">&lt;ol style="list-style-type: circle;"&gt;
+  &lt;li&gt;項目1&lt;/li&gt;
+  &lt;li style="color:green; font-size:20px;"&gt;項目2&lt;/li&gt;
+  &lt;li&gt;項目3&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+            <p>
+              上記では，&lt;ol&gt;タグにスタイル「list-style-type:
+              circle;」を適用したため，内部のリスト項目の記号が白丸に変化した．
+              一方，2つめの&lt;li&gt;タグにのみスタイル[color:green;
+              font-size:20px;」を適用したため，二つ目のリストのみ色が緑色に，フォントサイズが20pxに変化した．
+            </p>
+            <p>
+              スタイルを設定する際，<span style="color: red"
+                >各スタイルの区切りである「セミコロン」</span
+              >は忘れやすいので注意．
+            </p>
+          </section>
+        </section>
+        <section>
+          <h2 id="h2-table">tableタグ</h2>
+          <p>
+            リストは一次元的に項目を配置するのに対し，table
+            は二次元的に項目を配置する．そのような表を実現させるときに使用するタグが
+            &lt;table&gt;タグである．table
+            タグに関係する基本的なタグは以下である．
+          </p>
+          <table class="tag-table">
+            <tr>
+              <th>タグ</th>
+              <th>説明</th>
+            </tr>
+            <tr>
+              <td>&lt;table&gt;～&lt;/table&gt;</td>
+              <td>tableタグ．囲まれた部分が table 環境になる．</td>
+            </tr>
+            <tr>
+              <td>&lt;tr&gt;～&lt;/tr&gt;</td>
+              <td>
+                <span style="color: red">t</span>able
+                <span style="color: red">r</span>ow タグ．table
+                において，行環境を作り， この行環境が一つの行を構成する．
+              </td>
+            </tr>
+
+            <tr>
+              <td>&lt;th&gt;～&lt;/th&gt;</td>
+              <td>
+                <span style="color: red">t</span>able
+                <span style="color: red">h</span>eader
+                タグ．行環境において，列ヘッダーセルを表示する環境を作る．
+              </td>
+            </tr>
+            <tr>
+              <td>&lt;td&gt;～&lt;/td&gt;</td>
+              <td>
+                <span style="color: red">t</span>able
+                <span style="color: red">d</span>ata
+                タグ．行環境において，データセルを表示する環境を作る．
+              </td>
+            </tr>
+          </table>
+
+          <section>
+            <h3 id="h3-table-example">例</h3>
+
+            <div class="demo-box">
+              <table>
+                <tr>
+                  <th>名前</th>
+                  <th>年齢</th>
+                </tr>
+                <tr>
+                  <td>Alice</td>
+                  <td>23</td>
+                </tr>
+                <tr>
+                  <td>Bob</td>
+                  <td>18</td>
+                </tr>
+              </table>
+            </div>
+            <pre><code class="language-html">&lt;table&gt;
+  &lt;tr&gt;&lt;th&gt;名前&lt;/th&gt;&lt;th&gt;年齢&lt;/th&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;Alice&lt;/td&gt;&lt;td&gt;23&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;Bob&lt;/td&gt;&lt;td&gt;18&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+            <p>
+              上記の例のように，一つ一つの行は，tr
+              タグで囲むことにより実現されている．
+              また，headerセルである「名前」「年齢」は th
+              タグで囲んでいる．各セルは，td タグで囲まれている．
+            </p>
+          </section>
+
+          <section>
+            <h3 id="h3-table-example">スタイル適用例</h3>
+
+            <div class="demo-box">
+              <table style="border-color: red; border-width: 2px">
+                <tr>
+                  <th style="text-align: center">名前</th>
+                  <th>年齢</th>
+                </tr>
+                <tr>
+                  <td>Alice</td>
+                  <td style="border-style: dashed; border-width: 2px">23</td>
+                </tr>
+                <tr>
+                  <td>Bob</td>
+                  <td>18</td>
+                </tr>
+              </table>
+            </div>
+            <pre><code class="language-html">&lt;table style="border-color:red; border-width: 2px;"&gt;
+  &lt;tr&gt;&lt;th style="text-align: center;"&gt;名前&lt;/th&gt;&lt;th&gt;年齢&lt;/th&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;Alice&lt;/td&gt;&lt;td style="border-style:dashed; border-width:2px;"&gt;23&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;Bob&lt;/td&gt;&lt;td&gt;18&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+            <p>
+              table等に罫線の設定をする際，表に罫線がすでに引かれているかもしれないが，明示的に
+              border-width を指定しないと罫線が描画されないことがあるので注意．
+            </p>
+            <p>
+              すべてのセルに対して個別に設定をするのは面倒かもしれないが，スタイルシート（css）を利用したり，プログラム側で設定をすることが，実はできる．
+            </p>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

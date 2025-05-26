@@ -189,7 +189,7 @@
             <li><a href="#array-join">T[].join(x)</a></li>
             <li><a href="#array-map">T[].map(f)</a></li>
             <li><a href="#array-filter">T[].filter(f)</a></li>
-            <li><a href="#array-foreach">T[].forEach(f)</a></li>
+            <li><a href="#array-forEach">T[].forEach(f)</a></li>
           </ul>
         </div>
       </section>
@@ -626,7 +626,7 @@ console.log(arr); //[1, 2, 3, 4, 5] （元の配列は変更されない）
         </section>
 
         <section id="array-filter" class="function-block">
-          <h3>T[].filter(f)<span class="note">加工した配列の新規出力</span></h3>
+          <h3>T[].filter(f)<span class="note">抽出した配列の新規出力</span></h3>
           <div class="function-signature">
             <strong>関数構造:</strong>
             <!-- prettier-ignore -->
@@ -674,7 +674,7 @@ function T[].forEach(f: function): void</code>
 }
 
 let arr = [1, 2, 3, 4, 5];
-arr.forEach(f); //各要素に対し，処理 f を実行する
+arr.forEach(f); //各要素に対し，処理 f を実行する（1*1=1, 2*2=4, ... が出力される）
 console.log(arr); //[1, 2, 3, 4, 5] （元の配列は変更されない）</code></pre>
           </div>
         </section>
