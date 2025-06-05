@@ -1,0 +1,43 @@
+.method-explain {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        padding-left: 0.5em;
+        border-left: 4px solid #007acc; /* 視覚的な区切り */
+        background-color: #f0f8ff; /* やや淡い背景色 */
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #003366;
+}
+
+.note {
+  font-size: 0.9em;  /* 少し小さく */
+  color: #666;       /* 薄い色にして目立たせすぎない */
+  margin-left: 0.5em; /* 少し左にスペースを開ける */
+}
+.example-explain pre {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+dl {
+  margin: 0;
+  padding: 0;
+}
+
+dt {
+  margin: 0;
+  padding: 2px 4px;
+  font-size: 90%;
+  line-height: 1.4;
+  border-bottom: 1px solid #ccc;
+}
+
+
+.param-explain {
+  color: #333;
+  padding-left: 1em;
+}
+
+.example-explain {
+  background-color: #f9f9f9;
+  padding-left: 1em;
+}

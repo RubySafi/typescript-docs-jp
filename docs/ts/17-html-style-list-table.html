@@ -95,6 +95,16 @@
         border-radius: 6px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       }
+
+      .demo-box table,
+      .demo-box th,
+      .demo-box td,
+      .demo-box tr {
+        border: none;
+        border-collapse: separate;
+        padding: 0;
+        margin: 0;
+      }
     </style>
   </head>
   <body>
@@ -108,12 +118,14 @@
       <div class="breadcrumb-container">
         <ul class="breadcrumb">
           <li><a href="index.html">ホーム</a></li>
-          <li><a href="08-html-introduction.html">HTML 入門</a></li>
+          <li>
+            <a href="17-html-style-list-table.html">Style, List, Table</a>
+          </li>
         </ul>
       </div>
       <div class="next-prev-links">
-        &lt; <a href="07-basic-utils.html" class="prev">前</a> |
-        <a href="09-html-with-javascript.html" class="next">次</a>&gt;
+        &lt; <a href="16-arrow-function.html" class="prev">前</a> |
+        <a href="18-dom-add.html" class="next">次</a>&gt;
       </div>
     </nav>
 
@@ -402,13 +414,13 @@
                 <td>
                   タグの表示非表示を切り替えられる．none（非表示），block（ブロック要素として表示），inline（インライン要素として表示）などの値が設定できる．
                   none を設定すると，web
-                  画面から<strong>消える</strong>ためコメント的な使い方ができる．動的な web
-                  を作る DOM 操作と相性がよい．<br />
+                  画面から<strong>消える</strong>ためコメント的な使い方ができる．動的な
+                  web を作る DOM 操作と相性がよい．<br />
                   非表示にした部分は詰めて表示される（cf. visibility）．
                 </td>
                 <td class="code">
-                  &lt;div&gt;赤&lt;/div&gt;<br>
-                  &lt;div style="display: none;"&gt;青&lt;/div&gt;<br>
+                  &lt;div&gt;赤&lt;/div&gt;<br />
+                  &lt;div style="display: none;"&gt;青&lt;/div&gt;<br />
                   &lt;div&gt;緑&lt;/div&gt;
                 </td>
                 <td class="code">
@@ -422,21 +434,20 @@
                 <td>
                   タグの表示非表示を切り替えられる．hidden（非表示），visible（表示）などの値が設定できる．
                   hidden を設定すると，web
-                  画面から<strong>見えなくなる</strong>ためコメント的な使い方ができる．動的な web
-                  を作る DOM 操作と相性がよい．<br />
+                  画面から<strong>見えなくなる</strong>ためコメント的な使い方ができる．動的な
+                  web を作る DOM 操作と相性がよい．<br />
                   非表示にした部分は詰められずに表示される（cf. display）．
                 </td>
+                <td class="code"></td>
                 <td class="code">
-                <td class="code">
-                  &lt;div&gt;赤&lt;/div&gt;<br>
-                  &lt;div style="visibility: hidden;"&gt;青&lt;/div&gt;<br>
+                  &lt;div&gt;赤&lt;/div&gt;<br />
+                  &lt;div style="visibility: hidden;"&gt;青&lt;/div&gt;<br />
                   &lt;div&gt;緑&lt;/div&gt;
                 </td>
                 <td class="code">
                   <div>赤</div>
                   <div style="visibility: hidden">青</div>
                   <div>緑</div>
-                </td>
                 </td>
               </tr>
             </tbody>
@@ -610,7 +621,13 @@
             <h3 id="h3-table-example">スタイル適用例</h3>
 
             <div class="demo-box">
-              <table style="border-color: red; border-width: 2px">
+              <table
+                style="
+                  border-color: red;
+                  border-width: 2px;
+                  border-style: solid;
+                "
+              >
                 <tr>
                   <th style="text-align: center">名前</th>
                   <th>年齢</th>
@@ -625,17 +642,20 @@
                 </tr>
               </table>
             </div>
-            <pre><code class="language-html">&lt;table style="border-color:red; border-width: 2px;"&gt;
+            <pre><code class="language-html">&lt;table style="border-color:red; border-width: 2px; border-style:solid;"&gt;
   &lt;tr&gt;&lt;th style="text-align: center;"&gt;名前&lt;/th&gt;&lt;th&gt;年齢&lt;/th&gt;&lt;/tr&gt;
   &lt;tr&gt;&lt;td&gt;Alice&lt;/td&gt;&lt;td style="border-style:dashed; border-width:2px;"&gt;23&lt;/td&gt;&lt;/tr&gt;
   &lt;tr&gt;&lt;td&gt;Bob&lt;/td&gt;&lt;td&gt;18&lt;/td&gt;&lt;/tr&gt;
 &lt;/table&gt;</code></pre>
             <p>
-              table等に罫線の設定をする際，表に罫線がすでに引かれているかもしれないが，明示的に
-              border-width を指定しないと罫線が描画されないことがあるので注意．
+              table等に罫線の設定をする際，border-style, border-width,
+              border-color を設定しないといけない点に注意． これらは border
+              キーを使えば，
+              <code class="language-html">border: 1px solid black;</code
+              >のように一括で登録することもできて便利である
             </p>
             <p>
-              すべてのセルに対して個別に設定をするのは面倒かもしれないが，スタイルシート（css）を利用したり，プログラム側で設定をすることが，実はできる．
+              すべてのセルに対して個別に設定をするのは面倒かもしれないが，スタイルシート（css）を利用したり，プログラム側で設定をすることができるが，これは後のページで紹介する．
             </p>
           </section>
         </section>

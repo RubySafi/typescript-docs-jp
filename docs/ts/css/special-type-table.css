@@ -1,0 +1,61 @@
+table.special-type-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 14px;
+  table-layout: fixed;
+}
+
+table.special-type-table th,
+table.special-type-table td {
+  border: 1px solid #aaa;
+  padding: 0.5em;
+  text-align: left;
+  vertical-align: top;
+}
+
+table.special-type-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* 使用例のコード表示用 */
+table.special-type-table td.code {
+  font-family: Consolas, monospace;
+  white-space: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+  display: block;
+}
+
+/* value列で改行を許容する場合 */
+table.special-type-table td.wrap {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* 列幅の指定 */
+table.special-type-table colgroup col.table-col-name   { width: 10%; }
+table.special-type-table colgroup col.table-col-semantics { width: 20%; }
+table.special-type-table colgroup col.table-col-explain { width: 80%; }
+
+/* ストライプ背景 */
+table.special-type-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+table.special-type-table tbody tr:nth-child(even) {
+  background-color: #d0d0d0;
+}
+
+/* モバイル対応 */
+@media (max-width: 600px) {
+  table.special-type-table {
+    font-size: 12px;
+  }
+
+  table.special-type-table td.code {
+    white-space: normal;
+    word-break: break-all;
+  }
+}

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOM の追加</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/dom-explain-dl.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.dom_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.dom_table th:nth-child(1),
+      table.dom_table td:nth-child(1) {
+        min-width: 300px;
+        width: 40%;
+      }
+
+      /* 2列目（出力する値） */
+      table.dom_table th:nth-child(2),
+      table.dom_table td:nth-child(2) {
+        max-width: 400px;
+        width: 60%;
+      }
+
+      .demo-box {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      ul.toc {
+        list-style-type: disc;
+        margin-left: 1.5em;
+        padding-left: 0.5em;
+        line-height: 1.6;
+        font-size: 1rem;
+      }
+
+      ul.toc li a {
+        color: #004080;
+        text-decoration: none;
+      }
+
+      ul.toc li a:hover {
+        text-decoration: underline;
+        color: #0066cc;
+      }
+
+      h1.abstract {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #2c3e50; /* 落ち着いた濃いグレー */
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 0.3em;
+        margin-bottom: 1em;
+        margin-top: 1.5em;
+      }
+
+      .demo-box table,
+      .demo-box th,
+      .demo-box td,
+      .demo-box tr {
+        border: none;
+        border-collapse: separate;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>DOM の追加- TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="18-dom-add.html">DOM の追加</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="17-html-style-list-table.html" class="prev">前</a> |
+        <a href=".html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h1 class="abstract">DOM 操作 - 追加</h1>
+        <p>
+          このページでは，DOM の作成，追加を取り扱う．主に扱うのは，HTMLElement
+          型や Element 型などに代表される DOM 要素である．
+        </p>
+        <section>
+          <h2>使用するメソッド等</h2>
+          <p>以下のメソッドを利用する．</p>
+
+          <dl>
+            <dt>
+              <div class="method-explain">
+                val = document.createElement(p1);
+                <span class="note">指定したタグの作成</span>
+              </div>
+            </dt>
+            <dt class="param-explain">
+              p1: 作成したいタグ名（string 型）<br />
+              val: 作成したタグ（ HTMLElement 型など．タグにより変化．）
+            </dt>
+            <dt class="example-explain">
+              使用例：
+              <pre><code class="language-ts">const tag_div = document.createElement("div");//div タグの作成</code></pre>
+            </dt>
+            <dt>
+              <div class="method-explain">
+                element.appendChild(p1);
+                <span class="note">子要素の追加</span>
+              </div>
+            </dt>
+            <dt class="param-explain">
+              p1: 追加したい DOM 要素（HTMLElement 型など）<br />
+            </dt>
+            <dt class="example-explain">
+              <p>DOM 要素 element の末尾に，子要素として p1 を追加する．</p>
+              使用例：
+              <pre><code class="language-ts">element.appendChild(tag_div);</code></pre>
+            </dt>
+            <dt>
+              <div class="method-explain">
+                element.style.color = p1;
+                <span class="note">文字色を設定</span>
+              </div>
+            </dt>
+            <dt class="param-explain">
+              p1: 色を表す文字列（red, #rgb, #rrggbb, #rrggbbaa など）<br />
+            </dt>
+            <dt class="example-explain">
+              <p>DOM 要素 element の style 属性に対し，文字色を指定する．</p>
+              使用例：
+              <pre><code class="language-ts">element.style.color = "red";</code></pre>
+            </dt>
+          </dl>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              前ページで学んだ style
+              属性で設定することができるものは，同様に設定することができるのだが，一部プロパティは，
+              style における key
+              と異なる名前になる．詳細については別のページで扱う．
+            </div>
+          </div>
+
+          <section>
+            <h2>使用例 - listタグ</h2>
+            <p>値の取得と設定の例として，次のような処理を実装してみよう．</p>
+            <div class="demo-box">
+              <script src="js/18_1.js"></script>
+
+              <label>Name: <input id="NameInput" type="text" /></label>
+              <button onclick="addListElm()">Add</button>
+              <button onclick="clearAllList()">Clear</button>
+              <ul id="sample-list"></ul>
+            </div>
+            <p>実装内容：</p>
+            <ul>
+              <li>
+                Add ボタンを押すと，Name
+                に入力された内容を用いて，あいさつ文を書いた list
+                項目を追加する．
+              </li>
+              <li>Clearボタンを押すと，list の内容が初期化される．</li>
+              <li>追加される list の style は，赤色である．</li>
+              <li>Name の textbox が未入力ならば，alert で入力を促す．</li>
+            </ul>
+            <p>これを実現するコードが以下である．</p>
+            <pre><code class="language-html">&lt;div class="demo-box"&gt;
+  &lt;script src="dist/index.js"&gt;&lt;/script&gt;
+
+  &lt;label&gt;Name: &lt;input id="NameInput" type="text"/&gt;&lt;/label&gt;
+  &lt;button onclick="addListElm()"&gt;Add&lt;/button&gt;
+  &lt;button onclick="clearAllList()"&gt;Clear&lt;/button&gt;
+  &lt;ul id="sample-list"&gt;&lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+
+            <pre><code class="language-ts index-ts">function addListElm() {
+  if (isValid()) {
+    let elmList = document.getElementById('sample-list') as HTMLElement;
+    let elmInput = document.getElementById('NameInput') as HTMLInputElement;
+    let elm = document.createElement('li');
+    let name = elmInput.value;
+    if (name === '') {
+      alert('Input a name.');
+      return;
+    }
+    elm.innerText = `Hello, ${name}!`;
+    elm.style.color = 'red';
+    elmList.appendChild(elm);
+  }
+}
+
+function clearAllList() {
+  if (isValid()) {
+    let elmList = document.getElementById('sample-list') as HTMLElement;
+    elmList.innerHTML = '';
+  }
+}
+
+function isValid() {
+  let elmList = document.getElementById('sample-list');
+  let elmInput = document.getElementById('NameInput');
+  return elmList !== null && elmInput !== null;
+}</code></pre>
+            <p>実装のポイントおよび注意点：</p>
+            <ul>
+              <li>
+                isValid メソッドにより，DOM 要素が存在するかの null
+                チェックを行っている．
+              </li>
+              <li>
+                しかしながら，getElementById で返る値の型は<code
+                  >HTMLElement | null</code
+                >型のため，仮に null チェックが終わっていたとしても，TypeScript
+                の型推論がそれを反映してくれるとは限らない． したがって，as
+                演算子により型を明示的に指定する必要がある．
+              </li>
+              <li>
+                上記の処理は，代案もあるのだが，それについては将来的に学ぶ．
+              </li>
+              <li>
+                内容を初期化する際は，innerHTML プロパティに空文字を指定した．
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>使用例 - tableタグ</h2>
+            <p>値の取得と設定の例として，次のような処理を実装してみよう．</p>
+            <div class="demo-box">
+              <script src="js/18_2.js"></script>
+
+              <label>Name: <input id="NameInfo" type="text" /></label>
+              <label>Hobby: <input id="HobbyInfo" type="text" /></label>
+              <button onclick="addTableRow()">Add</button>
+              <button onclick="clearAllData()">Clear</button>
+              <table id="sample-table">
+                <tr>
+                  <th>Name</th>
+                  <th>Hobby</th>
+                </tr>
+              </table>
+            </div>
+            <p>実装内容：</p>
+            <ul>
+              <li>
+                Add ボタンを押すと，Name および Hobby
+                に入力された内容を用いて作成した新しい行を追加する．
+              </li>
+              <li>
+                Clearボタンを押すと，table
+                の内容がヘッダー行を残して初期化される．
+              </li>
+              <li>Name は緑，Hobby は青で追加する．</li>
+              <li>Name や Hobby が未入力ならば，alert で入力を促す．</li>
+            </ul>
+            <p>これを実現するコードが以下である．</p>
+            <pre><code class="language-html">&lt;div class="demo-box"&gt;
+  &lt;script src="dist/index.js"&gt;&lt;/script&gt;
+
+  &lt;label&gt;Name: &lt;input id="NameInfo" type="text" /&gt;&lt;/label&gt;
+  &lt;label&gt;Hobby: &lt;input id="HobbyInfo" type="text" /&gt;&lt;/label&gt;
+  &lt;button onclick="addTableRow()"&gt;Add&lt;/button&gt;
+  &lt;button onclick="clearAllData()"&gt;Clear&lt;/button&gt;
+  &lt;table id="sample-table"&gt;
+    &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Hobby&lt;/th&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre>
+
+            <pre><code class="language-ts index-ts">function addTableRow() {
+  if (isValid()) {
+    let elmTable = document.getElementById('sample-table') as HTMLElement;
+    let elmNameInfo = document.getElementById('NameInfo') as HTMLInputElement;
+    let elmHobbyInfo = document.getElementById('HobbyInfo') as HTMLInputElement;
+    let name = elmNameInfo.value;
+    let hobby = elmHobbyInfo.value;
+    if (name === '' || hobby === '') {
+      alert('Input a name or a hobby.');
+      return;
+    }
+    let elmTr = document.createElement('tr');
+    let elmTdName = document.createElement('td');
+    let elmTdHobby = document.createElement('td');
+
+    elmTdName.innerText = name;
+    elmTdHobby.innerText = hobby;
+    elmTdName.style.color = 'green';
+    elmTdHobby.style.color = 'blue';
+
+    elmTr.appendChild(elmTdName);
+    elmTr.appendChild(elmTdHobby);
+
+    elmTable.appendChild(elmTr);
+  }
+}
+
+function clearAllData() {
+  if (isValid()) {
+    let elmTable = document.getElementById('sample-table') as HTMLElement;
+    elmTable.innerHTML = '<tr><th>Name</th><th>Hobby</th></tr>';
+  }
+}
+
+function isValid() {
+  let elmTable = document.getElementById('sample-table');
+  let elmNameInfo = document.getElementById('NameInfo');
+  let elmHobbyInfo = document.getElementById('HobbyInfo');
+  return elmTable !== null && elmNameInfo !== null && elmHobbyInfo !== null;
+}</code></pre>
+            <p>実装のポイントおよび注意点：</p>
+            <ul>
+              <li>
+                isValid メソッドに対する注意点は，list のときと同じである．
+              </li>
+              <li>
+                内容を初期化する際は，一旦 innerHTML
+                を初期化したあと，タグ構文の形で innerHTML
+                プロパティに再設定をする形ととった． （これ以外の方法もある）
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>応用例</h2>
+            <p>String クラスのメソッドとの組み合わせを紹介する．</p>
+            <div class="demo-box">
+              <script src="js/18_3.js"></script>
+
+              <label>Values(csv): <input id="MultInput" type="text" /></label>
+              <button onclick="addMultList()">Add</button>
+              <button onclick="clearAllMultList()">Clear</button>
+              <ul id="sample-mult-list"></ul>
+            </div>
+            <p>実装内容：</p>
+            <ul>
+              <li>
+                Add ボタンを押すと，Values(csv) に入力された内容を csv
+                形式のデータ（comma で区切られたデータ）と解釈して，
+                それぞれをリストとして追加する．
+              </li>
+              <li>
+                例えば，「apple,banana」と入力すると，「apple」の項目と「banana」の項目が表示される．
+              </li>
+              <li>データが空のときは alert で入力を促す．</li>
+            </ul>
+            <p>これを実現するコードが以下である．</p>
+            <pre><code class="language-html">&lt;div class="demo-box"&gt;
+  &lt;script src="dist/index.js"&gt;&lt;/script&gt;
+
+  &lt;label&gt;Values(csv): &lt;input id="MultInput" type="text" /&gt;&lt;/label&gt;
+  &lt;button onclick="addMultList()"&gt;Add&lt;/button&gt;
+  &lt;button onclick="clearAllMultList()"&gt;Clear&lt;/button&gt;
+  &lt;ul id="sample-mult-list"&gt;&lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+
+            <pre><code class="language-ts index-ts">function addMultList() {
+  if (isValid()) {
+    let elmMultList = document.getElementById('sample-mult-list') as HTMLElement;
+    let elmMultInput = document.getElementById('MultInput') as HTMLInputElement;
+
+    let multValues = elmMultInput.value;
+    let list = multValues.split(',');
+    if (multValues.trim() === '') {
+      alert('Please input values in CSV format.');
+      return;
+    }
+    let elmChildList = document.createElement('li');
+    elmChildList.innerText = '入力データ';
+    let elmOL = document.createElement('ol');
+    for (let data of list) {
+      let elmList = document.createElement('li');
+      elmList.innerText = data;
+      elmOL.appendChild(elmList);
+    }
+    elmChildList.append(elmOL);
+    elmMultList.appendChild(elmChildList);
+  }
+}
+
+function clearAllMultList() {
+  if (isValid()) {
+    let elmMultList = document.getElementById(
+      'sample-mult-list'
+    ) as HTMLElement;
+    elmMultList.innerHTML = '';
+  }
+}
+
+function isValid() {
+  let elmMultList = document.getElementById('sample-mult-list');
+  let elmMultInput = document.getElementById('MultInput');
+  return elmMultList !== null && elmMultInput !== null;
+}</code></pre>
+            <p>実装のポイント：</p>
+            <ul>
+              <li>
+                comma で分離する際は，<code>.split()</code>メソッドを用いた．
+              </li>
+              <li>データが空かの判定法には，<code>.trim()</code>メソッドを用いて空文字になるかどうかで判定した．</li>
+            </ul>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

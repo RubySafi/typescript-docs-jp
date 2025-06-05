@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>特殊型</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/special-type-table.css" />
+    <link rel="stylesheet" href="css/code-error-table.css" />
+    <link rel="stylesheet" href="css/diagonal-table.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.tag-table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.tag-table th:nth-child(1),
+      table.tag-table td:nth-child(1) {
+        max-width: 200px;
+        width: 20%;
+      }
+
+      /* 2列目（出力する値） */
+      table.tag-table th:nth-child(2),
+      table.tag-table td:nth-child(2) {
+        width: 80%;
+      }
+
+      .demo-box {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .demo-box table,
+      .demo-box th,
+      .demo-box td,
+      .demo-box tr {
+        border: none;
+        border-collapse: separate;
+        padding: 0;
+        margin: 0;
+      }
+
+      .math-definition {
+        background-color: #f3f3ff;
+        border-left: 4px solid #5b5bd6;
+        padding: 0.8em 1em;
+        margin: 1em 0;
+        border-radius: 4px;
+        font-style: normal;
+        font-size: 1em;
+        line-height: 1.6;
+      }
+      .math-label {
+        font-weight: bold;
+        color: #333;
+      }
+
+      .math-remark {
+        background-color: #f3f3ff;
+        padding: 0.8em 1em;
+        margin: 1em 0;
+        border-radius: 4px;
+        font-style: normal;
+        font-size: 1em;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>特殊型 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li>
+            <a href="19-ts-special-types.html">特殊型</a>
+          </li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="18-dom-add.html" class="prev">前</a> |
+        <a href="" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>Linter とコンパイラ：型注釈による構文・意味解析の流れ</h2>
+          <section>
+            <h3>構文解析の流れ</h3>
+            <p>
+              TTypeScriptは，型注釈という機能によって，静的解析が可能となった．
+              これにより，コードを実行する前の段階で，構文や型に関する誤りをある程度検出することができる．
+            </p>
+            <div
+              style="
+                background-color: #f0f8ff;
+                border: 1px solid #a0c4e3;
+                border-radius: 8px;
+                padding: 12px 16px;
+                margin: 1em 0;
+                font-size: 0.95em;
+                line-height: 1.6;
+              "
+            >
+              <ul style="list-style-type: none">
+                <li>
+                  <code>index.ts</code> – 開発（TypeScript
+                  によるソースファイル）
+                </li>
+                <li>&nbsp; ↓ ① Lint チェック（ESLint 等による構文確認）</li>
+                <li>
+                  <code>npx tsc</code> – コンパイルにより
+                  <code>index.js</code> を生成
+                </li>
+                <li>&nbsp; ↓ ② コンパイル時チェック（型や構文）</li>
+                <li><code>index.js</code> – JavaScript 実行ファイル</li>
+                <li>&nbsp; ↓ ③ 実行時チェック（Node.js やブラウザ）</li>
+                <li>リリース – 公開・本番運用へ</li>
+              </ul>
+            </div>
+            <p>
+              JavaScript
+              では，型注釈が無かったことから①や②のチェックをすることができず，すべて③の実行時チェックのみであったため，
+              大規模開発がやりにくい等と弊害があった．一方，TypeScript
+              では型注釈の概念を加えたことから，実行する前にミスに気が付けるようになった．
+              例えば，ある変数が「number
+              型」であると型注釈されている場合に，その変数に文字列を代入しようとすると，Linter
+              やコンパイラが警告を出してくれるのである．
+            </p>
+            <p>
+              ①でチェックしてくれる機構のことを
+              Linter，②でチェックしてくれる機構のことをコンパイラといい， Linter
+              およびコンパイラによる承認を経たのちに実行時チェックが行われるという流れである．
+            </p>
+            <div class="block-info">
+              <span class="icon"></span>
+              <div class="text-content">
+                <p>
+                  型注釈によりすべてのミスが防げるわけではない．例えば，開発者が
+                  number 型だと思っていたデータが実は string 型だったりすると，
+                  実行時にエラーが発生する．型注釈というのは，あくまで開発者が信じる型情報を
+                  Linter 等に教えるものなのであり，
+                  コード上に問題ないかどうかを検出するだけなのである．
+                </p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>セマンティクスとシンタックス</h3>
+            <p>
+              Linter
+              およびコンパイラの仕事を理解する上では，セマンティクス（意味論）とシンタックス（文法）の概念を認識するとよい．
+              シンタックスとは，「記号や文字列の並べ方に関する形式的な規則」のことである．一方，セマンティクスとは，「その並びに意味を付与するための解釈体系」を指す．
+            </p>
+            <p>
+              例えば，html
+              という言語では，「&lt;」という文字を出力するのに<code>&amp;lt;</code>を利用する．これがシンタックスに対応する．
+              そして，「&amp;lt;」という記号は「<strong style="color: red"
+                >l</strong
+              >ess <strong style="color: red">t</strong>han
+              の略語であり，「小さい」ということを表す」
+              というのがセマンティクスである．シンタックスだけで色々と文章を表現することは可能だが，セマンティクスがなければ
+              無味乾燥な文字列を並べるだけになり，人間にとっては文字列を覚えたり書いたりするのに苦労する．
+              単に「&lt;を出すには<code>&amp;lt;</code>と書きましょう」といわれるよりも，
+              「&lt;を出すには<code>&amp;lt;</code>と書きましょう．これは<strong
+                >less than</strong
+              >の略記です」といわれたほうが圧倒的にわかりやすいのである．
+            </p>
+            <h3>Linter およびコンパイラの仕事</h3>
+            <p>
+              例えば，<code>let val: number = 3;</code
+              >という式があったとしよう．この式のセマンティクスは，「
+              <code>val</code> は <code>number</code> 型の変数であり，3
+              を代入する」である．
+              しかしながら，この文は単なる文字列であり，実際に<code>val</code>という変数にメモリアドレスが割り当てられたわけではない．
+              値の代入が行われるのは，③の「プログラムを実行・検証をするステップ」である．
+              となると，Linter
+              やコンパイラが行う仕事というのは「シンタックスが正しいかどうか」だけである．
+            </p>
+            <h3>型注釈とセマンティクス</h3>
+            <p>
+              Linter
+              やコンパイラが行うシンタックスのチェックというもののうち，標準的なものとして
+            </p>
+            <ul>
+              <li>
+                関数記法，メソッドの使い方，括弧の対応チェックなどが正しいか判定する
+              </li>
+            </ul>
+            <p>
+              というものがある．例えば，<code>3+(4+5;</code>という式は，括弧が閉じていないので不正，のように判断するのである．
+              これらの明らかな構文ミスは TypeScript
+              が登場する前から解析可能であり，これらは IDE の仕事であった．
+            </p>
+            <p>
+              これに対して，型注釈という概念を導入したことにより，セマンティクス的な解析が可能になった．例えば，
+            </p>
+            <pre><code>let a: number = 10;
+a = "text";</code></pre>
+            <p>
+              のようなものは，JavaScript
+              では検出できなかった．これは，セマンティクス的には，「number
+              型の変数に，string
+              型の値を代入しようとしているため，意味論的に誤っている」と解釈できるのである．
+            </p>
+            <p>
+              このように，型注釈によって，変数にセマンティクス的な解釈を可能にし，その解釈のもとでおかしいものを弾くという処理を行うのが
+              Linter やコンパイラの仕事というわけである．
+            </p>
+            <p>
+              しかし，実際に number
+              型の変数に代入しているわけでも，メモリアドレスを用意しているわけでもない．
+              これはただの文字の羅列であり，それに対して意味付けを与えているだけである．実際に代入処理が行われるのは③の段階なのであって，
+              この段階ではシンタックスに則って解析作業を行っているだけである．
+            </p>
+          </section>
+
+          <section>
+            <h2>特殊型と代入可能性</h2>
+            <h3>特殊型</h3>
+            <p>
+              以下に，TypeScript
+              がもっている特殊型の一覧を列挙する．これらのシンタックスを解説するのが本ページの目的である．
+            </p>
+            <table class="special-type-table">
+              <colgroup>
+                <col class="table-col-name" />
+                <col class="table-col-semantics" />
+                <col class="table-col-explain" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>型</th>
+                  <th>セマンティクス</th>
+                  <th>説明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>any</td>
+                  <td>なんでもあり</td>
+                  <td>
+                    あらゆる値を代入・操作可能な型．型安全性の保証は失われる．
+                  </td>
+                </tr>
+                <tr>
+                  <td>unknown</td>
+                  <td>何かはわからない</td>
+                  <td>
+                    型が不明であることを明示する型．安全性は保証されるが、利用には絞り込みが必要．
+                  </td>
+                </tr>
+                <tr>
+                  <td>void</td>
+                  <td>値を返さない</td>
+                  <td>関数が何も値を返さないことを示す型．</td>
+                </tr>
+                <tr>
+                  <td>undefined</td>
+                  <td>未定義</td>
+                  <td>
+                    変数が初期化されていない状態，または未定義の戻り値を表す．
+                  </td>
+                </tr>
+                <tr>
+                  <td>null</td>
+                  <td>明示的な無</td>
+                  <td>
+                    値が「存在しない」ことを明示する．通常は明示的に代入される．
+                  </td>
+                </tr>
+                <tr>
+                  <td>never</td>
+                  <td>到達不能</td>
+                  <td>
+                    この値には決して到達してはならないことを示す型．常に到達不能である必要がある．
+                  </td>
+                </tr>
+              </tbody>
+              <p>
+                なお，コンパイルをしたときにエラーを吐くかどうかは設定に依存する．ここでは，<strong
+                  style="color: red"
+                  >strictモード</strong
+                >で コンパイルを行った結果についてまとめる．
+              </p>
+            </table>
+            <section>
+              <h3>コンパイラの流れ</h3>
+              <p>
+                コンパイラがソースコードをコンパイルするとき，概ね以下の流れで行われる：
+              </p>
+              <ol>
+                <li>
+                  構文解析：ソースコードを解析し，明示的な文法エラー（括弧がない等）などを検出する
+                </li>
+                <li>
+                  型推論：型が不明な変数等に対し，型の推測を行う．これは，型検査に利用される．
+                </li>
+                <li>型検査：代入可能性の検証等を行う</li>
+                <li>制御フロー解析：未初期化変数の使用チェック等を行う．</li>
+              </ol>
+              <p>
+                実際にはさらに詳細な解析ステップが存在するが，本ページの目的においては上記で十分である．
+              </p>
+            </section>
+            <section>
+              <h3>代入可能性</h3>
+              <p>
+                ここでは，以下のコードがコンパイルエラーを起こすかどうか利用することにより，代入可能性を検証した．
+              </p>
+              <pre><code>function hoge(x: T1) {
+    return;
+    const y: T2 = x;
+}</code></pre>
+              <p>
+                上記のコードは，型T1 の変数 x を，型T2 の変数 y
+                に代入しようとしている．代入文より前に return
+                文があるため，そのエリアは到達不能領域に
+                なっており，代入以外が原因で発生するエラーが排除できる．
+                制御フロー解析は return
+                文により分岐済みであるため，未初期化や実行時パスに起因するエラーは排除されるのである．
+                そのため，<strong>型検査</strong>のみによるエラーを検出できる．
+                （なお，strictモードを無効にしていると，エラーが抑制されてしまい，正しく検出できない）
+                このコードを利用して代入可能性を調べると以下のようになる．
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th class="diagonal-header">
+                      <span class="t1">T1</span>
+                      <span class="t2">T2</span>
+                    </th>
+                    <th>never</th>
+                    <th>undefined</th>
+                    <th>void</th>
+                    <th>null</th>
+                    <th>string</th>
+                    <th>"123"</th>
+                    <th>symbol</th>
+                    <th>{a: number}</th>
+                    <th>unknown</th>
+                    <th>any</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>never</th>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                  <tr>
+                    <th>undefined</th>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                  <tr>
+                    <th>void</th>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                  <tr>
+                    <th>null</th>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                  <tr>
+                    <th>string</th>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                  <tr>
+                    <th>"123"</th>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                  <tr>
+                    <th>symbol</th>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                  <tr>
+                    <th>{a: number}</th>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                  <tr>
+                    <th>unknown</th>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                  <tr>
+                    <th>any</th>
+                    <td>×</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                    <td>〇</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>
+                上記の結果から，TypeScript
+                の型システムにおける代入可能性の規則が以下のように整理できる：
+              </p>
+              <ul>
+                <li>never 型変数は，どんな型の変数にも代入可能である</li>
+                <li>
+                  どんな型の変数も，unknown 型および any 型に代入可能である
+                </li>
+                <li>any 型変数は，never 型変数以外に代入可能である</li>
+                <li>リテラル型 "123" は，string 型に代入可能である</li>
+              </ul>
+              <p>が採用されていることがわかる．</p>
+              <p>代入可能性を定式化した用語として，部分型という概念がある．</p>
+              <div class="math-box math-definition">
+                <span class="math-label">定義（部分型）．</span>
+                任意の型 T1 の変数が，型 T2 の変数に代入可能であるとき，T1 は T2
+                の<strong>部分型（subtype）</strong>や<strong>下位型</strong>，T2
+                は T1 の<strong>上位型（supertype）</strong>であると表現し，記号
+                T1 <span class="math-symbol">&lt;:</span> T2 で表す．
+              </div>
+
+              TypeScript
+              における「代入可能性（assignability）」は，単なる構文的な一致ではなく，<strong>部分型関係</strong>に基づく理論的整合性によって判断される．
+              <code>never</code> や
+              <code>unknown</code>
+              のような特殊型は，この理論の両極に位置し，安全性と柔軟性のトレードオフを反映している．
+            </section>
+            <section>
+              <h2>エラー検出</h2>
+              <section>
+                <h3>代入に関わる検証事項</h3>
+                <p>
+                  ここでは，コンパイラが内部で行っている検証処理を深く理解していく．それを前提に，どのようなコードがエラーとなるかを明確に捉えられるようになる．
+                  また，どのようにコンパイラがエラーを出力するかを理解することで，どのようにして特殊型のセマンティクス（意味論）を実現させているかがわかる．
+                </p>
+                <p>
+                  代入に関係しそうな処理は，以下のようにまとめることができる：
+                </p>
+                <ul>
+                  <li><code>const x: T = y;</code> 定数の宣言と初期化</li>
+                  <li><code>let x: T = y;</code> 変数の宣言と初期化</li>
+                  <li><code>x = y;</code> 既存の変数への代入</li>
+                  <li><code>f(x);</code> 関数の呼び出し</li>
+                  <li><code>x = f(y);</code> 関数の戻り値の代入</li>
+                  <li><code>return x;</code> 関数の戻り値の登録</li>
+                  <li><code>return;</code> 関数の戻り値の暗黙の登録</li>
+                  <li>
+                    <code>function hoge(x: T){}</code> 関数の宣言時の引数の型
+                  </li>
+                  <li>
+                    <code>function hoge() : T {}</code> 関数の return
+                    文省略時の処理
+                  </li>
+                </ul>
+                また，上記処理に関係するエラーメッセージは以下である．
+                <ul>
+                  <li>TS1155: 'const' declarations must be initialized.</li>
+                  <li>TS2322: Type XXX is not assignable to type YYY.</li>
+                  <li>
+                    TS2355: A function whose declared type is neither
+                    'undefined', 'void', nor 'any' must return a value.
+                  </li>
+                  <li>
+                    TS2366: Function lacks ending return statement and return
+                    type does not include 'undefined'.
+                  </li>
+                  <li>TS2454: Variable 'XXX' is used before being assigned.</li>
+                  <li>
+                    TS2534: A function returning 'never' cannot have a reachable
+                    end point.
+                  </li>
+                  <li>TS7005: Variable 'XXX' implicitly has an 'any' type.</li>
+                  <li>TS7006: Parameter 'XXX' implicitly has an 'any' type.</li>
+                </ul>
+                <p>
+                  以下において，上記処理およびエラーについて一つずつ見ていく．
+                </p>
+              </section>
+              <section>
+                <h3>初期化</h3>
+                <p>
+                  まず，TypeScript
+                  でいう「初期化」の意味を明確にするために，JavaScript
+                  における変数の性質を確認しておこう．
+                  JavaScriptでは，すべてのアクセス可能な変数にはかならずなんらかの値が格納されている．したがって，実行時に「初期化されていない」変数は存在しない．
+                  そこで，TypeScript
+                  における「初期化」という概念を定義しなければならない．
+                </p>
+                <div class="math-box math-definition">
+                  <span class="math-label">定義（初期化）．</span>
+                  変数 x が<strong>初期化されている</strong>とは，x
+                  に明示的な代入が行われていることが静的に証明可能である状態のことをいう．
+                  ただし，明示的に代入しようとしている変数が初期化されているかどうかは問わない．
+                </div>
+                <p>
+                  TypeScript
+                  では，型宣言を省略した場合，型推測という方法により文脈から型が何かを適切に推測を行う．この際，
+                  <code>let</code
+                  >を使用した際に暗黙の初期化が行われることがある．
+                </p>
+                <div class="math-box math-definition">
+                  <span class="math-label">性質（暗黙の初期化）．</span>
+                  変数 x を初期化せずに<code>let x;</code>や<code
+                    >let x: T;</code
+                  >のように宣言したとする．型推測により，x の型が undefined
+                  を値として許容する型と推測されたとき， 変数 x は値
+                  <code>undefined</code> で初期化されたとみなされる．
+                </div>
+              </section>
+              <section>
+                <h3>暗黙の any の禁止（TS7005, TS7006）</h3>
+                <p>
+                  strict
+                  モードでコンパイルする場合，型推測によって「any」型と判別される変数は禁止される．通常の変数に対しては
+                  TS7005 が，関数の引数に対しては TS7006 が出力される．
+                </p>
+
+                <table class="code-error-table">
+                  <colgroup>
+                    <col class="table-col-code" />
+                    <col class="table-col-error" />
+                    <col class="table-col-explain" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>コード</th>
+                      <th>エラー</th>
+                      <th>説明</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (x) {};</code></pre>
+                      </td>
+                      <td>TS7006</td>
+                      <td>
+                        関数の引数の型を省略すると any
+                        と推定されるためエラー(TS7006)．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (x) {
+  let y: number = Math.abs(x);
+};</code></pre>
+                      </td>
+                      <td>TS7006</td>
+                      <td>
+                        関数本体の使用文から x の型（例えば
+                        number）は推定可能に見えるが，引数の型推論はその使用箇所とは独立して行われるため，x
+                        は any と推定され，エラー（TS7006）．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>const hoge;</code></pre>
+                      </td>
+                      <td>TS1155<br />TS7005</td>
+                      <td>
+                        変数 hoge は暗黙の any
+                        型と推定されるためエラー(TS7005)．TS1155については次の項目で扱う．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge: any;
+const foo = hoge;</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        hoge の型が明示的に any とされているため，foo
+                        にもそれが伝播して any 型となるが，これは「暗黙の
+                        any」ではなく「明示的 any
+                        の派生型」であるため，エラーとはならない．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let x;</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        型推測は文脈依存で変数の型が後から推定されるが，このコードのみの場合は
+                        x は暗黙の undefined 型(≠暗黙の any)
+                        と推定されるため，エラーとならない．
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <section>
+                <h3>const は，宣言時に初期化しなければならない（TS1155）</h3>
+                <p>
+                  const 宣言は，文法上 初期化を必須とするため，<code
+                    >const x;</code
+                  >や<code>const x: number;</code
+                  >のような宣言は文法違反であり，宣言と同時に明示的な初期化をしなければならない．TS1155
+                  が出力される．
+                </p>
+                <table class="code-error-table">
+                  <colgroup>
+                    <col class="table-col-code" />
+                    <col class="table-col-error" />
+                    <col class="table-col-explain" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>コード</th>
+                      <th>エラー</th>
+                      <th>説明</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <pre><code>const x;</code></pre>
+                      </td>
+                      <td>TS1155<br />TS7005</td>
+                      <td>
+                        const 宣言であるにもかかわらず，変数 x
+                        に初期化が行われていないためエラー(TS1155)．なお，x
+                        は暗黙の any 認定なので同時に別のエラーも検出される．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>const x:any;</code></pre>
+                      </td>
+                      <td>TS1155</td>
+                      <td>
+                        any 型は undefined
+                        を許容されるので，暗黙の初期化が行われるが，const
+                        に対しては暗黙の初期化は認められずにエラー（TS1155）
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let x:any;<br>
+const y = x;</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        初期化時に y
+                        に明示的に初期化を行っているのでエラーとならない．
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <section>
+                <h3>未初期化の変数は使用できない（TS2454）</h3>
+                <p>
+                  初期化されていない変数は使用できない．その場合， TS2454
+                  が出力される．
+                  ここでいう「使用」とは，変数の値にアクセスし，それをもとに別の計算や評価を行う操作を指す．単なる代入はこれに含まれない．例えば，
+                </p>
+
+                <table class="code-error-table">
+                  <colgroup>
+                    <col class="table-col-code" />
+                    <col class="table-col-error" />
+                    <col class="table-col-explain" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>コード</th>
+                      <th>エラー</th>
+                      <th>説明</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <pre><code>let x:number;
+console.log(`${typeof x}`);</code></pre>
+                      </td>
+                      <td>TS2454</td>
+                      <td>
+                        変数 x を初期化前に使用しようとしたのでエラー(TS2454)．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let x: unknown;
+console.log(`${typeof x}`);</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        unknown 型は undefined を許容するので，x
+                        は暗黙の初期化が行われるためエラーとならない．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let x:number;<br>
+x = 10;</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        これは，x
+                        の値を使用していることには該当しない（値の設定）ため，エラーとならない．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let x:number;
+const y = x;</code></pre>
+                      </td>
+                      <td>TS2454</td>
+                      <td>
+                        x の値を使用して y
+                        に値を設定しようとしたので，エラー(TS2454)となる．一方，
+                        const
+                        の初期化エラー(TS1155)は発生しない．代入しようとしている変数が初期化されているかされていないかに関わらず，明示的な代入をしようとしているならば問題ない．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let x: number;
+let y = x;
+let z = y;</code></pre>
+                      </td>
+                      <td>TS2454</td>
+                      <td>
+                        「y = x」の部分において，未初期化の x の値を使用して y
+                        に値を設定しようとしたので，エラー(TS2454)となる．一方，
+                        「z = y」の部分ではエラーは発生しない．
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <section>
+                <h3>
+                  特定条件下でのreturn文の省略禁止(TS2355, TS2366, TS2534)
+                </h3>
+                <p>
+                  関数の戻り値の型が特定の型（any型,void型,undefined型など）と推測されない場合は，return
+                  文を使わずに関数から抜け出すことはできない．
+                  関数から制御が抜ける可能性のある地点は「end
+                  point」と呼ばれる．この end point に return
+                  文がまったく存在しない場合は TS2355，一部に欠けている場合は
+                  TS2366 が出力される． 関数の戻り値が never 型の場合，end point
+                  に return 文が存在しないと TS2534
+                  が出力される．以下に補足を示す．
+                </p>
+                <ul>
+                  <li>
+                    たとえば any | number
+                    のようなユニオン型でもエラーは出力されないため，上記の3つの型に限定された挙動ではない．
+                  </li>
+                  <li>
+                    「end
+                    point」とは，「その関数自身から見て到達可能と判断されるコード位置」を指す．詳細は下記の例を参照．
+                  </li>
+                </ul>
+
+                <table class="code-error-table">
+                  <colgroup>
+                    <col class="table-col-code" />
+                    <col class="table-col-error" />
+                    <col class="table-col-explain" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>コード</th>
+                      <th>エラー</th>
+                      <th>説明</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function() : void {}</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        void 型の場合，end point に return 文を省略できる．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (): never {};</code></pre>
+                      </td>
+                      <td>TS2534</td>
+                      <td>
+                        end point に return がない為，エラーとなる．never
+                        型に対して return 文が省略されていると TS2534
+                        が出力される．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (): never {
+  throw 'exception'; //関数を強制終了
+  //到達不能
+};</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        例外が発生して関数が確実に終了するため，end point
+                        自体が存在せず，エラーも出力されない．
+                        なお，「throw」は，「メッセージを投げて強制終了させる」という命令である．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function() : number {}</code></pre>
+                      </td>
+                      <td>TS2355</td>
+                      <td>
+                        戻り値の型は number 型なのに，return
+                        を使わずに関数から抜け出す場所がある．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (x: number): number {
+  if (x > 0) {
+    return 0;
+  }
+};</code></pre>
+                      </td>
+                      <td>TS2366</td>
+                      <td>x > 0 が偽のときに return 文がない．</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (): number {
+  if (true) {
+    return 0;
+  }
+  //到達不能
+};</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        if 文の後続は常に到達不能と静的に判断されるため，end
+                        point には含まれずエラーにはならない．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (): number {
+  if (Valid()) {
+    return 0;
+  }
+  //到達不能
+};
+let Valid = function () {
+  return true;
+};</code></pre>
+                      </td>
+                      <td>TS2366</td>
+                      <td>
+                        関数 Valid は常に true
+                        を返すため，問題ないように見えるが，関数内部のみの情報からは，Valid()
+                        が boolean 型という情報しかわからず，常に true
+                        であることは静的に保証されないため，
+                        上記到達不能領域は関数内部から見ると end point
+                        になってしまい，return
+                        文がないというエラーが出力される．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (): never {
+  if (Math.random() &lt; 2) {
+    throw 'exception';
+  }
+  //到達不能
+};
+</code></pre>
+                      </td>
+                      <td>TS2534</td>
+                      <td>
+                        Math.random()
+                        の内部ロジックまでは解析されず，Math.random() は number
+                        型の値としかみないため，「到達不能」領域は end point
+                        になりうる．never 型に対する end point の return
+                        文の省略は TS2534 を出力する．
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>
+                  上記エラーは，関数の戻り値に対する型注釈が明示されていなくても推論結果に基づいて発生する．
+                  型注釈がない場合も，戻り値型の推論を正しく理解することが，return
+                  文の必須性を判断するために重要である．
+                </p>
+              </section>
+              <section>
+                <h3>不正な代入は出来ない(TS2322)</h3>
+                <p>
+                  代入可能表で確認したように，T1 型の値が常に T2
+                  型の変数に代入できるとは限らない． T1 型の値が常に T2
+                  型の変数に代入できるとき，T1 は T2
+                  の部分型というのであった．部分型でないような代入行為を行うときに，
+                  エラー TS2322 が検出される．
+                </p>
+                <p>
+                  この不正な代入の禁止が，TypeScript
+                  のウリの一つであり，型を導入したことにより，比較的安全な
+                  coding を可能にしている．
+                  代入処理に関連する概念等は以下である：
+                </p>
+                <ul>
+                  <li>
+                    戻り値の省略された「<code>return;</code>」は，値「<code>undefined</code>」を暗黙に返す
+                  </li>
+                  <li><code>never</code>型は，初期化を行うとエラーになる</li>
+                  <li>
+                    関数の引数は，関数内部では初期化されているという仮定のもとで動作処理がなされる
+                  </li>
+                </ul>
+
+                <table class="code-error-table">
+                  <colgroup>
+                    <col class="table-col-code" />
+                    <col class="table-col-error" />
+                    <col class="table-col-explain" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>コード</th>
+                      <th>エラー</th>
+                      <th>説明</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <pre><code>let x: number = 0;
+let y: string = x;</code></pre>
+                      </td>
+                      <td>TS2322</td>
+                      <td>
+                        number型は，string型の部分型でないので y に x
+                        を代入するところでエラー(TS2322)．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let x = 0;
+let y: string = x;</code></pre>
+                      </td>
+                      <td>TS2322</td>
+                      <td>
+                        x は number
+                        型と型推測される．そして，number型は，string型の部分型でないので
+                        y に x を代入するところでエラー(TS2322)．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (): string {
+  let x: number = 1;
+  return x;
+};</code></pre>
+                      </td>
+                      <td>TS2322</td>
+                      <td>
+                        <code>return x;</code>の部分で，x
+                        の型が戻り値の型に代入可能かの判定が行われる．x は
+                        number
+                        型であり，string型の部分型でないのでエラーとなる(TS2322)．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (): string {
+  return;
+};</code></pre>
+                      </td>
+                      <td>TS2322</td>
+                      <td>
+                        <code>return;</code
+                        >と記述すると戻り値が省略され，値「undefined」が返されるものとして推論される．その結果，戻り値は「undefined
+                        型」とみなされるが，undefined 型は
+                        string型の部分型でないので代入エラー(TS2322)となる．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function () {
+  return;
+};
+let foo: undefined = hoge();</code></pre>
+                      </td>
+                      <td>TS2322</td>
+                      <td>
+                        関数 hoge
+                        は，<code>return;</code>により戻り値を省略しているため，値「undefined」が返されるとされる．
+                        関数 hoge
+                        は戻り値の型を指定していないため，その型は「void
+                        型」と型推測される． foo は undefined
+                        型と型注釈されているが，undefined 型は void
+                        型の部分型でないため，エラーとなる（TS2322）．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function () {
+  return undefined;
+};
+let foo: undefined = hoge();</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        関数 hoge は，<code>return undefined;</code
+                        >と明示的に値「undefined」を返している．
+                        そのことから，関数 hoge の戻り値は「undefined
+                        型」と型推測される． foo は undefined
+                        型と型注釈されているが，undefined 型は（当然）undefined
+                        型の部分型なので，エラーは出ない．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function () {};
+let foo: any = hoge();</code></pre>
+                      </td>
+                      <td>ない</td>
+                      <td>
+                        関数 hoge は，return
+                        文が省略されているため，値「undefined」を返し，戻り値の型が省略されているため，戻り値の型は
+                        void 型と推測される． foo は any
+                        型と型注釈されており，void 型は any
+                        型の部分型なので，エラーは出ない．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (): never {
+  return;
+};</code></pre>
+                      </td>
+                      <td>TS2322</td>
+                      <td>
+                        <code>return;</code
+                        >で戻り値が省略されているため，undefined を返し，型は
+                        undefined 型と推測される．一方，戻り値の型としては never
+                        型を指定してあり，undefined 型は never
+                        型の部分型でないため，エラーとなる（TS2322）．
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <pre><code>let hoge = function (x: never): never {
+  return x;
+};</code></pre>
+                      </td>
+                      <td>なし</td>
+                      <td>
+                        return で設定された値は never 型であり，never
+                        型は（当然）never
+                        型の部分型であるため，エラーとはならない．
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+            </section>
+            <section>
+              <h2>never 型に対する補足</h2>
+              <p>
+                never
+                型のセマンティクスは「到達不能」であるが，これを実現するためのシンタックスとして採用されたものは，
+              </p>
+              <ul>
+                <li>never 型変数は初期化不可能</li>
+                <li>
+                  never 型を戻り値とする関数は，end point で return
+                  文の省略が出来ない
+                </li>
+              </ul>
+              <p>
+                である．上記により，生きた状態でコードに到達することが不可能になる．しかし，下記コードはエラーを吐かない：
+              </p>
+              <pre><code>let hoge = function (x: never): never {
+  let y: never = x;
+  console.log(y);
+  return y;
+};
+let z: never;</code></pre>
+              <p>これは文法違反を起こしていないからである．</p>
+              <ul>
+                <li>never 型は，return 文を省略できない</li>
+                <li>
+                  関数の引数は，関数内部では初期化されていると仮定しているため，y
+                  に x を代入することや，console.log(y)はエラーとならない
+                </li>
+                <li>
+                  return で返しているのは never 型であり，それは never
+                  型の部分型であるため，戻り値の型とも矛盾しない
+                </li>
+                <li>
+                  never 型の変数を let
+                  で宣言するだけならば自由である．（使用しようとしたらエラーとなる）
+                </li>
+              </ul>
+              <p>
+                ただし，このようなコードは実行時に x: never を与えることができないため，実際に関数が呼び出されることはない．
+                そのため，never 型の変数に生きた状態で到達することもない．したがって，「到達不能」という
+                never 型のセマンティクスは，型レベルで保証されていると言える．
+              </p>
+            </section>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
