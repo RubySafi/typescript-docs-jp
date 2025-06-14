@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>null合体とオプショナルプロパティ</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/custom-table.css" />
+    <link rel="stylesheet" href="css/code-error-table.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.tag-table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.tag-table th:nth-child(1),
+      table.tag-table td:nth-child(1) {
+        max-width: 200px;
+        width: 20%;
+      }
+
+      /* 2列目（出力する値） */
+      table.tag-table th:nth-child(2),
+      table.tag-table td:nth-child(2) {
+        width: 80%;
+      }
+
+      .demo-box {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .demo-box table,
+      .demo-box th,
+      .demo-box td,
+      .demo-box tr {
+        border: none;
+        border-collapse: separate;
+        padding: 0;
+        margin: 0;
+      }
+
+      .math-definition {
+        background-color: #f3f3ff;
+        border-left: 4px solid #5b5bd6;
+        padding: 0.8em 1em;
+        margin: 1em 0;
+        border-radius: 4px;
+        font-style: normal;
+        font-size: 1em;
+        line-height: 1.6;
+      }
+      .math-label {
+        font-weight: bold;
+        color: #333;
+      }
+
+      .param-grid {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        column-gap: 1em;
+        row-gap: 0.2em;
+        font-size: 90%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>null合体とオプショナルプロパティ - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li>
+            <a href="23-ts-nullish-optional-prop.html"
+              >null合体とオプショナルプロパティ</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="22-ts-nullsafety-optional.html" class="prev">前</a> |
+        <a href="24-dom-input-advanced.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>null 合体</h2>
+          <p>
+            値が決まっていないときの初期値を設定したいときはよくあるが，その場合は例えば以下のようにして実装することができる：
+          </p>
+          <pre><code>let val = (name !== null) ? name : "未入力";</code></pre>
+          <p>
+            ここで，name は「string |
+            null」型であり，「値が定まっていない」状態を「null」と仮定している．
+          </p>
+          <p>
+            さて，三項演算子の時点で十分便利なのであるが，これをさらにコンパクトに書くことができる：
+          </p>
+          <pre><code>let val = name ?? "未入力";</code></pre>
+          <p>
+            上記式は，「name が null 相当（JavaScript における値 null または
+            undefined）ならば，初期値"未入力"を代入する」という構文である．
+          </p>
+          <h3>応用例</h3>
+          <p>null 合体は，オプショナルチェーン演算子と相性がよい．</p>
+          <pre><code>type Obj = {
+  name: string;
+  age: number;
+};
+let obj: Obj = {
+  name: 'Bob',
+  age: 23,
+};
+let obj0: Obj = {
+  name: 'Administrator',
+  age: 0,
+};
+
+let greet = function (obj: Obj | null) {
+  let name: string = obj?.name ?? obj0.name;
+  let age: number = obj?.age ?? obj0.age;
+  console.log(`Hello, ${name}! age: ${age}`);
+};
+
+greet(null);
+greet(obj);</code></pre>
+          <p>上記のように，未設定のときに初期値を簡潔に与えることができる．</p>
+        </section>
+        <section>
+          <h2>オプショナルプロパティ</h2>
+          <p>
+            オブジェクトの型において，プロパティ名に「?」を付与することができる．「?」を付与したプロパティの型は，「
+            T | undefined 型」となる．
+            「?」を付与したプロパティは，オブジェクトの宣言時において記述を省略することができ，省略した場合は
+            undefined が初期値として代入される．
+          </p>
+          <pre><code>type Obj = {
+  shape: string;
+  area?: number; // number | undefined 型
+  volume?: number; // number | undefined 型
+};
+let rect: Obj = {
+  shape: 'Rectangle',
+  area: 100,
+};
+
+console.log(rect.shape); // Rectangle
+console.log(rect.area); // 100
+console.log(rect.volume); // undefined</code></pre>
+<p>これにより，設定任意のプロパティを定義することができる．
+</p>
+          <h3>応用例</h3>
+          <p>オプショナルプロパティも，オプショナルチェーン演算子と相性がよい．</p>
+          <pre><code>type Obj = {
+  name: string;
+  deposit?: number;
+  cash: number;
+};
+let objA: Obj = {
+  name: 'Alice',
+  cash: 10000,
+};
+let objB: Obj = {
+  name: 'Bob',
+  deposit: 5000,
+  cash: 12000,
+};
+
+
+let chk = function (obj: Obj) {
+  let asset: number = obj.cash;
+  asset += obj?.deposit ?? 0;// obj.deposit が未設定ならば 0 を初期値として与える．
+  console.log(`Hello, ${obj.name}! Your asset is ${asset}.`);
+};
+
+chk(objA);
+chk(objB);</code></pre>
+        </section>
+        <section>
+          <h2>null 合体代入</h2>
+          <p>null 合体は，通常の複合代入演算子と同じような使い方をすることができる．具体的な構文としては，</p>
+          <pre><code>value ??= a;</code></pre>
+          <p>という用法であり，</p>
+          <pre><code>value = value ?? a;</code></pre>
+          <p>という表現（value が null 的なときのみ a を代入）と同じである．</p>
+          <p>使用例：</p>
+          <pre><code>type Obj = {
+  total: number;
+  apple?: number;
+  banana?: number;
+  orange?: number;
+};
+let Bob: Obj = {
+  total: 0,
+  banana: 5,
+  orange: 7,
+};
+
+let normalizer = function (obj: Obj) {
+  obj.banana ??= 0;//未設定なら0とする
+  obj.apple ??= 0;//未設定なら0とする
+  obj.orange ??= 0;//未設定なら0とする
+  obj.total = obj!.apple + obj!.banana + obj!.orange;//直前で初期値設定済みなので，非nullアサーションを利用
+};
+normalizer(Bob);
+console.log(`フルーツ合計：${Bob.total}個`);//12個と表示される</code></pre>
+<p>しかしながら，破壊的代入である上，明示的に初期値が代入されたところで型 narrowing が発生するわけでもないため，使いどころには注意が必要である．
+  一時的な初期値として利用するなどの案が考えられる．
+</p>
+<p>例：下記のように，内部処理ではオプショナルプロパティを排除したオブジェクトで管理するようにすれば，undefined チェックに関する処理を排除できる．</p>
+<pre><code>type Obj_back = {
+  name: string;
+  donation: number;
+};
+
+type Obj_front = {
+  name: string;
+  donation?: number;
+};
+let Bob: Obj_front = {
+  name: 'Bob',
+};
+
+let normalizer = function (obj: Obj_front): Obj_back {
+  const obj_normalized = {
+    name: obj.name,
+    donation: obj.donation ?? 0,
+  };
+  return obj_normalized;
+};
+let x = normalizer(Bob);</code></pre>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

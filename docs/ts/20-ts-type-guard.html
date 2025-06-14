@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>型ガード</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/custom-table.css" />
+    <link rel="stylesheet" href="css/code-error-table.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.tag-table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.tag-table th:nth-child(1),
+      table.tag-table td:nth-child(1) {
+        max-width: 200px;
+        width: 20%;
+      }
+
+      /* 2列目（出力する値） */
+      table.tag-table th:nth-child(2),
+      table.tag-table td:nth-child(2) {
+        width: 80%;
+      }
+
+      .demo-box {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .demo-box table,
+      .demo-box th,
+      .demo-box td,
+      .demo-box tr {
+        border: none;
+        border-collapse: separate;
+        padding: 0;
+        margin: 0;
+      }
+
+      .math-definition {
+        background-color: #f3f3ff;
+        border-left: 4px solid #5b5bd6;
+        padding: 0.8em 1em;
+        margin: 1em 0;
+        border-radius: 4px;
+        font-style: normal;
+        font-size: 1em;
+        line-height: 1.6;
+      }
+      .math-label {
+        font-weight: bold;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>型ガード - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li>
+            <a href="20-ts-type-guard.html">型ガード</a>
+          </li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="19-ts-special-types.html" class="prev">前</a> |
+        <a href="21-ts-discriminated-union.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>型ガードと narrowing</h2>
+          <p>
+            演算やメソッドを安全に実行できるかを確認することは，バグを防ぐうえで重要である．
+            TypeScript
+            は，型が導入されていることからある程度安全性が保証される．与えられた変数の型が不明な場合，場合分けをして処理を実行することになるが，
+            そのような場合分けを，簡潔かつ安全に記述できるようにするのが「型ガード」という機能である．
+          </p>
+          <p>
+            簡単な型の場合は，typeof
+            演算子を利用して型の場合分けを可能にするが，複雑な型の場合は，カスタムする必要がある．
+            本ページでは，これらの概念について学ぶ．
+          </p>
+          <section>
+            <h2>型と処理</h2>
+            <section>
+              <h3>typeof 演算子</h3>
+              <p>
+                typeof 演算子はもともと JavaScript に存在するため，TypeScript
+                においてもその挙動は「JavaScript
+                で実行された場合の結果」に準じている．
+              </p>
+              <p>
+                <code>let x = 0;</code>としよう．例えば，JavaScript において，
+              </p>
+              <code> console.log(typeof x); </code>
+              <p>
+                は文字列の<code>number</code>が出力される．したがって，TypeScript
+                <code>typeof x === "number"</code>は<code>true</code>になる．
+              </p>
+              <p>
+                JavaScript では型がないため，値のみに依存して typeof
+                演算子は結果を返すことになる．すなわち，typeof
+                演算子は値を引数にとり，結果を文字列で返す関数になる．
+                そのことから，TypeScript では，typeof
+                演算子に変数を渡すとき，その変数は初期化済みである必要がある．つまり，
+                typeof
+                は変数そのものではなく，その中身（値）に対して適用される点に注意が必要である．
+              </p>
+              <p>
+                以下は，TypeScript における初期化済みの変数に対し，typeof
+                演算子が JavaScript
+                においてどのような値を返すのかを示した表である．
+              </p>
+              <table class="custom-table">
+                <colgroup>
+                  <col class="table-col-20" />
+                  <col class="table-col-30" />
+                  <col class="table-col-50" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th><code>let x;</code>の型</th>
+                    <th>JavaScript における<code>typeof x</code>の結果</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>number</td>
+                    <td>"number"</td>
+                    <td>任意の number 型の値は "number" を返す．</td>
+                  </tr>
+                  <tr>
+                    <td>string</td>
+                    <td>"string"</td>
+                    <td>任意の string 型の値は "string" を返す．</td>
+                  </tr>
+                  <tr>
+                    <td>boolean</td>
+                    <td>"boolean"</td>
+                    <td>
+                      任意の boolean 型の値（true, false のみ）は "boolean"
+                      を返す．
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>bigint</td>
+                    <td>"bigint"</td>
+                    <td>任意の bigint 型の値は "bigint" を返す．</td>
+                  </tr>
+                  <tr>
+                    <td>symbol</td>
+                    <td>"symbol"</td>
+                    <td>任意の symbol 型の値は "symbol" を返す．</td>
+                  </tr>
+                  <tr>
+                    <td>null</td>
+                    <td>"object"</td>
+                    <td>任意の null 型の値（null のみ）は "object" を返す．</td>
+                  </tr>
+                  <tr>
+                    <td>undefined</td>
+                    <td>"undefined"</td>
+                    <td>
+                      任意の undefined 型の値（undefined のみ）は "undefined"
+                      を返す<sup>*1</sup>．
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>void</td>
+                    <td>"undefined"</td>
+                    <td>
+                      任意の void 型の値（undefined のみ）は "undefined"
+                      を返す<sup>*1</sup>．
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>never</td>
+                    <td>-</td>
+                    <td>
+                      never 型は初期化不可能なので，文法上取得不可能である．
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>T1 => T2</td>
+                    <td>"function"</td>
+                    <td>
+                      関数ということしか分からず，引数の型も戻り値の型も不明である．
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>その他のオブジェクト</td>
+                    <td>"object"</td>
+                    <td>詳細は不明である．</td>
+                  </tr>
+                  <tr>
+                    <td>number | string</td>
+                    <td>値に依存する</td>
+                    <td>
+                      typeof
+                      は型ではなく値に依存するため，格納されている値に依存して変化する．
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>
+                <sup>*1</sup>：typeof 演算子は JavaScript
+                の値に応じて文字列を返すのであって，型に対して値を返すわけではない．
+                TypeScript では undefined 型と void 型を区別するが，JavaScript
+                ではいずれも undefined という同じ値になる．そのため typeof
+                演算子では，どちらの型であるかを区別できない．
+              </p>
+            </section>
+            <section>
+              <h3>型に関するエラーの例（TS2322, TS2339, TS2345）</h3>
+              <p>
+                TypeScript
+                では，すべての代入構文において代入可能性を検討し，不正ならば
+                TS2322 や TS2345 エラーを出す． 変数への代入違反は
+                TS2322エラー，関数への不正な引数は TS2345 エラーとなる．
+                また，オブジェクトに対してメソッドやプロパティを利用しようとするとき，可能かどうかを検討して不可能なら
+                TS2339 エラーを出す．
+              </p>
+
+              <table class="code-error-table">
+                <colgroup>
+                  <col class="table-col-code" />
+                  <col class="table-col-error" />
+                  <col class="table-col-explain" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>コード</th>
+                    <th>エラー</th>
+                    <th>説明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <pre><code>let hoge: number;
+let y:string = "123";
+hoge = y;</code></pre>
+                    </td>
+                    <td>TS2322</td>
+                    <td>
+                      hoge は number 型，y は string 型であり，hoge に y
+                      を代入しようとしている．string 型は number
+                      型の部分型でないためエラー(TS2322)．
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <pre><code>let hoge: number = 123;
+console.log(hoge.length);</code></pre>
+                    </td>
+                    <td>TS2339</td>
+                    <td>
+                      hoge は number 型であり，number 型は length
+                      というプロパティを持たないのでエラー(TS2339)．
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <pre><code>let hoge = function (x:string) {};
+let y:number = 12;
+hoge(y);
+                        </code></pre>
+                    </td>
+                    <td>TS2345</td>
+                    <td>
+                      hoge の引数は string 型であり，渡しているのは number
+                      型．number 型は string
+                      型の部分型でないためエラー(TS2345)．
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <pre><code>let hoge = function (x: string | number) {
+  if (isStr(x)) {
+    console.log(x.length);
+  }
+};
+
+let isStr = function (x: string | number): boolean {
+  return typeof x === 'string';
+};</code></pre>
+                    </td>
+                    <td>TS2339</td>
+                    <td>
+                      isStr は x が string 型かどうかを boolean
+                      で返すが，TypeScript は関数の内部まで見ないため，仮に常に
+                      true を返す関数だとしても，コンパイラにはわからない．
+                      つまり，x の型は string | number
+                      型のままであると推測される．そのため，x.length のような
+                      string
+                      特有のプロパティにはアクセスできず，エラー(TS2339)となる．
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>
+                プログラムの実行時において，もしも想定外の型が渡されていた場合に思わぬバグが発生しうる．
+                そのため，コンパイル時点で適切に型をチェックすることで，それを回避することが可能となる．
+                JavaScript とは異なり，TypeScript
+                には型があるため，静的解釈可能な範囲においてエラーを出してくれるのである．
+                この型検査を補助する技法として，「型
+                narrowing」や「型ガード」という手法があり，以下で詳しく学んでいく．
+              </p>
+            </section>
+          </section>
+          <section>
+            <h2>コンパイラの挙動</h2>
+            <h3>型情報の管理</h3>
+            <p>
+              TypeScript
+              は他の静的型付き言語と異なり，変数に型が一義的に固定されるとは限らない．
+              このため，変数に付与する型は「型」ではなく「型注釈」と呼ばれている．
+              型 narrowing
+              や型ガードを正確に理解するためには，コンパイラが変数の型をどのように管理しているかを把握しておく必要がある．
+              その際，変数のスコープ（その変数が定義されている局所領域）を意識するとよい．
+            </p>
+            <p>
+              TypeScript
+              では，変数や値の型については，単純に説明すると以下のように管理されている．
+            </p>
+            <ul>
+              <li>
+                変数が定義されたとき，その変数をシステムに登録（Binding）し，宣言時の型情報を型推測により登録する．
+              </li>
+              <li>
+                各スコープ内で，その変数に対して型推測に基づく「局所的な型」が与えられる．
+              </li>
+              <li>
+                より正確にいうと，各スコープに対して，そのスコープ内の変数および局所的な型をスコープに登録する．
+              </li>
+              <li>
+                局所的な型は，宣言時の型の部分型になっているように決められる．
+              </li>
+              <li>
+                変数から値を取り出して使用する際，その値の型は型推測により，その変数の局所的な型の部分型として決められる．
+              </li>
+              <li>
+                リテラルを直接記載する場合，その値の型も型推測により決められる．
+              </li>
+            </ul>
+            <p>
+              簡単にまとめると「宣言時の型」と，「使用時の型」の 2
+              つの型が存在し，後者はスコープ毎に異なることがあるのである．使用時の型は，
+              使用時に型推論される「そのスコープにおける具体的な型」のことであり，以下「局所的な型」と呼ぶことにする．
+              宣言時の型は「型注釈」を行うことにより，developer
+              が管理することができた． 局所的な型を developer
+              が管理する方法として「型 narrowing」および「型ガード」がある．
+              明示的に使用時の型をコンパイラに教えることにより，型推測の曖昧さが排除でき，よりユーザーの考え通りの
+              coding を可能にするのである．
+            </p>
+            <p>
+              以下の例では，宣言時の型とスコープに応じた局所的な型の違いを，具体的なコードとともに段階的に観察していく．
+            </p>
+            <p>例１：</p>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-05" />
+                <col class="table-col-20" />
+                <col class="table-col-10" />
+                <col class="table-col-10" />
+                <col class="table-col-10" />
+                <col class="table-col-30" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th rowspan="2">行</th>
+                  <th rowspan="2">code</th>
+                  <th colspan="2">aの型</th>
+                  <th>bの型</th>
+                  <th rowspan="2">説明</th>
+                </tr>
+                <tr>
+                  <th>宣言時</th>
+                  <th>局所的な型</th>
+                  <th>宣言時</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>let a: number | string;</td>
+                  <td>number | string</td>
+                  <td>number | string</td>
+                  <td>-</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>a = 123;</td>
+                  <td>number | string</td>
+                  <td>number</td>
+                  <td>-</td>
+                  <td>静的に number 型だと判断される</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>console.log(Math.abs(a));</td>
+                  <td>number | string</td>
+                  <td>number</td>
+                  <td>-</td>
+                  <td>a は局所的に number なのでエラーなし</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>a = '123';</td>
+                  <td>number | string</td>
+                  <td>string</td>
+                  <td>-</td>
+                  <td>静的に a は string 型だと判断される</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>console.log(a.length);</td>
+                  <td>number | string</td>
+                  <td>string</td>
+                  <td>-</td>
+                  <td>a は局所的に string なのでエラーなし</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>let b = a;</td>
+                  <td>number | string</td>
+                  <td>string</td>
+                  <td>string</td>
+                  <td>
+                    b の宣言時の型は string 型になる．（a の宣言時の型ではない）
+                  </td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>let hoge = function (x: string) {};</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>string 型を引数に渡せる関数を定義</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>hoge(a);</td>
+                  <td>number | string</td>
+                  <td>string</td>
+                  <td></td>
+                  <td>a は局所的に string 型なのでエラーは発生しない</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td>b = 123;</td>
+                  <td></td>
+                  <td></td>
+                  <td>string</td>
+                  <td>
+                    b は宣言時の型が string 型なので<strong style="color: red"
+                      >エラー（TS2322）</strong
+                    ><br />局所的な型は宣言時の型の部分型になるため，number
+                    型に変更されない
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              上記の例を見ればわかるように，変数 a は，宣言時の型は number |
+              string 型なのだが，実際に a
+              を使用するときの型が状況によって変化しているのがわかる．
+              静的に判断可能な場合は，最良の型に型推測される．
+            </p>
+            <p>例２：</p>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-05" />
+                <col class="table-col-20" />
+                <col class="table-col-10" />
+                <col class="table-col-10" />
+                <col class="table-col-30" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th rowspan="2">行</th>
+                  <th rowspan="2">code</th>
+                  <th colspan="2">aの型</th>
+                  <th rowspan="2">説明</th>
+                </tr>
+                <tr>
+                  <th>宣言時</th>
+                  <th>局所的な型</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>let a: number | string;</td>
+                  <td>number | string</td>
+                  <td>number | string</td>
+                  <td>a を number | string 型として宣言</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>a = 123;</td>
+                  <td>number | string</td>
+                  <td>number</td>
+                  <td>静的に number 型だと判断される</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>if (typeof a === 'number') &lbrace;</td>
+                  <td>number | string</td>
+                  <td>number</td>
+                  <td>
+                    この条件が真になるときは，a の型が number
+                    型に確定すると静的に判断できる
+                  </td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;console.log(Math.abs(a));</td>
+                  <td>number | string</td>
+                  <td>number</td>
+                  <td>a は number 型なのでエラーは起こらない</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>&rbrace; else &lbrace;</td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    「a = 123;」によって，if 突入前の a の型は number
+                    型ガードは，ユニオン型になっていなくても部分型に対する条件絞込みという意味で使用することができる．
+                    その条件下において，number
+                    型の可能性が排除されたものが，この else ブロックである．
+                  </td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;console.log(a.length);</td>
+                  <td>number | string</td>
+                  <td>never</td>
+                  <td>
+                    その結果，この else ブロック内では never
+                    型と推測された．never 型は length プロパティ
+                    をもたないため，<strong style="color: red"
+                      >エラー（TS2339）</strong
+                    >となる．
+                  </td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>&rbrace;</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              このように，変数の型というのは一種のツリー構造を成しているといえる．
+            </p>
+            <p>例３：</p>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-05" />
+                <col class="table-col-20" />
+                <col class="table-col-10" />
+                <col class="table-col-10" />
+                <col class="table-col-30" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th rowspan="2">行</th>
+                  <th rowspan="2">code</th>
+                  <th colspan="2">aの型</th>
+                  <th rowspan="2">説明</th>
+                </tr>
+                <tr>
+                  <th>宣言時</th>
+                  <th>局所的な型</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>let a: number | string | null ;</td>
+                  <td>number | string | null</td>
+                  <td>number | string| null</td>
+                  <td>a を number | string | null 型として宣言</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>a = Math.random() &lt; 10 ? 123 : '123';</td>
+                  <td>number | string | null</td>
+                  <td>number | string</td>
+                  <td>
+                    静的解釈では関数構造まで追跡しないため，コンパイラは「
+                    Math.random()」の実行結果については，戻り値の型（number
+                    型）のみを参照する． そのため，a は number | string
+                    型と推測される．
+                  </td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>if (typeof a === 'number') &lbrace;</td>
+                  <td>number | string</td>
+                  <td>number</td>
+                  <td>
+                    この条件が真になるときは，a の型が number
+                    型に確定すると静的に判断できる
+                  </td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;console.log(Math.abs(a));</td>
+                  <td>number | string</td>
+                  <td>number</td>
+                  <td>a は number 型なのでエラーは起こらない</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>&rbrace; else &lbrace;</td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    if 突入前は，a の型は number | string 型であるため，else
+                    ブロック内では「a は number
+                    が型である」という条件のもと「number
+                    型以外」が型推測される．
+                  </td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;console.log(a.length);</td>
+                  <td>number | string</td>
+                  <td>string</td>
+                  <td>
+                    その結果，この else ブロック内では string 型と推測された．
+                  </td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>&rbrace;</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            <p>このように，コンパイラが行っている型推測とは</p>
+            <ul>
+              <li>静的な情報のみから最適な型を都度判断する．</li>
+              <li>関数を利用する際は，戻り値の型のみを参照する．</li>
+              <li>
+                型推測は起こりうる可能性をすべて含んだ型になり，絶対に起こりえない型は候補に含めない．
+              </li>
+              <li>すべての候補が消えたときの型が never 型になる．</li>
+            </ul>
+            <p>という規則で行っていることがわかる．</p>
+          </section>
+        </section>
+        <section>
+          <h2>型 narrowing</h2>
+          <p>
+            コンパイラの型推論結果を developer
+            が明示的に誘導・活用するテクニックの一つとして，「型
+            narrowing」と呼ばれるものがある．それは，次の型推測の仕様を利用している．
+          </p>
+          <div class="math-box math-definition">
+            <p></p>
+            <pre><code>if (typeof x === 'T'){
+    //if ブロック
+} else {
+    //else ブロック
+}</code></pre>
+            <p>
+              という文を書いた場合，「if ブロック」および「else
+              ブロック」における型推測では「<code>typeof x === 'T'</code
+              >」の情報が利用される．特に， 一般に else
+              ブロックにおける変数の型は，if
+              条件が偽であることから，より狭い型に絞られる．
+            </p>
+          </div>
+          <p>典型的な利用方法は，x がユニオン型のときである．</p>
+          <p>例１：</p>
+          <pre><code>let hoge = function (x: string | number | boolean) {
+  console.log(x); //x は string | number | boolean 型になる
+  if (typeof x === 'string') {
+    console.log(x); // x は string 型になる
+  } else {
+    console.log(x); // x は number | boolean 型になる
+  }
+  console.log(x); //x は string | number | boolean 型になる
+};</code></pre>
+          <p>例２：</p>
+          <pre><code>let hoge = function (x: 'A' | 'B' | number | true) {
+  console.log(x); //x は 'A' | 'B' | number | true 型になる
+  if (typeof x === 'string') {
+    console.log(x); // x は 'A' | 'B' 型になる
+  } else {
+    console.log(x); // x は number | true 型になる
+  }
+};</code></pre>
+          <p>
+            上記例では，条件式「<code>typeof x === 'string'</code
+            >」が真になる型として，リテラル型 <code>'A'</code> および
+            <code>'B'</code> が挙げられることから，型推測により if
+            ブロック内部では <code>'A' | 'B'</code> 型として扱われるのである．
+          </p>
+          <p>
+            例３：typeof
+            演算子を使わなくても，静的にコンパイラが型を絞り込めるのならば問題ない．
+          </p>
+          <pre><code>let hoge = function (x: 'A' | 'B' | 'C' | number | true) {
+  console.log(x); //x は 'A' | 'B' | number | true 型になる
+  if ((x === 'A') || (x === 'B')) {
+    console.log(x); // x はユニオン型 'A' | 'B' になる
+  } else {
+    console.log(x); // x は 'C' | number | true 型になる
+  }
+};</code></pre>
+          <p>
+            このように，「typeof」を明示的に書かなくとも，条件式の情報からコンパイラが特定のリテラル型に絞れる場合は，narrowing
+            は自動的に適用される．
+          </p>
+          <p>
+            例４：型が有限個の値しか取りえない場合は，適切に差を取った型になる．
+          </p>
+          <pre><code>let hoge = function (x: boolean) {
+  if (x === true) {
+    console.log(x);
+    // x はリテラル型 true になる
+  } else {
+    console.log(x);
+    // x はリテラル型 false になる
+  }
+};</code></pre>
+          <p>
+            例５：値の候補が無数にある場合は，型推測では「型の引き算」は行われない．（型
+            narrowing は行われない）
+          </p>
+          <pre><code>let hoge = function (x: number) {
+  if (x === 0) {
+    console.log(x);
+    // x はリテラル型 0 になる
+  } else {
+    console.log(x);
+    // x は number 型になる
+  }
+};</code></pre>
+          <p>
+            「number」型のように無数の値を取りうる型では，単一の値（例：0）を除外しても，残りが無数にあるため
+            narrow
+            にはなりにくい．これは型システムが「残りの全ての数値」を明示的に表現できないためである．
+          </p>
+        </section>
+        <section>
+          <h2>型ガード</h2>
+          <p>
+            型 narrowing の通常の方法では typeof
+            演算子でできる簡単な判別しかできなかった． typeof
+            演算子を使わなくても型 narrowing が行われることはある．
+            しかしこれらの方法は，型推論に全面的に依存するため，仕様を理解していないと予期しない挙動を引き起こすことがある．
+          </p>
+          <p>
+            下記例では，x の型が状況によってコロコロ変わる典型的な例である．
+          </p>
+          <pre><code>let hoge = function (x: void | undefined) {
+  console.log(x);// x は void | undefined 型
+  if (typeof x === 'undefined') {
+    console.log(x); // x は型推測により undefined 型になる．
+  } else {
+    console.log(x); // x は never 型になる
+  }
+};</code></pre>
+          <p>
+            TypeScript 上では void | undefined
+            型だが，実行時に格納されている値は undefined であり，typeof
+            演算子ではともに 'undefined' を返すため， 上記 code では void と
+            undefined を区別することができない．
+          </p>
+          <p>
+            typeof
+            演算子を使っても，ある程度型情報をコンパイラに伝えることはできるのだが，上記の例のように，typeof
+            演算子は実行時に代入されている値に付随して値が決定される関数なため，異なる型が同じ値を返すことがある．
+            そのため，明示的にコンパイラに型を知らせる方法があり，それが型ガードと呼ばれる方法である．
+          </p>
+          <div class="math-box math-definition">
+            <p>
+              ある変数が型 T であるかどうかをコンパイラに伝えたいときを考える．
+              このとき，型 T
+              かどうかの判定ロジックを用いた関数を以下のように用意すればよい．
+            </p>
+            <ul>
+              <li>戻り値の型は boolean (true または false) とする．</li>
+              <li>
+                関数宣言において，戻り値の型注釈は（boolean ではなく）<code
+                  >x is T</code
+                >を書く．
+              </li>
+              <li>
+                上記 x
+                は，関数の引数の一つであり，型チェックをする対象となる変数である．
+              </li>
+            </ul>
+          </div>
+          <p>
+            例：string
+            型かどうかを判定したいという目的を考えよう．以下の例では，戻り値の型注釈を変えたらどうなるかを示している．
+            戻り値の型注釈が<code>boolean</code>なときは，コンパイラはなんらかの
+            boolean 型として見ない．一方，
+            <code>x is string</code>という型注釈にした場合，引数に渡した x は
+            true のときに string 型，という情報を渡すことになる．
+          </p>
+          <pre><code>
+let isString = function (x: string | number): x is string {
+  let flag: boolean = typeof x === 'string';
+  return flag;
+};
+
+let hoge(x: string | number){
+  console.log(x);// x は string | number 型
+  if (isString(x)) {
+    console.log(x);// x は string 型
+  }
+  else {
+    console.log(x);// x は number 型
+  }
+  console.log(x);// x は string | number 型
+}</code></pre>
+          <pre><code>let isStringWOtypeGuard = function (x: string | number): boolean {
+  let flag: boolean = typeof x === 'string';
+  return flag;
+};
+
+let hoge(x: string | number){
+  console.log(x);// x は string | number 型
+
+  if (isStringWOtypeGuard(x)) {
+    console.log(x);// x は string | number 型
+  }
+  else {
+    console.log(x);// x は string | number 型
+  }
+}
+</code></pre>
+          <p>
+            上記のように，型ガードというのはユーザーが定義した型判定ロジックにより，明示的に局所的な型をコントロールする方法である．
+            型ガードを利用すれば，通常の型 narrowing
+            では分離できないような複雑な型判定を，型ガードによって明示的に指定できる．
+          </p>
+          <p>
+            例２：以下は，void と undefined
+            の分離挙動の実験である．実用性はないが，型ガードや型推測の仕様を理解するのに役に立つ．void
+            型と undefined 型の特徴として，次があった．
+          </p>
+          <ul>
+            <li>これらは異なる型である</li>
+            <li>
+              許容できる値はともに値 undefined
+              のみである（値は同じなので，所属している型で判断をすることになる）
+            </li>
+            <li>
+              void 型は undefined 型の(真の)上位型である（undefined 型は void
+              型に代入可能．逆は不可）
+            </li>
+          </ul>
+          <p>
+            このことから，変数 <code>x</code> が
+            <code>undefined | void</code> 型であるとき，void 型と undefined
+            型を分離するには工夫が必要である．
+          </p>
+          <p>（Case 1：void 判定を優先）</p>
+          <pre><code>let hoge = function (x: void | undefined) {
+  if (isVoid(x)) {
+    console.log(x); //void は undefined の上位型なので，x は void | undefined と推測される
+  } else {
+    console.log(x); //x は never 型
+  }
+};
+
+let isVoid = function (x: void | undefined): x is void {
+  return true; //実験のため，常に true を返すことにする
+};</code></pre>
+          <p>（Case 2：undefined 判定を優先）</p>
+          <pre><code>let hoge = function (x: void | undefined) {
+  if (isUndefined(x)) {
+    console.log(x); //x は undefined 型になる．
+  } else {
+    console.log(x); //x は void 型になる．
+  }
+};
+
+let isUndefined = function (x: void | undefined): x is undefined {
+  return true; //実験のため，常に true を返すことにする
+};</code></pre>
+          <p>
+            上記のことより，分離は可能だが，undefined
+            判定ロジックを先に行わなければならないことがわかる．
+          </p>
+        </section>
+        <section>
+          <h2>補遺：型ガードについて</h2>
+          <h3>様々な型注釈の利用</h3>
+          <p>
+            型ガードを利用すれば，typeof
+            演算子等で判定不能な関数を，開発者が望む任意の条件によって型を絞り込むことができる．
+            特に，関数の型やユニオン型の一部に属する値を対象にした高度な判定が可能である．
+            例えば，関数は typeof 演算子では 'function'
+            としか出ないため，引数の個数や型などがわからない．
+            しかし型判定がカスタムできるならば，それらの困難が解消される．
+          </p>
+          <pre><code>let hoge = function (f: Function) {
+  if (isGoodFunction(f)) {
+    console.log(f(10)); //f は number -> number という関数であることが確定するので，f(10)と記述できる．
+  } else {
+    console.log(f); //その他
+  }
+};
+
+let isGoodFunction = function (x: Function): x is (a: number) => number {
+  return true; //実験のため，常に true を返すことにする
+};</code></pre>
+          <p>
+            上の例では，関数型「Function」に対して「引数が number 型で戻り値も
+            number 型である」という特性をカスタム判定で示している．
+          </p>
+          <h3>型エイリアスの利用</h3>
+          <p>型エイリアスを利用して判定させる型の種類も増やすことができる．</p>
+          <pre><code>type color1 = 'red' | 'blue' | 'green';
+type color2 = 'black' | 'white';
+type myColor = color1 | color2;
+
+let hoge = function (x: myColor) {
+  if (isColor1(x)) {
+    console.log(x); // x は color1 型
+  } else {
+    console.log(x); // x は 'black' | 'white' 型
+  }
+};
+
+let isColor1 = function (x: myColor): x is color1 {
+  return true; //実験のため，常に true を返すこととする．
+};</code></pre>
+          <p>
+            ユニオン型の一部だけを抜き出す形で条件判定することで，元のユニオンをより細分化しながら処理することが可能となる．
+            この技法は，タグ付きユニオン（discriminated
+            union）との組み合わせでも頻繁に用いられる．
+          </p>
+          <h3>部分型への絞込み</h3>
+          <p>
+            型ガードは，ユニオン型になっていなくても部分型に対する条件絞込みという意味で使用することができる．
+            例えば，先ほど述べた「undefined/void
+            分離ロジック」については，もともとの型が undefined | void
+            型であったが， void 型は undefined
+            型の上位型であることから，以下のように書くこともできる．
+          </p>
+          <pre><code>let hoge = function (x: void) {
+  if (isUndefined(x)) {
+    console.log(x); //x は undefined 型
+  } else {
+    console.log(x); //x は void 型
+  }
+};
+
+let isUndefined = function (x: void | undefined): x is undefined {
+  return true; //実験のため，常に true を返すことにする
+};</code></pre>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                型ガードについては，typeof 演算子やカスタムの他，<code>Array.isArray()</code>のような標準関数による型ガードも利用すると，より有用である．
+                すなわち，型ガードは TypeScript の独自機能ではなく，ある程度は JavaScript の文脈でも使用することができる．
+              </p>
+            </div>
+          </div>
+          <div class="block-warning">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                型ガードは，開発者が型判定の根拠をコンパイラに伝えるための手段であり，
+                その判定ロジック自体が正しい保証は存在しない．
+                判定方法に誤りがあっても，TypeScript
+                コンパイラはそれを検出できない点に留意が必要である．
+              </p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

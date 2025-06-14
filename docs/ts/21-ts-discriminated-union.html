@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>in 演算子とタグ付きユニオン</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/custom-table.css" />
+    <link rel="stylesheet" href="css/code-error-table.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.tag-table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.tag-table th:nth-child(1),
+      table.tag-table td:nth-child(1) {
+        max-width: 200px;
+        width: 20%;
+      }
+
+      /* 2列目（出力する値） */
+      table.tag-table th:nth-child(2),
+      table.tag-table td:nth-child(2) {
+        width: 80%;
+      }
+
+      .demo-box {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .demo-box table,
+      .demo-box th,
+      .demo-box td,
+      .demo-box tr {
+        border: none;
+        border-collapse: separate;
+        padding: 0;
+        margin: 0;
+      }
+
+      .math-definition {
+        background-color: #f3f3ff;
+        border-left: 4px solid #5b5bd6;
+        padding: 0.8em 1em;
+        margin: 1em 0;
+        border-radius: 4px;
+        font-style: normal;
+        font-size: 1em;
+        line-height: 1.6;
+      }
+      .math-label {
+        font-weight: bold;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>in 演算子とタグ付きユニオン - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li>
+            <a href="21-ts-discriminated-union.html"
+              >in 演算子とタグ付きユニオン</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="20-ts-type-guard.html" class="prev">前</a> |
+        <a href="22-ts-nullsafety-optional.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>型ガード</h2>
+          <p>
+            今回は，オブジェクト型に対する型ガードを学ぶ．まずは，型ガードの定義を確認しよう．
+          </p>
+          <div class="math-box math-definition">
+            <span class="math-label">定義（型ガード）．</span>
+            <p>
+              JavaScript の実行時チェック等を用いて，TypeScript
+              における型をより具体的なものへと絞り込む（narrow）ための技法のことを<strong>型ガード</strong>という．
+            </p>
+          </div>
+          <p>前のページでは，型ガードの方法として，</p>
+          <ul>
+            <li>typeof 演算子による型 narrowing</li>
+            <li><code>x is T</code>記法による型ガード</li>
+          </ul>
+          を主に紹介した．本ページでは，オブジェクト型のプロパティによる型ガードのテクニックとして，in
+          演算子による型ガードおよび，タグ付きユニオンと呼ばれる手法による型ガードを学ぶ．
+          これらの用語を簡単に説明すると，以下の通りである．
+          <ul>
+            <li>
+              <strong>in 演算子による型ガード</strong
+              >：オブジェクトに対し，特定のプロパティ・メソッドの有無を確認することで絞り込む手法
+            </li>
+            <li>
+              <strong>タグ付きユニオンによる型ガード</strong
+              >：共通するプロパティの値で条件分岐をすることで絞り込む手法
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2>in 演算子</h2>
+          <p>in 演算子の構文は次の通りである．</p>
+
+          <div class="math-box math-definition">
+            <p>
+              object 型である変数 obj に対し，
+              <code>x in obj</code>と書くことにより，obj にプロパティ x
+              があるかどうかを boolean 値で返す． この判定結果は，型 narrowing
+              に利用される．ただし，x は文字列で指定する．
+            </p>
+          </div>
+          <p>
+            以下の例のように，特定のプロパティをもつかどうかが判定できる．指定するプロパティ名は，文字列型変数の形で指定してもよい：
+          </p>
+          <pre><code>let obj = {
+  name: 'square',
+  side: 4,
+  area: 16,
+};
+
+console.log('length' in obj); //false
+console.log('side' in obj); //true
+
+let x = 'area';
+console.log(x in obj); //true</code></pre>
+          <p>以下は，in 演算子を用いた型 narrowing の使用例である：</p>
+          <pre><code>type obj1 = {
+  val: string;
+  x: number;
+};
+type obj2 = {
+  val: string;
+  y: number;
+};
+type obj3 = {
+  val: string;
+  z: number;
+};
+
+let hoge = function (obj: obj1 | obj2 | obj3) {
+  console.log(obj.val); //obj は obj1 | obj2 | obj3 型．val は共通プロパティなので，アクセス可能．
+  if ('x' in obj) {
+    console.log(obj.x); // obj は obj1 型
+  } else if ('y' in obj) {
+    console.log(obj.y); // obj は obj2 型
+  } else {
+    console.log(obj.z); // obj は obj3 型
+  }
+};</code></pre>
+
+          <div class="block-warning">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+in 演算子は，そのオブジェクトに対してアクセス可能なプロパティに対して true を返す．したがって，例えば各オブジェクトがデフォルトでもつメソッド「toString」などを指定しても true になってしまう点には注意が必要である．
+したがって，正しく理解して使わないとバグの原因になりかねない．
+              </p>
+              <pre><code>let obj = {
+  x: 1,
+  y: 2,
+};
+
+console.log('toString' in obj); //true を返す
+</code></pre>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h2>タグ付きユニオン</h2>
+          <p>
+            ユニオン型の変数<code>let x: T1 | T2 | T3;</code
+            >に対し，<code>x.size</code>のようにプロパティアクセスがエラー無く実行出来るためには，すべての型
+            T1，T2，T3
+            が共通してプロパティ<code>size</code>を保有している必要がある．これは，変数<code>x</code>がどんな型であったとしてもエラーなく結果を返す必要があるからである．
+          </p>
+          <p>
+            さて，in 演算子により型 narrowing
+            が発生したように，共通するプロパティの値で絞り込んでも型 narrowing
+            が発生する．これを利用するものがタグ付きユニオンである．
+          </p>
+          <pre><code>type obj1 = {
+  shape: 'square';
+  side: number;
+  area: number;
+};
+type obj2 = {
+  shape: 'cube';
+  side: number;
+  volume: number;
+};
+
+let hoge = function (x: obj1 | obj2) {
+  if (x.shape === 'square') {
+    console.log(x.area); //x は obj1 型
+  } else {
+    console.log(x.volume); //x は obj2 型
+  }
+};</code></pre>
+          <p>
+            上記の例では，obj1 型や obj2
+            型は共通するプロパティ「shape」をもち，また各型はそれらを定数リテラルとして保存している．
+            obj1
+            型の変数は，プロパティ「shape」をもつが，その値は常に「"square"」なのである．そのことから，コンパイラが適切に型の絞込みを行うことができる．
+          </p>
+          <p>
+            この定数リテラルとしてのプロパティがタグであり，タグをもったユニオン型ということで，タグ付きユニオンと呼ばれている．タグが固定されていることから，コンパイラがどの型になっているかが静的に判断可能となるのである．
+          </p>
+
+          <div class="block-remark">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                型ガードを適切に利用するには，「いつ型 narrowing
+                が発生するのか」を正しく理解することが大切である．例えば，
+              </p>
+              <pre><code>type obj1 = {
+  shape: number;
+  side: number;
+  area: number;
+};
+type obj2 = {
+  shape: string;
+  side: number;
+  volume: number;
+};
+
+let hoge = function (x: obj1 | obj2) {
+  if (typeof x.shape === 'number') {
+    console.log(x.area); //x は obj1 | obj2 型なのでエラー
+  } else {
+    console.log(x.volume); //x は obj1 | obj2 型なのでエラー
+  }
+};</code></pre>
+              <p>
+                上記のようなコードのように，プロパティの型でパッと見判断できそうに思っても，コンパイラは型の絞込みを行ってはくれない．もしも有名ではない方法で型ガードを行う際は，本当に型
+                narrowing が発生するのかを実験してからのほうがよい．
+              </p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h2>型注釈としての typeof 演算子</h2>
+          <p>
+            typeof 演算子は，型注釈以外の場所に書く場合は JavaScript
+            の結果準拠の挙動をするが，型注釈の文脈（型を期待する場所）に書いた場合の挙動は異なる．主な用法は以下の通りである：
+          </p>
+          <pre><code>let x: typeof y;</code></pre>
+          <p>
+            このとき，「typeof y」とは，「変数 y に対して TypeScript
+            コンパイラが推論した型」となる．この際，変数 y
+            がどのように定義されているかによって結果が異なる．
+          </p>
+          <p>
+            型ガードを行う際は，もともとあった型が条件により絞り込まれるのだが，typeof
+            演算子を利用して宣言時の型を定義した場合，注意が必要である．
+          </p>
+          <p>例１：</p>
+          <pre><code>let foo = '123';
+const baa = '123';
+
+let x: typeof foo; // x は string 型
+let y: typeof baa; // x は "123" 型</code></pre>
+          <ul>
+            <li>
+              変数 x の型注釈で用いた変数「foo」は再代入可能な let
+              で定義してある．その場合，何が入力されるか確立しないことから，typeof
+              演算子では「string 型」と解釈する．
+            </li>
+            <li>
+              変数 y の型注釈で用いた変数「baa」は再代入不可な const
+              で定義してある．その場合，typeof
+              演算子ではリテラル型として解釈するため，「"123"型」となる．
+            </li>
+          </ul>
+          <p>例２：</p>
+          <pre><code>let foo = {
+  p1: true,
+  p2: 'square',
+};
+const baa = {
+  p1: true,
+  p2: 'square',
+};
+
+let x: typeof foo; // x は {p1: boolean, p2: string } 型
+let y: typeof baa; // y は {p1: boolean, p2: string } 型</code></pre>
+          <p>
+            先ほどと似ているが，今回は，typeof foo をつかっても typeof baa
+            を使っても，ともに同じ型になってしまった．
+            これは，オブジェクト型が参照型であり，仮に const
+            で宣言をしていたとしてもプロパティ自体は変更できることで，値が固定できないことが理由である．
+          </p>
+          <p>例３：</p>
+          <pre><code>type Fig = {
+  p1: boolean;
+  p2: 'square';
+};
+let foo: Fig = {
+  p1: true,
+  p2: 'square',
+};
+const baa: Fig = {
+  p1: false,
+  p2: 'square',
+};
+
+let x: typeof foo; // x は Fig 型
+let y: typeof baa; // y は Fig 型</code></pre>
+          <p>
+            値を固定したい場合は，オブジェクトのプロパティをリテラル型として宣言した上で，それを利用するとよい．
+          </p>
+          <p>例４：</p>
+          <pre><code>let hoge = function (a: number): number {
+  return a;
+};
+
+let x: typeof hoge; // x は (a: number) => number 型
+
+x = function (b: number): number {
+  return 2 * b;
+}; // (_: number) => number 型 の関数は代入可能である．
+
+x = function (c: string): string {
+  return c;
+}; //関数の型が一致しないので，TS2322 エラー</code></pre>
+          <p>
+            このように，特定の引数の型および返り値の型をもつ関数のみを代入可能な変数を定義できる．
+          </p>
+        </section>
+        <section>
+          <h2>never 型変数による網羅性チェック</h2>
+          <p>never 型変数は，「到達不能である」というセマンティクスをもち，また never 型変数の特徴として「never 型変数は never 型の値しか代入できない」というものがある．
+            型 narrowing を行うことで意図的に never 型変数を発生させ，コンパイラエラーを起こさずに網羅性チェックを行うことができる．
+            例えば，以下のように使用する．
+          </p>
+          <pre><code>let hoge = function (color: 'red' | 'blue') {
+  if (color === 'red') {
+    console.log(color); // x は "red" 型
+  } else if (color === 'blue') {
+    console.log(color); // x は "blue" 型
+  } else {
+    const err: never = color; //color は never 型（よって，現段階ではエラーとならない）
+  }
+};</code></pre>
+<p>上記のコードにおいて，最後の else ブロックに到達することはありえない．したがって，このブロックは書く必要性はない．
+  しかし，この領域を用意するのは将来の拡張性を考慮してのことである．関数の引数は将来的に 'red' | 'blue' | 'green' 型に拡張するかもしれない．
+  もしも拡張すると，最後の else ブロックは color は 'green' 型になる．すると，never 型変数に 'green' 型変数を代入しようとすることになり，コンパイラエラーを起こす．
+  これが意図していることは以下である：
+</p>
+<ul>
+  <li>将来，様々な拡張をした際，拡張に応じて様々な箇所のコードを書き換える必要が生じてくる．その場所にあらかじめ「拡張したらエラーを出す」コードを書いておくのである．
+こうすることで「拡張し忘れる」ということがなくなる．つまり，一種の将来への保険のために用いる．
+  </li>
+</ul>
+<p>条件をすべて網羅したとき，型 narrowing により never 型が発生するという仕様，および never 型変数には never 型変数のみ代入可能，というテクニックを利用するのである．
+switch による条件分岐でも型 narrowing が発生する．
+</p>
+<pre><code>let hoge = function (color: 'red' | 'blue') {
+  switch (color) {
+    case 'red':
+      console.log(color); // color は 'red' 型
+      break;
+    case 'blue':
+      console.log(color); // color は 'blue' 型
+      break;
+    default:
+      const err: never = color; // color は never 型，よって現段階ではエラーとならない
+      break;
+  }
+};</code></pre>
+<p>このような網羅性チェックは，小規模なプロジェクトでは，ちょっとした拡張をした際，どこを修正すればよいか判断できるため，無駄になるかもしれない．
+  しかし，大規模開発や多人数での開発，また時間経過で内容を忘れたころの拡張など，そのようなときに適切に修正できるかどうかに不安が残る．
+  このときの備えとして利用することができる．
+  今回は，ただのコンパイルエラーを出すだけの処理にしているが，そのときのエラーメッセージを例外を投げるという技術を利用してカスタムすることが可能である．
+  それについては，例外処理のページで学ぶ．
+</p>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

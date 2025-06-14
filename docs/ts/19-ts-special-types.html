@@ -152,7 +152,7 @@
       </div>
       <div class="next-prev-links">
         &lt; <a href="18-dom-add.html" class="prev">前</a> |
-        <a href="" class="next">次</a>&gt;
+        <a href="20-ts-type-guard.html" class="next">次</a>&gt;
       </div>
     </nav>
 
@@ -353,13 +353,13 @@ a = "text";</code></pre>
                   </td>
                 </tr>
               </tbody>
+            </table>
               <p>
                 なお，コンパイルをしたときにエラーを吐くかどうかは設定に依存する．ここでは，<strong
                   style="color: red"
                   >strictモード</strong
                 >で コンパイルを行った結果についてまとめる．
               </p>
-            </table>
             <section>
               <h3>コンパイラの流れ</h3>
               <p>
@@ -1223,7 +1223,7 @@ let foo: any = hoge();</code></pre>
                 型のセマンティクスは「到達不能」であるが，これを実現するためのシンタックスとして採用されたものは，
               </p>
               <ul>
-                <li>never 型変数は初期化不可能</li>
+                <li>never 型変数は（never 型変数による代入以外で）初期化不可能</li>
                 <li>
                   never 型を戻り値とする関数は，end point で return
                   文の省略が出来ない

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>null安全とオプショナル操作子</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/custom-table.css" />
+    <link rel="stylesheet" href="css/code-error-table.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.tag-table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.tag-table th:nth-child(1),
+      table.tag-table td:nth-child(1) {
+        max-width: 200px;
+        width: 20%;
+      }
+
+      /* 2列目（出力する値） */
+      table.tag-table th:nth-child(2),
+      table.tag-table td:nth-child(2) {
+        width: 80%;
+      }
+
+      .demo-box {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .demo-box table,
+      .demo-box th,
+      .demo-box td,
+      .demo-box tr {
+        border: none;
+        border-collapse: separate;
+        padding: 0;
+        margin: 0;
+      }
+
+      .math-definition {
+        background-color: #f3f3ff;
+        border-left: 4px solid #5b5bd6;
+        padding: 0.8em 1em;
+        margin: 1em 0;
+        border-radius: 4px;
+        font-style: normal;
+        font-size: 1em;
+        line-height: 1.6;
+      }
+      .math-label {
+        font-weight: bold;
+        color: #333;
+      }
+
+      .param-grid {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        column-gap: 1em;
+        row-gap: 0.2em;
+        font-size: 90%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>null安全とオプショナル操作子 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li>
+            <a href="22-ts-nullsafety-optional.html"
+              >null安全とオプショナル操作子</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="21-ts-discriminated-union.html" class="prev">前</a> |
+        <a href="23-ts-nullish-optional-prop.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>null チェック</h2>
+          <p>
+            何等かのオブジェクトを取得するとき，取得に失敗したときは null
+            を返すような挙動をする関数はよくある．その解決策として，結果を引き受ける変数に
+            null を許容するか，取得する際に null チェックを行うかの二択がある：
+          </p>
+          <pre><code>let res1: string | null;
+let res2: string;
+
+let getStr = function (): string | null {
+  if (Math.random() &lt; 0.5) {
+    return 'abc';
+  }
+  return null;
+};
+
+res1 = getStr(); //nullを許容する
+
+let temp = getStr();
+if (temp !== null) {
+  //nullチェックを行う
+  res2 = temp;
+}</code></pre>
+          <p>前者の場合は，使用時に null チェックをする必要がある：</p>
+          <pre><code>let hoge = function(x: string | null) {
+  if (x !== null){
+    console.log(x.length);//lengthプロパティをもつことが保証されなければならない
+  }
+}</code></pre>
+          <p>
+            このように，プロパティを使用する際に，そのプロパティを正しくもつことを確認するロジックが必要になる．
+          </p>
+          <p>
+            これらを現段階で書くことは可能だが，構文が冗長になりやすい．それを簡単に書く記法があり，それらをこのページで学んでいく．
+          </p>
+        </section>
+        <section>
+          <h2>オプショナルチェーン演算子</h2>
+          <p>
+            オブジェクトが指定されたプロパティを持つかどうかを合理的に判断する方法として，「?」演算子がある．
+            <strong
+              >この演算子は JavaScript に存在するため，JavaScript
+              の結果に基づいた挙動を行う．</strong
+            >
+          </p>
+          <section>
+            <h3>標準的な用法</h3>
+            <div class="math-box math-definition">
+              <p><strong>構文</strong>：<code>val = foo?.baa;</code></p>
+              <div class="param-grid">
+                <div><code>foo</code></div>
+                <div>プロパティアクセスをしたい変数またはリテラル</div>
+                <div><code>baa</code></div>
+                <div>アクセスしたいプロパティ名</div>
+              </div>
+              <p>
+                <strong>戻り値</strong>： foo が JavaScript
+                において値「null」または「undefined」のとき，値
+                <code>undefined</code>
+                を返す．そうでない場合は，指定したプロパティにアクセスした結果を返す．
+              </p>
+              <p>
+                <strong>戻り値の型</strong>：undefined | T 型である．ここで，T
+                は foo.baa の型（プロパティ
+                <code>baa</code> の型）である．ただし，型推測により型が narrow
+                されることはある．
+              </p>
+              <p>
+                <strong>注意事項</strong>：TypeScript において，foo
+                の型が，「アクセスしたいプロパティを保持する型」または「null的な型<sup>*1</sup>」でない場合はエラーとなる．
+              </p>
+              <p>
+                <sup>*1</sup
+                >：例えば，null型，never型，undefined型，void型ならばエラーとならない．
+              </p>
+            </div>
+            <p>例１：</p>
+            <pre><code>let hoge = function (x: null | string) {
+  console.log(x?.length);
+};
+
+hoge('abc'); // 3
+hoge(null); // undefined</code></pre>
+            <p>
+              上記は標準的な使い方である．オプショナル操作子「?」により，nullチェックを回避して安全に
+              length プロパティにアクセスできる．
+            </p>
+            <p>例２：</p>
+            <pre><code>let hoge = function (x: undefined | string) {
+  console.log(x?.length);
+};
+let foo = function (): undefined | string {
+  if (Math.random() &lt; 2) {
+    return 'abc'; //必ず 'abc' を返す．
+  }
+  return undefined;
+};
+let x = foo() as undefined;
+hoge(x); // 3</code></pre>
+            <p>
+              上記コードは，実用性はないが，コンパイラの挙動を理解するのに役に立つ．上記コードでは，x
+              は型注釈により undefined 型とされてしまっているが中身は 'abc'
+              であり，3 を返しているということから，JavaScript
+              実行時に基づいていることがわかる．
+              つまり，「型」というのはあくまで「安全な coding の為」に
+              TypeScript が用意している補助的なものであり，JavaScript
+              のコードを安全に出力するための仕組みに過ぎず，実行時には型情報は失われる．つまり，いくら
+              TypeScript の時点で undefined
+              型だとコンパイラに主張したところで，実行時のコードには何の影響も及ぼさないのである．
+            </p>
+          </section>
+        </section>
+        <section>
+          <h3>連鎖的用法</h3>
+          <p>
+            オプショナルチェーン演算子は，「チェーン」とついていることからわかるように，連鎖して使用すると便利である．例えば，
+          </p>
+          <pre><code>let x = obj?.prop?.val;</code></pre>
+          <p>という使い方を考えてみよう．上記構文は，厳密に書くと</p>
+          <pre><code>let x = (obj?.prop)?.val;</code></pre>
+          <p>
+            である．<code>obj?.prop</code> が undefined
+            を返したときは，定義より，次の「<code>?.val</code>」でも undefined
+            を返す．このようにして，すべて正常にアクセス可能な時以外は undefined
+            を返す，という式を書くことが可能となる．
+          </p>
+        </section>
+        <section>
+          <h3>プロパティへのアクセス - ドット記法，ブラケット記法</h3>
+          <p>
+            オブジェクトのプロパティへのアクセスは，ドットによるアクセス（ドット記法）の他にも，[]を利用したアクセス（ブラケット記法）がある．例えば，
+          </p>
+          <pre><code>let obj = {
+  val: 'abc',
+};
+
+console.log(`ドット記法: ${obj.val}`); //abc
+
+console.log(`ブラケット記法: ${obj['val']}`); //abc</code></pre>
+          <p>
+            のようにアクセスできる．この節では，これらのアクセス方法に対するオプショナル操作子を学ぶ．
+          </p>
+          <p>
+            アクセスしたいプロパティが値のこともあれば関数のときもある．オブジェクトのキーは，原則
+            symbol または string として保存されるが，
+            以下では簡単のため，キーはすべて「文字列として管理」されるものを扱う．文字列として管理されるとは，以下のような意味である．
+          </p>
+          <pre><code>let obj = {
+  123: 123,
+  '123': 456,// TS1117 エラー
+};</code></pre>
+          <p>
+            上記コードでは，「123」というキーと「'123'」というキーが設定されているように思えるが，内部的には文字列で管理されているため，同じキーを重複して設定しようとしていると解釈される．
+            この場合，TS1117 エラーが出力される．
+          </p>
+          <pre><code>let obj = {
+  123: 'xyz',
+};
+
+console.log(obj[123]); //xyz と表示される
+console.log(obj['123']); //xyz と表示される</code></pre>
+          <p>
+            上記のように，内部的には文字列でアクセスしているのと同じである．
+          </p>
+          <p>
+            さて，このようなプロパティに格納された値を使用して処理をしたいときもオプショナル操作子が利用できる．
+          </p>
+          <p>ドット記法でアクセスする例が以下である：</p>
+          <pre><code>type Obj = { foo: string | null; baa: string | null } | null;
+
+let objA: Obj = {
+  foo: 'xyz',
+  baa: null,
+};
+let objB: Obj = null;
+
+let chk = function (obj: Obj) {
+  console.log(`1: ${obj?.foo?.length}`);
+  console.log(`2: ${obj?.baa?.length}`);
+};
+
+chk(objA); // "1: 3" および，"2: undefined" が表示される
+
+chk(objB); // "1: undefined" および，"2: undefined" が表示される</code></pre>
+          <p>chk(objA) について</p>
+          <div style="display: flex; gap: 2rem">
+            <ul>
+              <li><code>(obj?.foo)?.length</code></li>
+              <li style="list-style-type: none">
+                ↓obj (=objA) は非 null 相当より objA.foo (='xyz') を返す
+              </li>
+              <li><code>objA.foo?.length</code></li>
+              <li style="list-style-type: none">
+                ↓objA.foo(='xyz') は非 null 相当より 'xyz'.length (=3) を返す
+              </li>
+              <li><code>3</code></li>
+            </ul>
+            <ul>
+              <li><code>(obj?.baa)?.length</code></li>
+              <li style="list-style-type: none">
+                ↓obj (=objA) は非 null 相当より objA.baa (=null) を返す
+              </li>
+              <li><code>objA.baa?.length</code></li>
+              <li style="list-style-type: none">
+                ↓objA.baa(=null) は null 相当より undefined を返す
+              </li>
+              <li><code>undefined</code></li>
+            </ul>
+          </div>
+          <p>chk(objB) について</p>
+          <div style="display: flex; gap: 2rem">
+            <ul>
+              <li><code>(obj?.foo)?.length</code></li>
+              <li style="list-style-type: none">
+                ↓obj (= objB = null) は null 相当より undefined を返す
+              </li>
+              <li><code>objB.foo?.length</code></li>
+              <li style="list-style-type: none">
+                ↓objB.foo(= undefined) は null 相当より undefined を返す
+              </li>
+              <li><code>undefined</code></li>
+            </ul>
+            <ul>
+              <li><code>(obj?.baa)?.length</code></li>
+              <li style="list-style-type: none">
+                ↓obj (= objB = null) は null 相当より undefined を返す
+              </li>
+              <li><code>objB.baa?.length</code></li>
+              <li style="list-style-type: none">
+                ↓objB.baa(= undefined) は null 相当より undefined を返す
+              </li>
+              <li><code>undefined</code></li>
+            </ul>
+          </div>
+          <p>同様のコードが，ブラケット記法を用いても実現できる：</p>
+          <pre><code>type Obj = { foo: string | null; baa: string | null } | null;
+
+let objA: Obj = {
+  foo: 'xyz',
+  baa: null,
+};
+let objB: Obj = null;
+
+let chk = function (obj: Obj) {
+  console.log(`1: ${obj?.['foo']?.['length']}`);
+  console.log(`2: ${obj?.['baa']?.['length']}`);
+};
+
+chk(objA); // "1: 3" および，"2: undefined" が表示される
+
+chk(objB); // "1: undefined" および，"2: undefined" が表示される
+</code></pre>
+          <p>
+            両者の違いは，アクセスするプロパティ名の柔軟性である．後者のブラケット記法によるアクセスには，以下の利便性がある：
+          </p>
+          <ul>
+            <li>ドットではアクセス不可能な識別子へのアクセスも可能になる</li>
+            <li>文字列ではなく，文字列型変数を使ってもアクセス可能である</li>
+          </ul>
+          <p>
+            プロパティの識別子には，（非推奨だが）ハイフンや半角スペースが利用できる．これらのプロパティへはドットによるアクセスができないが，ブラケット記法ならばアクセス可能である．
+          </p>
+          <pre><code>let obj = {
+  'abc-123': 123,
+  xyz: 10000,
+  'xyz-123': 5,
+};
+
+console.log(obj['abc-123']);//123
+console.log(obj.xyz-123); //10000 - 123 が計算される
+console.log(obj.'xyz-123');// TS1003 エラー</code></pre>
+          <p>後者は，用法には注意が必要だが便利である．</p>
+          <pre><code>let obj = {
+  val: 123,
+};
+let prop1 = 'val'; //prop1 は string 型だと推測される
+console.log(obj[prop1]); //TS7053 エラー
+
+let prop2: 'val' = 'val'; //prop2 はリテラル型 val だと推測される
+console.log(obj[prop2]); //正常に通る
+
+const prop3 = 'val'; //prop3 はリテラル型 val だと推測される
+console.log(obj[prop3]); //正常に通る
+
+const prop4: string = 'val'; //prop4 は string 型だと推測される
+console.log(obj[prop4]); //TS7053 エラー
+
+console.log(obj['val']); //正常に通る
+
+let prop5 = 'val'; //prop5 は string 型
+if (prop5 in obj) {
+  console.log(obj[prop5]); //TS7053 エラー
+}
+
+const prop6: string = 'val'; //prop6 は string 型
+if (prop6 in obj) {
+  console.log(obj[prop6]); //TS7053 エラー
+}</code></pre>
+          <p>上記のエラー（strictモード）の原因は以下である：</p>
+          <ul>
+            <li>
+              TSコンパイラは，確実にアクセス可能であると判断しない限り，安全性のためにエラーを吐く仕様になっている．string
+              型だと，どのようなキーでアクセスされるか不明であり，そのようなキーの存在がわからない．よってエラーを出す．
+            </li>
+            <li>
+              リテラル型の場合は，その値以外取りえないことから，アクセス可能かどうかを事前に判断する
+            </li>
+            <li>
+              in
+              演算子でプロパティの存在を保証しても，コンパイラはそれをアクセス可能の担保としない
+            </li>
+          </ul>
+          <p>
+            すなわち，リテラル型変数にすることさえ気を付ければ，変数も利用することが可能になる．
+          </p>
+        </section>
+        <section>
+          <h3>関数呼び出し</h3>
+          <p>オブジェクトのプロパティが関数のときの記法は以下のように行う．</p>
+          <pre><code>type Obj = {
+  calc: ((x: number) => number) | null;
+} | null;
+
+let objA: Obj = {
+  calc: null,
+};
+let objB: Obj = {
+  calc: (x: number) => 2 * x,
+};
+
+let objC: Obj = null;
+
+let chk = function (obj: Obj) {
+  console.log(obj?.calc?.(10));//ドット記法の場合
+  //console.log(obj?.['calc']?.(10)); //ブラケット記法の場合
+};
+
+chk(objA); //undefined
+chk(objB); //20
+chk(objC); //undefined</code></pre>
+          <p>
+            `obj?.calc?.(10)` のように記述することで，null
+            チェックをしつつ関数を呼び出すことができる．
+            このように，存在確認後に
+            <code>()</code> を付ければよい．
+          </p>
+        </section>
+        <section>
+          <h2>非 null アサーション</h2>
+          <p>
+            非 null
+            アサーションとは，オプショナルチェーン演算子における「?」を「!」に変えたものであり，「開発者がコンパイラに対し，検証対象が
+            null 相当ではないことを保証する」意味合いをもつ．
+            その意味で，型アサーションを行う <code>as</code> 演算子と似ている（ただし非 null の保証に特化している）．
+          </p>
+          <pre><code>type Obj = {
+  val: number;
+};
+
+let obj: Obj | null = {
+  val: 123,
+};
+
+let hoge = function (obj: Obj | null) {
+  console.log(obj!.val);//このコードの結果は
+  console.log((obj as Obj).val);//このコードの結果と同じ
+};
+hoge(obj);</code></pre>
+          <p>
+            上記のコードのように，as 演算子により null
+            でないことを保証しているのと本質的に同じである．
+          </p>
+          <p>
+            オプショナルチェーン演算子との違いは，確実にアクセスできることを保証することから例えば返り値の型に違いが生じる：
+          </p>
+          <pre><code>type Obj = {
+  val: number;
+} | null;
+let objA: Obj = {
+  val: 123,
+};
+
+let optional = function (obj: Obj) {
+  return obj?.val;
+};
+let nonNull = function (obj: Obj) {
+  return obj!.val;
+};
+
+let x = optional(objA); // number | undefined 型
+let y = nonNull(objA); // number 型</code></pre>
+          <p>
+            null の可能性が残る場合は，undefined
+            を返す可能性が出てくるため，戻り値の型に対して undefined
+            の可能性が生じる．しかし，null
+            でないことを開発者が保証することで，undefined が返る可能性が消える．
+          </p>
+          <p>
+            非 null アサーションは as 演算子と同様に，コンパイラに対して null
+            でないことを保証するものであり，コンパイラの型チェックによる型安全性の恩恵を外すことになる．
+            したがって，開発者の判断が誤りであれば実行時エラーとなる可能性があることに注意しなければならない．
+          </p>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
