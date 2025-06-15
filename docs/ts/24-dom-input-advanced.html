@@ -160,92 +160,66 @@
     <main>
       <section class="content">
         <h1 class="abstract">Input タグの応用</h1>
-        <p>
-          input タグは，以下のようにテキスト入力欄を用意するもので，
-        </p>
+        <p>input タグは，以下のようにテキスト入力欄を用意するもので，</p>
         <section>
           <section>
             <h2>使用例 - listタグ</h2>
             <p>値の取得と設定の例として，次のような処理を実装してみよう．</p>
             <div class="demo-box">
-              <script src="js/18_1.js"></script>
+              <script src="js/24_1.js"></script>
 
               <label>Name: <input id="NameInput" type="text" /></label>
-              <button onclick="addListElm()">Add</button>
-              <button onclick="clearAllList()">Clear</button>
-              <ul id="sample-list"></ul>
+              <label
+                >Info: <input id="InfoOutput" type="text" readonly
+              /></label>
+              <button onclick="convertInfo()">Convert</button>
             </div>
             <p>実装内容：</p>
             <ul>
               <li>
-                Add ボタンを押すと，Name
-                に入力された内容を用いて，あいさつ文を書いた list
-                項目を追加する．
+                Convert ボタンを押すと，Name
+                テキストボックスに入力された情報が，Info
+                テキストボックスに表示される．
               </li>
-              <li>Clearボタンを押すと，list の内容が初期化される．</li>
-              <li>追加される list の style は，赤色である．</li>
-              <li>Name の textbox が未入力ならば，alert で入力を促す．</li>
             </ul>
             <p>これを実現するコードが以下である．</p>
-            <pre><code class="language-html">&lt;div class="demo-box"&gt;
-  &lt;script src="dist/index.js"&gt;&lt;/script&gt;
+            <pre><code class="language-html">&lt;script src="dist/index.js"&gt;&lt;/script&gt;
 
-  &lt;label&gt;Name: &lt;input id="NameInput" type="text"/&gt;&lt;/label&gt;
-  &lt;button onclick="addListElm()"&gt;Add&lt;/button&gt;
-  &lt;button onclick="clearAllList()"&gt;Clear&lt;/button&gt;
-  &lt;ul id="sample-list"&gt;&lt;/ul&gt;
-&lt;/div&gt;</code></pre>
+  &lt;label&gt;Name: &lt;input id="NameInput" type="text" /&gt;&lt;/label&gt;
+  &lt;label&gt;Info: &lt;input id="InfoOutput" type="text" readonly/&gt;&lt;/label&gt;
+  &lt;button onclick="convertInfo()"&gt;Convert&lt;/button&gt;</code></pre>
 
-            <pre><code class="language-ts index-ts">function addListElm() {
-  if (isValid()) {
-    let elmList = document.getElementById('sample-list') as HTMLElement;
-    let elmInput = document.getElementById('NameInput') as HTMLInputElement;
-    let elm = document.createElement('li');
-    let name = elmInput.value;
-    if (name === '') {
-      alert('Input a name.');
-      return;
-    }
-    elm.innerText = `Hello, ${name}!`;
-    elm.style.color = 'red';
-    elmList.appendChild(elm);
+            <pre><code class="language-ts index-ts">function convertInfo() {
+  const input = document.getElementById('NameInput') as HTMLInputElement | null;
+  const output = document.getElementById( 'InfoOutput' ) as HTMLInputElement | null;
+
+  const text = input?.value;
+  if (output !== null) {
+    output.value = text ?? '';
   }
-}
-
-function clearAllList() {
-  if (isValid()) {
-    let elmList = document.getElementById('sample-list') as HTMLElement;
-    elmList.innerHTML = '';
-  }
-}
-
-function isValid() {
-  let elmList = document.getElementById('sample-list');
-  let elmInput = document.getElementById('NameInput');
-  return elmList !== null && elmInput !== null;
 }</code></pre>
             <p>実装のポイントおよび注意点：</p>
             <ul>
               <li>
-                isValid メソッドにより，DOM 要素が存在するかの null
-                チェックを行っている．
+                それぞれの属性を null 許容型として取得する．
               </li>
               <li>
-                しかしながら，getElementById で返る値の型は<code
-                  >HTMLElement | null</code
-                >型のため，仮に null チェックが終わっていたとしても，TypeScript
-                の型推論がそれを反映してくれるとは限らない． したがって，as
-                演算子により型を明示的に指定する必要がある．
-              </li>
-              <li>
-                上記の処理は，代案もあるのだが，それについては将来的に学ぶ．
-              </li>
-              <li>
-                内容を初期化する際は，innerHTML プロパティに空文字を指定した．
-              </li>
+                オプショナルチェーン演算子により，null チェックを併用してテキストを取得する．
+                </li>
+                <li>値設定時は，null合体により，取得失敗したときの初期値も設定している</li>
             </ul>
+            <p>今までは null チェックのため冗長なコードになっていたが，上記のように ? や ?? を使うと，null チェックをしつつ非常に簡潔にコードを書くことができる．
+            </p>
+            
+            <div class="block-info">
+              <span class="icon"></span>
+              <div class="text-content">
+                <p>
+                  falsy な値，という概念を導入すると，上記コードはもっとスマートに書くことができる．これについては後のページで扱う．
+                </p>
+              </div>
+            </div>
           </section>
-
         </section>
       </section>
     </main>
