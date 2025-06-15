@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOM の追加</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <link rel="stylesheet" href="css/html.css" />
+    <link rel="stylesheet" href="css/dom-explain-dl.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #000;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+      table.typeof_table {
+        max-width: 600px;
+      }
+      /* 1列目（渡す値） */
+      table.typeof_table th:nth-child(1),
+      table.typeof_table td:nth-child(1) {
+        max-width: 300px;
+        width: 30%;
+      }
+
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(2),
+      table.typeof_table td:nth-child(2) {
+        max-width: 300px;
+        width: 20%;
+      }
+      /* 2列目（出力する値） */
+      table.typeof_table th:nth-child(3),
+      table.typeof_table td:nth-child(3) {
+        max-width: 300px;
+        width: 50%;
+      }
+
+      h3 {
+        border-left: 4px solid #3a8dde; /* 青系アクセントライン */
+        padding-left: 0.6em;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        color: #333; /* 落ち着いた本文寄りの色 */
+        font-weight: bold;
+      }
+
+      table.dom_table {
+        max-width: 1000px;
+      }
+      /* 1列目（渡す値） */
+      table.dom_table th:nth-child(1),
+      table.dom_table td:nth-child(1) {
+        min-width: 300px;
+        width: 40%;
+      }
+
+      /* 2列目（出力する値） */
+      table.dom_table th:nth-child(2),
+      table.dom_table td:nth-child(2) {
+        max-width: 400px;
+        width: 60%;
+      }
+
+      .demo-box {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin: 1.5em 0;
+        background-color: #fdfdfd;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      ul.toc {
+        list-style-type: disc;
+        margin-left: 1.5em;
+        padding-left: 0.5em;
+        line-height: 1.6;
+        font-size: 1rem;
+      }
+
+      ul.toc li a {
+        color: #004080;
+        text-decoration: none;
+      }
+
+      ul.toc li a:hover {
+        text-decoration: underline;
+        color: #0066cc;
+      }
+
+      h1.abstract {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #2c3e50; /* 落ち着いた濃いグレー */
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 0.3em;
+        margin-bottom: 1em;
+        margin-top: 1.5em;
+      }
+
+      .demo-box table,
+      .demo-box th,
+      .demo-box td,
+      .demo-box tr {
+        border: none;
+        border-collapse: separate;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>Input タグの応用 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="24-dom-input-advanced.html">Input タグの応用</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="23-ts-nullish-optional-prop.html" class="prev">前</a> |
+        <a href="" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h1 class="abstract">Input タグの応用</h1>
+        <p>
+          input タグは，以下のようにテキスト入力欄を用意する
+        </p>
+        <section>
+          <section>
+            <h2>使用例 - listタグ</h2>
+            <p>値の取得と設定の例として，次のような処理を実装してみよう．</p>
+            <div class="demo-box">
+              <script src="js/18_1.js"></script>
+
+              <label>Name: <input id="NameInput" type="text" /></label>
+              <button onclick="addListElm()">Add</button>
+              <button onclick="clearAllList()">Clear</button>
+              <ul id="sample-list"></ul>
+            </div>
+            <p>実装内容：</p>
+            <ul>
+              <li>
+                Add ボタンを押すと，Name
+                に入力された内容を用いて，あいさつ文を書いた list
+                項目を追加する．
+              </li>
+              <li>Clearボタンを押すと，list の内容が初期化される．</li>
+              <li>追加される list の style は，赤色である．</li>
+              <li>Name の textbox が未入力ならば，alert で入力を促す．</li>
+            </ul>
+            <p>これを実現するコードが以下である．</p>
+            <pre><code class="language-html">&lt;div class="demo-box"&gt;
+  &lt;script src="dist/index.js"&gt;&lt;/script&gt;
+
+  &lt;label&gt;Name: &lt;input id="NameInput" type="text"/&gt;&lt;/label&gt;
+  &lt;button onclick="addListElm()"&gt;Add&lt;/button&gt;
+  &lt;button onclick="clearAllList()"&gt;Clear&lt;/button&gt;
+  &lt;ul id="sample-list"&gt;&lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+
+            <pre><code class="language-ts index-ts">function addListElm() {
+  if (isValid()) {
+    let elmList = document.getElementById('sample-list') as HTMLElement;
+    let elmInput = document.getElementById('NameInput') as HTMLInputElement;
+    let elm = document.createElement('li');
+    let name = elmInput.value;
+    if (name === '') {
+      alert('Input a name.');
+      return;
+    }
+    elm.innerText = `Hello, ${name}!`;
+    elm.style.color = 'red';
+    elmList.appendChild(elm);
+  }
+}
+
+function clearAllList() {
+  if (isValid()) {
+    let elmList = document.getElementById('sample-list') as HTMLElement;
+    elmList.innerHTML = '';
+  }
+}
+
+function isValid() {
+  let elmList = document.getElementById('sample-list');
+  let elmInput = document.getElementById('NameInput');
+  return elmList !== null && elmInput !== null;
+}</code></pre>
+            <p>実装のポイントおよび注意点：</p>
+            <ul>
+              <li>
+                isValid メソッドにより，DOM 要素が存在するかの null
+                チェックを行っている．
+              </li>
+              <li>
+                しかしながら，getElementById で返る値の型は<code
+                  >HTMLElement | null</code
+                >型のため，仮に null チェックが終わっていたとしても，TypeScript
+                の型推論がそれを反映してくれるとは限らない． したがって，as
+                演算子により型を明示的に指定する必要がある．
+              </li>
+              <li>
+                上記の処理は，代案もあるのだが，それについては将来的に学ぶ．
+              </li>
+              <li>
+                内容を初期化する際は，innerHTML プロパティに空文字を指定した．
+              </li>
+            </ul>
+          </section>
+
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
