@@ -509,11 +509,30 @@ chk(objC); //undefined</code></pre>
         <section>
           <h2>非 null アサーション</h2>
           <p>
-            非 null
-            アサーションとは，オプショナルチェーン演算子における「?」を「!」に変えたものであり，「開発者がコンパイラに対し，検証対象が
-            null 相当ではないことを保証する」意味合いをもつ．
-            その意味で，型アサーションを行う <code>as</code> 演算子と似ている（ただし非 null の保証に特化している）．
-          </p>
+  非 null アサーションとは，変数の末尾に <code>!</code> を付けることで，
+  「この値は null でも undefined でもない」と開発者がコンパイラに明示する構文である．
+  その意味で，型アサーションを行う <code>as</code> 演算子と似ている（ただし非 null の保証に特化している）．
+  オプショナルチェーン <code>?.</code> とは逆に，null チェックを省略して直接アクセスするものである．
+</p>
+
+          <pre><code>function check(x: string | null | undefined) {
+  let val = x!; //val は string 型
+  console.log(val.length);
+}</code></pre>
+<p>上記のように，null または undefined の可能性がある型に対し，その可能性を排除して型 narrowing を発生させることができる．</p>
+<p>
+  オプショナルチェーン演算子のように，ドットと併用することも多い．なお，プロパティ自体が null を許容する場合，利用する際はそのプロパティに対しても非 null アサーションを使う必要がある：
+</p>
+<pre><code>type Obj = {
+  name : string;
+  age : number | null;
+}
+function check(obj: Obj | null) {
+  let val1 = obj!.name;// obj が null でないと仮定
+  let val2 = obj!.age!;// obj が null でなく，さらに age も null でないと仮定
+}</code></pre>
+<p>コンパイラに型を開発者の意図通りに指定する，という意味では as 演算子に似ている：
+</p>
           <pre><code>type Obj = {
   val: number;
 };
@@ -527,12 +546,14 @@ let hoge = function (obj: Obj | null) {
   console.log((obj as Obj).val);//このコードの結果と同じ
 };
 hoge(obj);</code></pre>
+<p>
+  非 null アサーション <code>!</code> は，<code>as</code> 演算子のように，
+  コンパイラの型推論に介入するための手段の一種であるが，<code>as</code> は
+  型そのものを強制的に指定するのに対し，<code>!</code> は null または undefined の
+  可能性を取り除いて narrowing を発生させる点に違いがある．
+</p>
           <p>
-            上記のコードのように，as 演算子により null
-            でないことを保証しているのと本質的に同じである．
-          </p>
-          <p>
-            オプショナルチェーン演算子との違いは，確実にアクセスできることを保証することから例えば返り値の型に違いが生じる：
+            ! を使用すると型 narrowing が生じることから取得する型に違いが生じる：
           </p>
           <pre><code>type Obj = {
   val: number;
@@ -550,12 +571,6 @@ let nonNull = function (obj: Obj) {
 
 let x = optional(objA); // number | undefined 型
 let y = nonNull(objA); // number 型</code></pre>
-          <p>
-            null の可能性が残る場合は，undefined
-            を返す可能性が出てくるため，戻り値の型に対して undefined
-            の可能性が生じる．しかし，null
-            でないことを開発者が保証することで，undefined が返る可能性が消える．
-          </p>
           <p>
             非 null アサーションは as 演算子と同様に，コンパイラに対して null
             でないことを保証するものであり，コンパイラの型チェックによる型安全性の恩恵を外すことになる．
