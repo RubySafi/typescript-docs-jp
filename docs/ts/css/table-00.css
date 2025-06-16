@@ -1,0 +1,65 @@
+table.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 14px;
+  table-layout: fixed;
+}
+
+table.custom-table th,
+table.custom-table td {
+  border: 1px solid #aaa;
+  padding: 0.5em;
+  text-align: left;
+  vertical-align: top;
+}
+
+table.custom-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* 使用例のコード表示用 */
+table.custom-table td.code {
+  font-family: Consolas, monospace;
+  white-space: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+  display: block;
+}
+
+/* value列で改行を許容する場合 */
+table.custom-table td.wrap {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* 列幅の指定 */
+table.custom-table colgroup col.table-col-05   { width: 5%; }
+table.custom-table colgroup col.table-col-10   { width: 10%; }
+table.custom-table colgroup col.table-col-20   { width: 20%; }
+table.custom-table colgroup col.table-col-30   { width: 30%; }
+table.custom-table colgroup col.table-col-40   { width: 40%; }
+table.custom-table colgroup col.table-col-50   { width: 50%; }
+table.custom-table colgroup col.table-col-60   { width: 60%; }
+
+/* ストライプ背景 */
+table.custom-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+table.custom-table tbody tr:nth-child(even) {
+  background-color: #d0d0d0;
+}
+
+/* モバイル対応 */
+@media (max-width: 600px) {
+  table.custom-table {
+    font-size: 12px;
+  }
+
+  table.custom-table td.code {
+    white-space: normal;
+    word-break: break-all;
+  }
+}

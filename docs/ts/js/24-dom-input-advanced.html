@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>input タグの応用</title>
+    <title>DOM の追加</title>
 
     <link
       rel="stylesheet"
@@ -30,7 +30,7 @@
   <body>
     <!-- ヘッダー -->
     <header>
-      <h1>input タグの応用 - TypeScript</h1>
+      <h1>Input タグの応用 - TypeScript</h1>
     </header>
 
     <!-- パンくずリスト -->
@@ -55,7 +55,7 @@
           <p>
             <code>input</code>タグは，<a href="12-input-textarea.html"
               >前のページ</a
-            >で学んだように，テキストボックスを用意するものであった．
+            >で学んだように，テキスト入力欄を用意するものであった．
             値の取得や設定についての注意事項をまとめると，以下のようになる：
           </p>
           <ul>
@@ -66,12 +66,12 @@
               <code>HTMLElement | null</code> 型である． ここで，<code
                 >null</code
               >
-              は取得失敗を意味する．
+              は取得失敗である．
             </li>
             <li>取得失敗の可能性を考え，null チェックを行うべきである．</li>
             <li>
               <code>as</code> 演算子を用いて，<code>HTMLInputElement</code>
-              にキャストしなければ，値の取得・設定ができない．
+              にキャストをしなければ，値の取得・設定ができない．
             </li>
             <li>
               値の取得・設定は，<code>HTMLInputElement</code> 型の
@@ -106,7 +106,7 @@
             <pre><code class="language-html">&lt;script src="dist/index.js"&gt;&lt;/script&gt;
 
 &lt;label&gt;Name: &lt;input id="NameInput" type="text" /&gt;&lt;/label&gt;
-&lt;label&gt;Info: &lt;input id="InfoOutput" type="text" readonly /&gt;&lt;/label&gt;
+&lt;label&gt;Info: &lt;input id="InfoOutput" type="text" readonly/&gt;&lt;/label&gt;
 &lt;button onclick="convertInfo()"&gt;Convert&lt;/button&gt;</code></pre>
           </div>
 
@@ -133,13 +133,13 @@
               チェックを併用してテキストを取得する．
             </li>
             <li>
-              値設定時は，null合体により，取得失敗したときの初期値も定めている．
+              値設定時は，null合体により，取得失敗したときの初期値も設定している
             </li>
           </ul>
           <p>
             今までは null チェックのため冗長なコードになっていたが，上記のように
             ? や ?? を使うと，null
-            チェックを内包した簡潔なコードが実現できる．
+            チェックをしつつ非常に簡潔にコードを書くことができる．
           </p>
 
           <div class="block-info">
@@ -158,7 +158,7 @@
             input タグの type 属性に "number"
             を設定すると，数値入力ボックスを表示できる（C# でいう NumericUpDown
             Control に近い）．
-            この入力ボックスにはスピンボタン（上下ボタン）が付いており，クリックすると数値が変化する．上下カーソルでも変化させることができる．以下の属性を追加で設定可能である．
+            この入力ボックスにはスピンボタン（上下ボタン）が付いており，クリックすると数値が変化する．上下カーソルでも変化させることができる．以下の属性を追加で設定することができる．
           </p>
           <ul>
             <li><code>min = "value"</code> 最小値を設定できる．</li>
@@ -195,7 +195,7 @@
             <li>
               valueAsNumber プロパティを通して，number
               型のままで値の取得・設定を行うことができる．ただし，不正な数は NaN
-              になるので，利用前に NaN チェックが必要である．
+              になるので，NaN チェックが必要である．
             </li>
           </ul>
 
@@ -293,9 +293,9 @@ function numberReset() {
             <div class="text-content">
               <p>
                 注意事項：フォーカスがあっていなかったり mouse hover
-                状態でないときは，スピンボタンが非表示になってしまうため，
-                デフォルト状態では，通常の input ボックスと数値入力用ボックスの違いが視覚的に判別しにくい点が大きな欠点である．
-                これは，ブラウザ依存ではあるが
+                状態でないときは，スピンボタンが非表示になってしまうため，デフォルトで通常の
+                input
+                ボックスなのか数値入力用なのかが区別できないのが大きな欠点である．これは，ブラウザ依存ではあるが
                 css を利用することで解決可能である．
               </p>
             </div>
@@ -446,7 +446,7 @@ function numberReset() {
               に値を設定できる．識別子として利用できる．
             </li>
             <li>
-              <code>name = "xxx"</code> 同じ name
+              <code>name = "xxx</code> 同じ name
               値をもつラジオボタンをグループ化できる．グループ内は，クリックにより一つの項目のみ選択状態にできる．
             </li>
           </ul>
@@ -481,14 +481,14 @@ function numberReset() {
             }
             function radio_sample_02_reset() {
               let elms = document.getElementsByClassName("radio_sample_02");
-              for (elm of elms) {
-                elm.checked = false;
+              for(elm of elms){
+              elm.checked = false;
               }
             }
             function radio_sample_03_reset() {
               let elms = document.getElementsByClassName("radio_sample_03");
-              for (elm of elms) {
-                elm.checked = false;
+              for(elm of elms){
+              elm.checked = false;
               }
             }
           </script>
@@ -523,42 +523,12 @@ function numberReset() {
                 name="B"&gt;B2&lt;/label&gt;&lt;br&gt;
               </td>
               <td>
-                <label
-                  ><input
-                    class="radio_sample_02"
-                    type="radio"
-                    name="A"
-                  />A1</label
-                ><br />
-                <label
-                  ><input
-                    class="radio_sample_02"
-                    type="radio"
-                    name="A"
-                  />A2</label
-                ><br />
-                <label
-                  ><input
-                    class="radio_sample_02"
-                    type="radio"
-                    name="B"
-                  />B1</label
-                ><br />
-                <label
-                  ><input
-                    class="radio_sample_02"
-                    type="radio"
-                    name="B"
-                  />B2</label
-                ><br />
+                <label><input class="radio_sample_02" type="radio" name="A" />A1</label><br />
+                <label><input class="radio_sample_02" type="radio" name="A" />A2</label><br />
+                <label><input class="radio_sample_02" type="radio" name="B" />B1</label><br />
+                <label><input class="radio_sample_02" type="radio" name="B" />B2</label><br />
               </td>
-              <td>
-                同じ name グループ内のみ単一選択可能．<button
-                  onclick="radio_sample_02_reset()"
-                >
-                  Reset
-                </button>
-              </td>
+              <td>同じ name グループ内のみ単一選択可能．<button onclick="radio_sample_02_reset()">Reset</button></td>
             </tr>
             <tr>
               <td>
@@ -572,74 +542,37 @@ function numberReset() {
                 &gt;未設定2&lt;/label&gt;&lt;br&gt;
               </td>
               <td>
-                <label
-                  ><input
-                    class="radio_sample_03"
-                    type="radio"
-                    name=""
-                  />空文字1</label
-                ><br />
-                <label
-                  ><input
-                    class="radio_sample_03"
-                    type="radio"
-                    name=""
-                  />空文字2</label
-                ><br />
-                <label
-                  ><input class="radio_sample_03" type="radio" />未設定1</label
-                ><br />
-                <label
-                  ><input class="radio_sample_03" type="radio" />未設定2</label
-                ><br />
+                <label><input class="radio_sample_03" type="radio" name="" />空文字1</label><br />
+                <label><input class="radio_sample_03" type="radio" name="" />空文字2</label><br />
+                <label><input class="radio_sample_03" type="radio" />未設定1</label><br />
+                <label><input class="radio_sample_03" type="radio" />未設定2</label><br />
               </td>
-              <td>
-                明示的に name に空文字を設定しても group
-                化されず，すべて単一グループとして処理される．<button
-                  onclick="radio_sample_03_reset()"
-                >
-                  Reset
-                </button>
-              </td>
+              <td>明示的に name に空文字を設定しても group 化されず，すべて単一グループとして処理される．<button onclick="radio_sample_03_reset()">Reset</button></td>
             </tr>
           </table>
           <p>サンプル：</p>
 
           <div class="block-container label-custom" data-label="Browser">
             <script src="js/24_4.js"></script>
-
             <label style="background-color: aquamarine"
-              ><input
-                class="radioBtn"
-                type="radio"
-                name="A"
-                value="apple"
-              />りんご</label
+              ><input id="chkA" type="checkbox" name="A" />項目1</label
             >
             <label style="background-color: bisque"
               ><input
-                class="radioBtn"
-                type="radio"
-                name="A"
-                value="banana"
-              />バナナ</label
+                id="chkB"
+                type="checkbox"
+                value="OK"
+                checked
+              />項目2</label
             >
-            <label style="background-color: cornflowerblue"
-              ><input
-                class="radioBtn"
-                type="radio"
-                name="A"
-                value="cocoa"
-              />ココア</label
-            >
-            <button onclick="getRadioBtnInfo()">Info</button>
+            <button onclick="getChkInfo()">Info</button>
           </div>
           <p>実装内容：</p>
           <ul>
-            <li>
-              Info ボタンを押すと，選択したラジオボタンの value 属性の値が alert
-              で表示される．
-            </li>
+            <li>Info ボタンを押すと，checkboxの情報が alert で表示される．</li>
+            <li>項目1には，name 属性を設定した．</li>
+            <li>項目2には，value 属性を設定した．</li>
+            <li>見やすさのために，背景を設定した．</li>
           </ul>
           <p>これを実現するコードが以下である．</p>
           <div

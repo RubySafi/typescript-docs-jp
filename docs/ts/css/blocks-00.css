@@ -1,0 +1,118 @@
+
+/* 共通スタイル */
+.block-warning,
+.block-remark,
+.block-note,
+.block-info {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left-width: 5px;
+  border-radius: 4px;
+}
+
+/* 共通スタイル */
+.block-info .text-content {
+  flex: 1; /* テキストコンテンツが残りのスペースを占めるようにする */
+  flex-direction: column; /* テキストコンテンツ内は縦並びに */
+  margin-right:20px;
+}
+
+
+.block-note .icon {
+  flex: 0 0 32px; /* 収縮も拡大もさせず、固定幅 */
+  height: 32px;
+  margin-right: 10px;
+  background-image: url('../img/edit_document_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg');
+  background-size: contain; /* アスペクト比を維持してアイコン全体を表示 */
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.block-info .icon {
+  flex: 0 0 32px; /* 収縮も拡大もさせず、固定幅 */
+  height: 32px;
+  margin-right: 10px;
+  background-image: url('../img/info_32dp_5985E1_FILL0_wght400_GRAD0_opsz40.svg');
+  background-size: contain; /* アスペクト比を維持してアイコン全体を表示 */
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.block-remark .icon {
+  flex: 0 0 32px; /* 収縮も拡大もさせず、固定幅 */
+  height: 32px;
+  margin-right: 10px;
+  background-image: url('../img/comment_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg');
+  background-size: contain; /* アスペクト比を維持してアイコン全体を表示 */
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 注意：緑系 */
+.block-remark {
+  background-color: #e8f5e9;
+  border-left-color: #81c784;
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left-width: 5px;
+  border-radius: 4px;
+}
+
+
+
+/* 情報：青系 */
+.block-info {
+  background-color: #e3f2fd;
+  border-left-color: #64b5f6;
+  display: flex;
+  align-items: flex-start; /* アイコンとテキストを縦方向で揃える */
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left-width: 5px;
+  border-radius: 4px;
+  max-width: 100%; /* 親要素の最大幅を100%に設定 */
+  box-sizing: border-box;
+}
+
+/* コメント：黄色系 */
+.block-note {
+  background-color: #fff8e1;
+  border-left-color: #ffb74d;
+  display: flex;
+  align-items: flex-start; /* アイコンとテキストを縦方向で揃える */
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left-width: 5px;
+  border-radius: 4px;
+}
+
+.block-warning .icon {
+  flex: 0 0 32px; /* 収縮も拡大もさせず、固定幅 */
+  height: 32px;
+  margin-right: 10px;
+  background-image: url('../img/warning_32dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg');
+  background-size: contain; /* アスペクト比を維持してアイコン全体を表示 */
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 警告：橙～赤系 */
+.block-warning {
+  background-color: #fff3e0;         /* 薄いオレンジ系（背景） */
+  border-left-color: #ff7043;        /* 濃いオレンジ（左線） */
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left-width: 5px;
+  border-radius: 4px;
+}
+
+

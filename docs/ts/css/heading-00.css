@@ -1,0 +1,52 @@
+
+/* メインコンテンツ */
+main {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.content h1 {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #1a2c42;
+  border-bottom: 3px solid #2c7cc3;
+  padding-bottom: 6px;
+  margin-bottom: 1em;
+  margin-top: 0.5em;
+}
+
+.content h2 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+}
+
+.content h3 {
+  border-left: 4px solid #3a8dde;
+  padding-left: 0.6em;
+  margin-top: 1.5em;
+  font-size: 1.1em;
+  color: #333;
+  font-weight: bold;
+}
+
+.content h4 {
+  padding-left: 1.2em;
+  position: relative;
+  font-size: 1em;
+  font-weight: bold;
+  color: #444;
+  margin-top: 1.2em;
+  margin-bottom: 0.3em;
+}
+
+.content h4::before {
+  content: "▶";
+  position: absolute;
+  left: 0;
+  color: #3a8dde;
+  font-size: 0.9em;
+}
+

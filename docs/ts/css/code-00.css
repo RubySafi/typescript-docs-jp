@@ -1,0 +1,115 @@
+/* -----------------------------
+   コードラベル（共通の見出し用）
+----------------------------- */
+.label-custom::before {
+  content: attr(data-label);  /* HTML 側で data-label="index.ts" のように指定 */
+  font-size: 0.7em;
+  color: #666;
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px 0 4px 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+}
+
+/* -----------------------------
+   表示用コンテナ（demo, code）
+----------------------------- */
+.block-container {
+  position: relative;
+  border: 1px solid #ccc;
+  padding: 1.5em 0.5em 1em 0.5em;
+  margin: 1.5em 0;
+  background-color: #fdfdfd;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  display: block;
+  overflow-x: auto;
+}
+
+
+/* -----------------------------
+   各コードブロックのテーマ別カラー
+----------------------------- */
+.theme-dark {
+  background-color: #333;
+  color: #dcdcdc;
+  padding: 0 0.5em 0 0.5em; /* 通常の padding */
+  font-family: Consolas, Monaco, 'Courier New', monospace;  
+  font-size: 0.95em;
+  line-height: 1.3;
+}
+
+.theme-dark.label-custom {
+  background-color: #333;
+  color: #dcdcdc;
+  padding: 0.5em 0.5em 0 0.5em; /* label-custom がついた場合の padding */
+  font-family: Consolas, Monaco, 'Courier New', monospace;  
+  font-size: 0.95em;
+  line-height: 1.3;
+}
+
+.theme-light {
+  background-color: #f8f8f8;
+  color: #333;
+  padding: 0 0.5em 0 0.5em;
+  font-family: Consolas, Monaco, 'Courier New', monospace;  
+  font-size: 0.95em;
+  line-height: 1.3;
+}
+.theme-light.label-custom {
+  background-color: #f8f8f8;
+  color: #333;
+  padding: 0.5em 0.5em 0 0.5em;
+  font-family: Consolas, Monaco, 'Courier New', monospace;  
+  font-size: 0.95em;
+  line-height: 1.3;
+}
+
+/* -----------------------------
+   シンタックスハイライト設定の更新
+----------------------------- */
+.block-container code.hljs {
+  display: block;
+  padding: 0;
+  background: none;
+}
+
+.language-ts{
+  color: #dcdcdc;
+  font-family: Consolas, Monaco, 'Courier New', monospace;  
+  font-size: 0.95em;
+  line-height: 1.3;
+}
+
+.language-html{
+  color: #333;             
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 0.95em;
+  line-height: 1.3;
+}
+
+.theme-dark .hljs-comment {
+  color:#77aadd;
+}
+.theme-light .hljs-attr {
+  color:#bb0;
+}
+.theme-light .hljs-string {
+  color:#3b3;
+}
+
+/* -----------------------------
+   インラインコード
+----------------------------- */
+p code, li code, span code {
+  background-color: #c8c8c8;
+  padding: 0 0.3em;
+  border-radius: 3px;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 0.95em;
+}
