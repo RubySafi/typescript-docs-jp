@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>イベント管理</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- 現在移行作業中 -->
+    <link rel="stylesheet" href="css/blocks-00.css" />
+    <link rel="stylesheet" href="css/code-00.css" />
+    <link rel="stylesheet" href="css/heading-00.css" />
+    <link rel="stylesheet" href="css/table-00.css" />
+    <link rel="stylesheet" href="css/layout-00.css" />
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>event管理 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="25-dom-eventlistener.html">event管理</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="24-dom-input-advanced.html" class="prev">前</a> |
+        <a href="" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>event</h2>
+          <p>
+            user によるクリックや値の変更といった，何らかの状態変化のことを
+            <strong>event（イベント）</strong> という．
+            例えば，ボタンをクリックする，というのも一種のイベントである．
+          </p>
+          <div class="block-container label-custom" data-label="Browser">
+            <script>
+              function greet() {
+                alert("Hello!");
+              }
+            </script>
+            <button onclick="greet()">Click</button>
+          </div>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;script&gt;
+  function greet(){alert('Hello!');}
+&lt;/script&gt;
+&lt;button onclick="greet()"&gt;Click&lt;/button&gt;</code></pre>
+          </div>
+          <p>
+            上記のようにすると，ボタンをクリック
+            することで<code>greet()</code>が実行されるのであった．これは，より具体的には以下のような仕組みになっている：
+          </p>
+          <ol>
+            <li>
+              button を user がクリックすると，この button に対して click
+              イベントが発生する．
+            </li>
+            <li>
+              onclick 属性を付与することにより，click
+              イベントが発生した際に実行する処理を登録できる．
+            </li>
+            <li>
+              上記コードによれば，<code>greet()</code>が登録されているが，これは
+              click
+              イベント発生時に「関数<code>greet</code>を実行<code>()</code>する」という意味である．
+            </li>
+            <li>
+              script タグにより greet 関数が定義されており，Hello という文字列を
+              alert で出す，という処理である．
+            </li>
+          </ol>
+          <p>上記処理の問題点として，</p>
+          <ul>
+            <li>
+              本来レイアウトの管理が役割であるはずの HTML
+              に，処理が一部記述されているため，管理的な面で不健全である
+            </li>
+            <li>
+              click した際に登録できる関数は 1
+              個だけなので，複数の処理を実行したいときは関数を統合しなければならない
+            </li>
+            <li>
+              処理したいイベントは，click 以外にも色々とあり，HTML
+              では限界がある
+            </li>
+          </ul>
+          <p>
+            などが挙げられる．もちろん，一つ目は気分の問題が強く，二つ目は複数の関数を管理する関数を渡すことで拡張が容易な設計になるのだが，三つ目は避けられない．
+            実はこれらの event 管理は JavaScript
+            側からコントロールすることが可能であり，これにより役割分担ができ，さらに柔軟なイベント処理が可能になる．
+          </p>
+          <p>
+            イベントの登録・削除には，DOM 要素 elm
+            に対するプロパティである<code>addEventListener</code>および<code>removeEventListener</code>を用いることになる．これらを本ページで学習していく．
+          </p>
+        </section>
+        <section>
+          <h2>addEventListener 入門</h2>
+          <p>
+            使用例を見てからのほうが説明が理解しやすいため，まずは下記コードを見てみよう．
+          </p>
+          <div class="block-container label-custom" data-label="Browser">
+            <button id="btn">Click</button>
+            <script src="js/25_1.js"></script>
+          </div>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;button id="btn"&gt;Click&lt;/button&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+          </div>
+          <div
+            class="block-container label-custom theme-dark"
+            data-label="TypeScript"
+          >
+            <pre><code class="language-ts">const btn = document.getElementById('btn') as HTMLElement | null;
+btn?.addEventListener('click', greet);
+
+function greet(e: MouseEvent) {
+  alert('Hello!!');
+}</code></pre>
+          </div>
+          <p>上記コードのポイントは以下の通りである．</p>
+          <ul>
+            <li>
+              button を DOM 要素として取得し，<code>addEventListener</code>
+              プロパティによりイベント登録を行っている．
+            </li>
+            <li>
+              イベントは，第一引数にイベントの種類
+              <code>'click'</code
+              >を，第二引数に関数<code>greet</code>を設定することで登録が完了する．
+            </li>
+            <li>
+              登録された関数 <code>greet</code> は，引数に
+              <code>MouseEvent</code> 型の変数をとる．
+            </li>
+            <li>
+              <strong style="color: red"
+                >該当する JavaScript は，button タグよりも後で script
+                タグにより読み込んでいる．</strong
+              >
+            </li>
+            <li>
+              イベント発生時は，登録された関数<code>greet</code>が実行<code>()</code>されるが，その際に
+              <code>MouseEvent</code> 型の値が引数として渡される．
+            </li>
+          </ul>
+          <p>
+            このようにして，イベント登録したいタグを DOM
+            要素として取得して，関数を登録することで自由にイベントの設定ができるのである．
+          </p>
+
+          <div class="block-remark">
+            <span class="icon"></span>
+            <div>
+              <p>コード</p>
+              <div class="text-content">
+                <div class="block-container theme-dark" style="margin: 0">
+                  <pre><code class="language-ts">const btn = document.getElementById('btn') as HTMLElement | null;
+btn?.addEventListener('click', greet);</code></pre>
+                </div>
+              </div>
+              <p>
+                の意味は，DOM 要素 btn の 'click' イベントに関数 greet
+                を登録する，というものである．これに対して次の落とし穴がある：
+              </p>
+              <ul>
+                <li>
+                  このコードが実行される際に，DOM 要素 btn
+                  が見つからなければならない（したがって，<strong
+                    style="color: red"
+                    >button タグよりも後で JavaScript を読み込む必要</strong
+                  >がある）
+                </li>
+                <li>
+                  登録するのは関数 <code>greet</code> であって，関数の実行
+                  <code>greet()</code> ではない．関数の実行
+                  <code>()</code> はイベント発生時におこなわれる．
+                </li>
+              </ul>
+            </div>
+          </div>
+          <p>
+            <code>addEventListener</code>
+            の登録に入る前に，次の特徴を把握しておこう．
+          </p>
+          <ul>
+            <li>
+              イベントは文字列で指定する．イベントの種類によって指定する文字列が異なる．
+            </li>
+            <li>
+              登録した関数に渡される変数の型は，イベントの種類によって異なる．例えば，'click'
+              イベントの場合は 'MouseEvent' 型となっている．
+            </li>
+            <li>
+              登録する関数について，イベント発生時に渡される変数を使用しない場合は，引数が
+              0 の関数として登録してもよい．
+            </li>
+            <li>
+              一つのイベントに関数はいくらでも登録でき，登録した順に実行される．
+            </li>
+            <li>
+              関数は，アロー関数としても渡すことができるが，削除できなくなるため，関数管理に慣れてからにすることを推奨する．
+            </li>
+          </ul>
+          <p>
+            このように，<code>addEventListener</code>
+            を用いれば「HTMLから処理を分離」でき，「複数の処理を同時登録」できるため，より実践的かつ拡張性の高いイベント管理が可能になる．
+          </p>
+        </section>
+        <section>
+          <h2>addEventListener と重要 event</h2>
+          <p>
+            DOM 要素へのイベントの登録は，DOM
+            要素を取得した後に以下の流れで行うのであった：
+          </p>
+          <ol>
+            <li>
+              addEventListener により，イベントを文字列で指定し (event type)
+              ，関数を渡す（例：<code>addEventListener('click', greet)</code>）
+            </li>
+            <li>
+              イベント発火時には，event type に依存した型のオブジェクト (event
+              object) が関数に渡される．（省略可）
+            </li>
+            <li>
+              event object
+              を使用しない場合は，関数定義において引数は省略できる．
+            </li>
+          </ol>
+          <p>
+            そこで，非常に重要な event type および，event object
+            の型および特徴をまとめておこう．
+          </p>
+
+          <table class="custom-table">
+            <colgroup>
+              <col class="table-col-10" />
+              <col class="table-col-35" />
+              <col class="table-col-20" />
+              <col class="table-col-35" />
+            </colgroup>
+            <tr>
+              <th>event type</th>
+              <th>説明</th>
+              <th>event object の型</th>
+              <th>重要プロパティ</th>
+            </tr>
+            <tr>
+              <td><code>'click'</code></td>
+              <td>マウスでクリックされたとき．</td>
+              <td><code>MouseEvent</code></td>
+              <td rowspan="2" style="background-color: bisque">
+                <ul>
+                  <li><code>clientX</code>, <code>clientY</code> マウス座標</li>
+                  <li><code>button</code> 押されたマウスボタン</li>
+                  <li>
+                    <code>ctrlKey</code>, <code>shiftKey</code>,
+                    <code>altKey</code>, <code>metaKey</code> 修飾キー押下状況
+                  </li>
+                  <li><code>type</code> event type</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><code>'contextmenu'</code></td>
+              <td>右クリックされたとき．</td>
+              <td><code>MouseEvent</code></td>
+            </tr>
+            <tr>
+              <td><code>'input'</code></td>
+              <td>入力欄の値が変更されたとき．</td>
+              <td><code>Event</code></td>
+              <td rowspan="2" style="background-color: bisque">
+                <ul>
+                  <li>
+                    <code>target</code> イベントが発生した要素 (<code
+                      >EventTarget | null</code
+                    >
+                    型)
+                  </li>
+                  <li><code>type</code> event type</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><code>'change'</code></td>
+              <td>入力欄の値の変更が確定されたとき．</td>
+              <td><code>Event</code></td>
+            </tr>
+            <tr>
+              <td><code>'keydown'</code></td>
+              <td>キーが押されたとき．</td>
+              <td><code>KeyboardEvent</code></td>
+              <td rowspan="2" style="background-color: bisque">
+                <ul>
+                  <li><code>key</code> 入力された文字を表す文字列</li>
+                  <li><code>code</code> 押されたキーボード上のキーの名称</li>
+                  <li>
+                    <code>ctrlKey</code>, <code>shiftKey</code>,
+                    <code>altKey</code>, <code>metaKey</code> 修飾キー押下状況
+                  </li>
+                  <li><code>type</code> event type</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><code>'keyup'</code></td>
+              <td>キーが離されたとき．</td>
+              <td><code>KeyboardEvent</code></td>
+            </tr>
+            <tr>
+              <td><code>'focus'</code></td>
+              <td>要素にフォーカスが当たったとき．</td>
+              <td><code>FocusEvent</code></td>
+              <td style="background-color: bisque">
+                <ul>
+                  <li>
+                    <code>target</code>
+                    新しく focus された要素 (<code>EventTarget | null</code>
+                    型)
+                  </li>
+                  <li>
+                    <code>relatedTarget</code>
+                    直前に focus されていた要素 (<code>EventTarget | null</code>
+                    型)
+                  </li>
+                  <li><code>type</code> event type</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><code>'blur'</code></td>
+              <td>要素からフォーカスが外れたとき．</td>
+              <td><code>FocusEvent</code></td>
+              <td style="background-color: bisque">
+                <ul>
+                  <li>
+                    <code>target</code>
+                    直前に focus されていた要素 (<code>EventTarget | null</code>
+                    型)
+                  </li>
+                  <li>
+                    <code>relatedTarget</code>
+                    新しく focus された要素 (<code>EventTarget | null</code>
+                    型)
+                  </li>
+                  <li><code>type</code> event type</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+          <section>
+            <h3>例 - click, contextmenu</h3>
+            <p>
+              以下の例では，p タグに <code>click</code>，<code
+                >contextmenu</code
+              >
+              イベントを設定した．イベント発火時の情報を，textarea
+              タグ内に表示している．
+            </p>
+            <div class="block-container label-custom" data-label="Browser">
+              <p id="mouseevent" style="background-color: antiquewhite">
+                Click / Right Click
+              </p>
+              <textarea
+                id="mouseevent_result"
+                rows="5"
+                cols="100"
+                readonly
+              ></textarea>
+              <script type="module" src="js/25_2_1.js"></script>
+            </div>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;p id=&quot;mouseevent&quot; style=&quot;background-color: antiquewhite;&quot;&gt;Click / Right Click&lt;/p&gt;
+&lt;textarea id=&quot;mouseevent_result&quot; rows=&quot;5&quot; cols=&quot;100&quot; readonly&gt;&lt;/textarea&gt;
+&lt;script src=&quot;dist/index.js&quot;&gt;&lt;/script&gt;</code></pre>
+            </div>
+            <div
+              class="block-container label-custom theme-dark"
+              data-label="TypeScript"
+            >
+              <pre><code class="language-ts">const elm = document.getElementById('mouseevent') as HTMLElement | null;
+
+elm?.addEventListener('click', clickInfo);
+elm?.addEventListener('contextmenu', clickInfo);
+
+function clickInfo(e: MouseEvent) {
+  let res = document.getElementById('mouseevent_result') as HTMLTextAreaElement | null;
+  let text = `イベント: ${e.type}\n`;
+  text += `clientX:${e.clientX}, clientY:${e.clientY}\n`;
+  text += `button:${e.button}\n`;
+  text += `ctrlKey:${e.ctrlKey}, shiftKey:${e.shiftKey}, altKey:${e.altKey}, metaKey:${e.metaKey}`;
+  if (res !== null) {
+    res.value = text;
+  }
+}</code></pre>
+            </div>
+
+            <div class="block-info">
+              <span class="icon"></span>
+              <div class="text-content">
+                <p>
+                  上記では右クリックをすると contextmenu
+                  が表示されてしまうが，<code>e.preventDefault();</code>を利用することで，その発生が抑制できる．（但し，一部のブラウザでは
+                  <code>preventDefault()</code> を使っても contextmenu
+                  が完全に抑制されない場合がある）
+                </p>
+
+                <div class="block-container label-custom" data-label="Browser">
+                  <p
+                    id="mouseevent_extra"
+                    style="background-color: antiquewhite"
+                  >
+                    Left / Right Click（contextmenu 抑制）
+                  </p>
+                  <input id="prevent_RC" readonly />
+                  <script type="module" src="js/25_2_1_2.js"></script>
+                </div>
+                <div
+                  class="block-container label-custom theme-light"
+                  data-label="HTML"
+                >
+                  <pre><code class="language-html">&lt;p id=&quot;mouseevent_extra&quot; style=&quot;background-color: antiquewhite;&quot;&gt;Left / Right Click（contextmenu 抑制）&lt;/p&gt;
+&lt;input id=&quot;prevent_RC&quot; readonly &gt;
+&lt;script src=&quot;dist/index.js&quot;&gt;&lt;/script&gt;</code></pre>
+                </div>
+                <div class="block-container theme-dark">
+                  <pre><code class="language-ts">const elm = document.getElementById('mouseevent_extra') as HTMLElement | null;
+
+elm?.addEventListener('click', clickInfo);
+elm?.addEventListener('contextmenu', clickInfo);
+
+function clickInfo(e: MouseEvent) {
+  e.preventDefault();
+  let res = document.getElementById('prevent_RC') as HTMLInputElement | null;
+  let text = '';
+  switch (e.type) {
+    case 'click':
+      text = `pタグ上で左クリック`;
+      break;
+    case 'contextmenu':
+      text = `pタグ上で右クリック`;
+      break;
+  }
+  if (res !== null) {
+    res.value = text;
+  }
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>例 - input, change</h3>
+            <p>
+              input, change
+              は，キー入力値という概念が存在するタグに対して機能するため，主に
+              input タグおよび textarea タグに対して使用する．
+            </p>
+            <p>
+              以下の例では，input タグに <code>input</code>，<code>change</code>
+              イベントを設定した．イベント発火時の情報を，textarea
+              タグ内に表示している．
+            </p>
+            <p>以下の点に注意する必要がある：</p>
+            <ul>
+              <li>
+                change イベントの検出は，入力が確定したとき(Enterを押す，Focus
+                が変化など)になされる．
+              </li>
+              <li>
+                target プロパティで取得できる型は
+                <code>EventTarget | null</code> 型なので，実際にその DOM
+                要素を利用する場合は，<code>HTMLInputElement</code> や
+                <code>HTMLTextAreaElement</code> にキャストする必要がある．
+                <code>null</code> の可能性があるので，null
+                チェックを行うか，null 許容型にするか等を考慮する必要がある．
+              </li>
+            </ul>
+            <div class="block-container label-custom" data-label="Browser">
+              <label style="background-color: antiquewhite"
+                >input<input id="event_input"
+              /></label>
+              <label style="background-color: aquamarine"
+                >change<input id="event_change" />(注：Enter or Focus
+                移動で検出)</label
+              ><br>
+              <textarea
+                id="event_result"
+                rows="5"
+                cols="100"
+                readonly
+              ></textarea>
+              <script type="module" src="js/25_2_2.js"></script>
+            </div>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;label style=&quot;background-color: antiquewhite;&quot;&gt;input&lt;input id=&quot;event_input&quot;&gt;&lt;/label&gt;
+&lt;label style=&quot;background-color:aquamarine;&quot;&gt;change&lt;input id=&quot;event_change&quot;&gt;(注：Enter or Focus 移動で検出)&lt;/label&gt;&lt;br&gt;
+&lt;textarea id=&quot;event_result&quot; rows=&quot;5&quot; cols=&quot;100&quot; readonly&gt;&lt;/textarea&gt;
+&lt;script src=&quot;dist/index.js&quot;&gt;&lt;/script&gt;</code></pre>
+            </div>
+            <div
+              class="block-container label-custom theme-dark"
+              data-label="TypeScript"
+            >
+              <pre><code class="language-ts">const elmInput = document.getElementById('event_input') as HTMLElement | null;
+const elmChange = document.getElementById('event_change') as HTMLElement | null;
+
+elmInput?.addEventListener('input', eventInfo);
+elmChange?.addEventListener('change', eventInfo);
+
+function eventInfo(e: Event) {
+  let res = document.getElementById('event_result') as HTMLTextAreaElement | null;
+  let text = `イベント: ${e.type}\n`;
+  let elm = e.target as HTMLInputElement | null;
+  text += `現在の入力値:${elm?.value}\n`;
+  if (res !== null) {
+    res.value = text;
+  }
+}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>例 - keydown, keyup</h3>
+            <p>
+              keydown, keyup
+              イベントは，フォーカスが移る等によりキー入力の対象となるタグに対して機能する．
+            </p>
+            <p>
+              以下の例では，input タグに <code>keydown</code>，<code
+                >keyup</code
+              >
+              イベントを設定した．イベント発火時の情報を，textarea
+              タグ内に表示している．
+            </p>
+            <p>主な使用例は以下の通り．</p>
+            <ul>
+              <li>
+                keydown : 例えば，入力させたい文字を制限させたいとき（ctrl+V
+                対策も必要）
+              </li>
+              <li>keydown : カスタムショートカットキーを設定したいとき</li>
+              <li>
+                keyup : 入力確定後に文章整形をしたいとき（例：Enter
+                入力後に拡張子を付与する等）
+              </li>
+              <li>keydown/keyup : ゲームのキャラ操作等</li>
+            </ul>
+            <div class="block-container label-custom" data-label="Browser">
+              <label style="background-color: aquamarine"
+                >keydown / keyup<input id="event_kbd" /></label
+              ><br />
+              <textarea
+                id="event_kbd_result"
+                rows="5"
+                cols="100"
+                readonly
+              ></textarea>
+              <script type="module" src="js/25_2_3.js"></script>
+            </div>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;label style="background-color:aquamarine;"&gt;keydown / keyup&lt;input id="event_kbd"&gt;&lt;/label&gt;&lt;br&gt;
+&lt;textarea id="event_kbd_result" rows="5" cols="100" readonly&gt;&lt;/textarea&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+            </div>
+            <div
+              class="block-container label-custom theme-dark"
+              data-label="TypeScript"
+            >
+              <pre><code class="language-ts">const elm = document.getElementById('event_kbd') as HTMLElement | null;
+
+elm?.addEventListener('keydown', eventInfo);
+elm?.addEventListener('keyup', eventInfo);
+
+function eventInfo(e: KeyboardEvent) {
+  let res = document.getElementById('event_kbd_result') as HTMLTextAreaElement | null;
+  let text = `イベント: ${e.type}\n`;
+  text += `key:${e.key}, code:${e.code}\n`;
+  text += `ctrlKey:${e.ctrlKey}, shiftKey:${e.shiftKey}, altKey:${e.altKey}, metaKey:${e.metaKey}`;
+  if (res !== null) {
+    res.value = text;
+  }
+}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>例 - focus, blur</h3>
+            <p>
+              focus, blur
+              は，フォーカスが移る，という概念が存在するタグに対して機能する．ここで，「フォーカスが移る」とは主に「文字入力の対象となる」という意味である．
+            </p>
+            <p>
+              以下の例では，input タグに <code>focus</code>，<code>blur</code>
+              イベントを設定した．イベント発火時の情報を，p タグ内に表示している．
+            </p>
+            <div class="block-container label-custom" data-label="Browser">
+              <label style="background-color: aquamarine">
+                event 登録済<input id="event_fcs" value="inputA"
+              /></label>
+              <label style="background-color: bisque"
+                >event 未登録<input value="inputB" /></label
+              ><br />
+              <p id="event_fcs_result" style="background-color: lightpink">
+                結果がここに表示されます．
+              </p>
+              <script type="module" src="js/25_2_4.js"></script>
+            </div>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;label style="background-color:aquamarine;"&gt; event 登録済&lt;input id="event_fcs" value="inputA"&gt;&lt;/label&gt;
+&lt;label style="background-color:bisque"&gt;event 未登録&lt;input value="inputB"&gt;&lt;/label&gt;&lt;br&gt;
+&lt;p id="event_fcs_result" style="background-color:lightpink"&gt;結果がここに表示されます．&lt;/p&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+            </div>
+            <div
+              class="block-container label-custom theme-dark"
+              data-label="TypeScript"
+            >
+              <pre><code class="language-ts">const elm = document.getElementById('event_fcs') as HTMLElement | null;
+
+elm?.addEventListener('focus', eventInfo);
+elm?.addEventListener('blur', eventInfo);
+
+function eventInfo(e: FocusEvent) {
+  let res = document.getElementById('event_fcs_result') as HTMLElement | null;
+  let text = `イベント: ${e.type}<br>`;
+  switch (e.type) {
+    case 'focus':
+      text += 'target: focus 取得要素, relatedTarget: focus 失効要素<br>';
+      break;
+    case 'blur':
+      text += 'target: focus 失効要素, relatedTarget: focus 取得要素<br>';
+      break;
+  }
+  let elmRT = e.relatedTarget as HTMLInputElement | null;
+  let elmT = e.target as HTMLInputElement | null;
+  text += `target の text : ${elmT?.value}<br>`;
+  text += `relatedTarget の text : ${elmRT?.value}`;
+  if (res !== null) {
+    res.innerHTML = text;
+  }
+}</code></pre>
+            </div>
+          </section>
+          <section>
+            <h2>addEventListener と様々な event</h2>
+            <p>ここまでに紹介したもの以外にも，さまざまなイベントが存在する．その中でも，特に使用頻度や重要性が高いものを以下に列挙する．
+            </p>
+
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-30" />
+                <col class="table-col-50" />
+                <col class="table-col-20" />
+              </colgroup>
+              <tr>
+                <th>event type</th>
+                <th>説明</th>
+                <th>event object の型</th>
+              </tr>
+              <tr>
+                <td><code>'submit'</code></td>
+                <td>フォームが送信されたとき．</td>
+                <td><code>SubmitEvent</code></td>
+              </tr>
+              <tr>
+                <td><code>'load'</code></td>
+                <td>ページや画像などの読み込みが完了したとき．</td>
+                <td><code>Event</code></td>
+              </tr>
+              <tr>
+                <td><code>'error'</code></td>
+                <td>リソースの読み込みに失敗したとき．</td>
+                <td><code>Event</code></td>
+              </tr>
+              <tr>
+                <td><code>'dblclick'</code></td>
+                <td>ダブルクリックしたとき．</td>
+                <td><code>MouseEvent</code></td>
+              </tr>
+              <tr>
+                <td><code>'mousedown'</code></td>
+                <td>マウスボタンが押されたとき．</td>
+                <td><code>MouseEvent</code></td>
+              </tr>
+              <tr>
+                <td><code>'mouseup'</code></td>
+                <td>マウスボタンが離されたとき．</td>
+                <td><code>MouseEvent</code></td>
+              </tr>
+              <tr>
+                <td><code>'mouseenter'</code></td>
+                <td>マウスポインタが要素に入ったとき．</td>
+                <td><code>MouseEvent</code></td>
+              </tr>
+              <tr>
+                <td><code>'mouseleave'</code></td>
+                <td>マウスポインタが要素から出たとき．</td>
+                <td><code>MouseEvent</code></td>
+              </tr>
+              <tr>
+                <td><code>'scroll'</code></td>
+                <td>スクロールが発生したとき．</td>
+                <td><code>Event</code></td>
+              </tr>
+              <tr>
+                <td><code>'resize'</code></td>
+                <td>ウィンドウのサイズが変化したとき．</td>
+                <td><code>UIEvent</code></td>
+              </tr>
+            </table>
+            <p>
+              なお，ここで Event 型としたものの中には，より具体的な型（例：UIEvent や ErrorEvent）が内部的に使われる場合もある．
+              上記以外にも多くのイベントが存在するが，具体的な使用例とともに，必要に応じて順次紹介することにする．
+            </p>
+          </section>
+        </section>
+        <section>
+          <h2>removeEventListener</h2>
+          <p>
+            DOM 要素に登録した event に紐づいた関数を削除するには
+            <code>removeEventListener</code> を利用する．使用の仕方は
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">//elm は登録を削除したい DOM 要素を表す変数
+elm.removeEventListener('event type', 登録した関数名);</code></pre>
+          </div>
+          <p>のようにして行う．</p>
+          <p>
+            以下の例では，「イベント登録」および「イベント削除」ボタンを押すと，実行ボタンに
+            click イベントが登録/削除される．
+            「実行(登録済)」となっているときにクリックすると alert
+            が出るようになっている．
+          </p>
+          <div class="block-container label-custom" data-label="Browser">
+            <button id="add_event">イベント登録</button>
+            <button id="remove_event">イベント削除</button>
+            <button id="trigger">実行(未登録)</button>
+            <script type="module" src="js/25_3.js"></script>
+          </div>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;button id="add_event"&gt;イベント登録&lt;/button&gt;
+&lt;button id="remove_event"&gt;イベント削除&lt;/button&gt;
+&lt;button id="trigger"&gt;実行(未登録)&lt;/button&gt;</code></pre>
+          </div>
+          <div
+            class="block-container label-custom theme-dark"
+            data-label="TypeScript"
+          >
+            <pre><code class="language-ts">const elmAdd = document.getElementById('add_event') as HTMLElement | null;
+const elmRemove = document.getElementById('remove_event') as HTMLElement | null;
+const elm = document.getElementById('trigger') as HTMLElement | null;
+
+elmAdd?.addEventListener('click', addEvent);
+elmRemove?.addEventListener('click', removeEvent);
+
+function addEvent() {
+  if (elm !== null) {
+    elm.addEventListener('click', greet);
+    elm.innerText = '実行(登録済)';
+  }
+}
+
+function removeEvent() {
+  if (elm !== null) {
+    elm.removeEventListener('click', greet);
+    elm.innerText = '実行(未登録)';
+  }
+}
+
+function greet() {
+  alert('Hello');
+}</code></pre>
+          </div>
+          <p>
+            上記プログラムでは，登録した関数の引数を省略した．このように，event
+            object を関数内で使用しない場合は引数を省略できる．
+          </p>
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                各 event type
+                には，複数の関数を登録することができる．その場合は，登録した順にその関数が実行される．たとえば，
+              </p>
+
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">elm.addEventListener('click', greetA);
+elm.addEventListener('click', greetB);</code></pre>
+              </div>
+              <p>
+                とすれば，関数<code>greetA</code>を実行した後に関数<code>greetB</code>が実行される．このように複数の関数を登録することは，<code>onclick</code>属性では実現できないことである．
+                同様のことを実現したい場合は，
+              </p>
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">function greet() {
+   greetA();
+   greetB(); 
+}</code></pre>
+              </div>
+              <p>
+                のように複数の関数をコントロールする関数<code>greet</code>を登録するしかない．
+              </p>
+            </div>
+          </div>
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                登録したい関数が単純な関数ならば，アロー関数として登録することはできる．例えば，alert
+                を表示する関数は
+              </p>
+
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">elm.addEventListener('click', () => alert('Hello'));</code></pre>
+              </div>
+              <p>のようにすればよい．event object を利用したい場合は，例えば</p>
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">elm.addEventListener('keydown', (e: KeyboardEvent) => alert(`key: ${e.key}`));</code></pre>
+              </div>
+              <p>
+                のように登録することができる．しかし，<strong
+                  >このように登録した関数は<span style="color: red"
+                    >削除できない</span
+                  ></strong
+                >という点に留意が必要である．削除できる関数は，関数宣言等をして名前のある関数に限る．
+              </p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
