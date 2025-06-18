@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>タイマー管理</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- 現在移行作業中 -->
+    <link rel="stylesheet" href="css/blocks-00.css" />
+    <link rel="stylesheet" href="css/code-00.css" />
+    <link rel="stylesheet" href="css/heading-00.css" />
+    <link rel="stylesheet" href="css/table-00.css" />
+    <link rel="stylesheet" href="css/layout-00.css" />
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>タイマー管理 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="26-dom-timer.html">タイマー管理</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="25-dom-eventlistener.html" class="prev">前</a> |
+        <a href="" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>処理の実行順序 - その1</h2>
+          <p>
+            JavaScript
+            では，実行前に構文解析および宣言の環境登録が行われ，その後，上から順に実行される．例えば，
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">console.log('A');
+let x = 10;
+console.log('B');
+console.log(x);</code></pre>
+          </div>
+          <p>のような code があった場合，</p>
+          <ol>
+            <li><code>console.log('A');</code> が実行される</li>
+            <li><code>let x = 10;</code> が実行される</li>
+            <li><code>console.log('B');</code> が実行される</li>
+            <li><code>console.log(x);</code> が実行される</li>
+          </ol>
+          <p>の順で処理が行われる．</p>
+          <p>
+            構文解析により関数の宣言が検出され，宣言の環境登録の段階で関数の登録が行われる．これにより，各処理において適切に関数を呼び出すことができる．
+            これにより，関数の定義がコードの後のほうに書かれていても，適切に呼び出すことが可能となる．
+            これを巻き上げ (hoisting) というのであった（<a
+              href="06-function.html"
+              >参照</a
+            >）．例えば，
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">console.log('A');
+greet();
+
+function greet() {
+  console.log('Hello')
+  console.log('World')
+}
+
+console.log('B');
+</code></pre>
+          </div>
+          <p>の場合は，</p>
+          <ol>
+            <li>
+              関数
+              <code>greet</code>
+              がシステムに登録され，自由に呼び出せるようになる．
+            </li>
+            <li><code>console.log('A');</code>が実行される．</li>
+            <li>
+              <code>greet();</code>が実行される．
+              <ol>
+                <li><code>console.log('Hello');</code>が実行される．</li>
+                <li><code>console.log('World');</code>が実行される．</li>
+              </ol>
+            </li>
+            <li><code>console.log('B');</code>が実行される．</li>
+          </ol>
+          <p>
+            のような順で処理が行われる．<code>function greet() {...}</code
+            >の部分は，関数<code>greet</code>の定義であり，<code>greet();</code>の実行と<code>console.log('B');</code>の実行の
+            間に挟まれているように見えるが，実行時には関数定義自体は評価（実行）されず，あくまで関数の呼び出し部分だけが評価対象となる．
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">console.log('A');
+greet();
+
+function greet() {
+  while(true){
+    console.log('loop');
+  }//無限ループ
+}
+
+console.log('B');
+</code></pre>
+          </div>
+          <p>
+            上記のようなコードの場合は，関数<code>greet</code>の内部で無限ループが発生しており，
+          </p>
+          <ol>
+            <li>
+              関数
+              <code>greet</code>
+              がシステムに登録され，自由に呼び出せるようになる．
+            </li>
+            <li><code>console.log('A');</code>が実行される．</li>
+            <li>
+              <code>greet();</code>が実行される．
+              <ol>
+                <li><code>while</code>ブロック</li>
+                <ol>
+                  <li>whileブロックの継続判定: true</li>
+                  <li><code>console.log('loop');</code>が実行される．</li>
+                  <li>whileブロックの継続判定: true</li>
+                  <li><code>console.log('loop');</code>が実行される．</li>
+                  <li>...</li>
+                </ol>
+              </ol>
+            </li>
+          </ol>
+          <p>
+            のように実行される．無限ループのため，いつまでたっても処理が終わらず，<code>console.log('B');</code>が実行されることはない．
+          </p>
+          <p>
+            このように，JavaScript
+            は上から順に処理が実行され，処理が完了してから次の処理に移る，という手順でプログラムが動くようになっている．処理は基本即時実行なので，時間が関わる処理を実行したい場合は工夫が必要であった．<a
+              href="05-loop.html"
+              >ループ処理</a
+            >のページでは，<code>Date.now()</code>を利用することで時間関係を処理していた．例えば，
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">let x = 0;
+while (true) {
+  console.log(x);
+  waitTime(1000);//1000ms待機
+  x++;
+}
+
+function waitTime(ms: number) {
+  const now = Date.now();
+  while (Date.now() - now &lt; ms) {}
+}</code></pre>
+          </div>
+          <p>
+            のようにすれば 1秒
+            ごとに<code>console.log(x);</code>が行われるコードを書くことができる．
+          </p>
+          <p>
+            上記のような，時間をトリガーにした処理は，<code>setTimeout</code> や
+            <code>setInterval</code>
+            を使うと，より簡便に記述することができ，これを以下で学んでいく．
+          </p>
+        </section>
+        <section>
+          <h2>setTimeout</h2>
+          <p>
+            <code>setTimeout</code>
+            は，宣言してから指定時間後に，指定の処理を実行する命令である．構文は以下の通り：
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">let val = setTimeout(func, time, p1, p2, ...);</code></pre>
+          </div>
+          <ul>
+            <li>
+              <code>val</code>:
+              登録ID（型は実行環境によって変化．予約キャンセルをする際に利用する．）
+            </li>
+            <li><code>func</code>: 予約登録をしたい関数</li>
+            <li><code>time</code>: 何 ms 後に処理を実行したいか指定</li>
+            <li>
+              <code>p1</code>, <code>p2</code>, ... :
+              関数の引数（引数がなければ省略する）
+            </li>
+          </ul>
+          <p>上記における補足事項は以下の通り：</p>
+          <ul>
+            <li>
+              登録 ID が不要な場合は，単に
+              <code>setTimeout(func, time, p1, p2, ...);</code> と書いてよい．
+            </li>
+            <li>
+              <code>val</code> の型は，ブラウザなら
+              <code>number</code> 型，Node.js ならば
+              <code>Timeout</code> オブジェクトである．
+            </li>
+            <li>登録した関数の戻り値は無視される．</li>
+            <li>
+              指定した時間後にすぐに処理が実行されることは保証されない．例えば，100ms
+              後に実行すると書いても，実際の処理が 1000ms
+              後になることはありうる．
+            </li>
+          </ul>
+          <h3>例1</h3>
+          <p>
+            以下の例では，登録 ID
+            は不要なため，単に<code>setTimeout</code>のみ書いている．
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">setTimeout(greet, 1000, 'A');
+setTimeout(greet, 2000, 'B');
+setTimeout(greet, 3000, 'C');
+setTimeout(greet, 1000, 'D');
+setTimeout(greet, 2000, 'E');
+setTimeout(greet, 3000, 'F');
+
+function greet(x: string) {
+  console.log(x);
+}</code></pre>
+          </div>
+          <p>
+            処理の順序は以下の通り．説明の都合上，各処理の実行にかかる時間は 0ms
+            であると仮定し，現在時刻を t [s]で表している．
+          </p>
+          <ol>
+            <li>
+              [t = 0] 関数
+              <code>greet</code>
+              がシステムに登録され，自由に呼び出せるようになる．
+            </li>
+            <li>
+              [t = 0]
+              <code>setTimeout(greet, 1000, 'A');</code
+              >が実行（関数<code>greet('A')</code>の実行を 1000ms = 1s
+              後に予約）
+            </li>
+            <li>
+              [t = 0]
+              <code>setTimeout(greet, 2000, 'B');</code
+              >が実行（関数<code>greet('B')</code>の実行を 2000ms = 2s
+              後に予約）
+            </li>
+            <li>
+              [t = 0]
+              <code>setTimeout(greet, 3000, 'C');</code
+              >が実行（関数<code>greet('C')</code>の実行を 3000ms = 3s
+              後に予約）
+            </li>
+            <li>
+              [t = 0]
+              <code>setTimeout(greet, 1000, 'D');</code
+              >が実行（関数<code>greet('D')</code>の実行を 1000ms = 1s
+              後に予約）
+            </li>
+            <li>
+              [t = 0]
+              <code>setTimeout(greet, 2000, 'E');</code
+              >が実行（関数<code>greet('E')</code>の実行を 2000ms = 2s
+              後に予約）
+            </li>
+            <li>
+              [t = 0]
+              <code>setTimeout(greet, 3000, 'F');</code
+              >が実行（関数<code>greet('F')</code>の実行を 3000ms = 3s
+              後に予約）
+            </li>
+            <li>[t = 1] 予約されていた<code>greet('A')</code>が実行</li>
+            <li>[t = 1] 予約されていた<code>greet('D')</code>が実行</li>
+            <li>[t = 2] 予約されていた<code>greet('B')</code>が実行</li>
+            <li>[t = 2] 予約されていた<code>greet('E')</code>が実行</li>
+            <li>[t = 3] 予約されていた<code>greet('C')</code>が実行</li>
+            <li>[t = 3] 予約されていた<code>greet('F')</code>が実行</li>
+          </ol>
+          <h2>処理の実行順序 - その2</h2>
+          <p>
+            <code>setTimeout</code> や
+            <code>setInterval</code>
+            を正しく理解するには，処理の実行順序をより正確に理解しなければならない．JavaScript
+            では，構文解析の後に上から順に処理が実行されるが，
+            最初に読み込まれる部分はグローバルスコープと呼ばれ，初めに実行される
+            main 関数のような立ち位置である．つまり，イメージとしては
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">console.log('A');</code></pre>
+          </div>
+          というコードを渡して実行するということは，
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">function main() {
+  console.log('A');
+}</code></pre>
+          </div>
+          <p>
+            のような <code>main</code> 関数を定義し，<code>main()</code>
+            を実行させていることに等しい．（実際には，グローバルスコープのため，ここで定義された変数はどこからでもアクセスできるという意味で完全には同じではない．）以降では，この部分の処理を「main
+            処理」と呼ぶことにする．
+          </p>
+          <p>この概念を導入すれば，以下の code の実行順がよく理解できる：</p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">setTimeout(greet, 1000, 'xxx');
+console.log('Hello');
+waitTime(2000); // 2 秒待機
+console.log('World');
+waitTime(1000); // 1 秒待機
+
+function greet(x: string) {
+  console.log(x);
+}
+function waitTime(x: number) {
+  const now = Date.now();
+  while (Date.now() - now &lt; x) {}
+}
+</code></pre>
+          </div>
+          <ol>
+            <li>
+              [t = 0] 関数
+              <code>greet</code>, <code>waitTime</code>
+              がシステムに登録され，自由に呼び出せるようになる．
+            </li>
+            <li>
+              main 処理を実行
+              <ol>
+                <li>
+                  [t = 0]
+                  <code>setTimeout(greet, 1000, 'xxx');</code
+                  >が実行（<code>greet('xxx')</code>を 1s 後に予約）
+                </li>
+                <li>[t = 0] <code>console.log('Hello');</code>が実行</li>
+
+                <li>[t = 0] <code>waitTime(2000);</code>が実行</li>
+                <ol>
+                  <li>[t = 0] <code>const now = Date.now();</code> が実行</li>
+                  <li>
+                    [t = 0]
+                    <code>while (Date.now() - now &lt; 2000) {}</code> が実行
+                  </li>
+                  <li>
+                    [t = 2] <code>while</code> 継続条件が
+                    <code>false</code> になる
+                  </li>
+                </ol>
+                <li>[t = 2] <code>console.log('World');</code>が実行</li>
+                <li>[t = 2] <code>waitTime(1000);</code>が実行</li>
+                <ol>
+                  <li>[t = 2] <code>const now = Date.now();</code> が実行</li>
+                  <li>
+                    [t = 2]
+                    <code>while (Date.now() - now &lt; 1000) {}</code> が実行
+                  </li>
+                  <li>
+                    [t = 3] <code>while</code> 継続条件が
+                    <code>false</code> になる
+                  </li>
+                </ol>
+              </ol>
+            </li>
+            <li>[t = 3] 予約されていた<code>greet('xxx')</code>が実行</li>
+          </ol>
+          <p>
+            上記の例にあるように，1s
+            後に実行予約していたとしても，実行されるタイミングは 1s
+            後とは限らない．<code>setTimeout</code> の予約時間 (1s)
+            が経過しても，main 処理が完了するまでは予約処理は実行されないため，
+            結果的に 3s
+            後に実行されるのである．処理が完了してから次の処理に移る，という構造になっているため，処理に時間がかかればその分，実行タイミングが遅くなることに注意が必要である．
+          </p>
+        </section>
+        <section>
+          <h2>setInterval</h2>
+          <p>
+            <code>setTimeout</code>
+            は指定時刻経過後の関数の実行予約であったが，<code>setInterval</code>
+            を利用すれば，定期的に実行する関数の登録ができる．構文は以下の通りである．
+          </p>
+
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">let val = setInterval(func, time, p1, p2, ...);</code></pre>
+          </div>
+          <ul>
+            <li>
+              <code>val</code>:
+              登録ID（型は実行環境によって変化．予約キャンセルをする際に利用する．）
+            </li>
+            <li><code>func</code>: 定期実行の登録をしたい関数</li>
+            <li><code>time</code>: 何 ms 毎に処理を実行したいか指定</li>
+            <li>
+              <code>p1</code>, <code>p2</code>, ... :
+              関数の引数（引数がなければ省略する）
+            </li>
+          </ul>
+          <p>上記における補足事項は以下の通り：</p>
+          <ul>
+            <li>
+              登録 ID が不要な場合は，単に
+              <code>setInterval(func, time, p1, p2, ...);</code> と書いてよい．
+            </li>
+            <li>
+              <code>val</code> の型は，ブラウザなら
+              <code>number</code> 型，Node.js ならば
+              <code>Timeout</code> オブジェクトである．
+            </li>
+            <li>登録した関数の戻り値は無視される．</li>
+            <li>
+              指定した時間毎に処理が実行されることは保証されない．例えば，1000ms
+              毎に実行すると書いても，実際の処理は 1000ms 毎とは限らない．
+            </li>
+            <li>
+              関数の定期実行の時間計測は，直前にその関数が実行開始された時刻を基準とする<a
+                href="#order-of-process-3"
+                >（後述）</a
+              >
+            </li>
+          </ul>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">let x = 0;
+console.log('Hello');
+setInterval(tick, 1000);
+console.log('World');
+
+function tick() {
+  console.log(`tick[${x}]`);
+  x++;
+}</code></pre>
+          </div>
+          <ol>
+            <li>
+              [t = 0] 関数
+              <code>tick</code>
+              がシステムに登録され，自由に呼び出せるようになる．
+            </li>
+            <li>
+              main 処理を実行
+              <ol>
+                <li>
+                  [t = 0]
+                  <code>let x = 0;</code>が実行（以後，変数
+                  <code>x</code> が使用可能になる）
+                </li>
+                <li>[t = 0] <code>console.log('Hello');</code>が実行</li>
+                <li>
+                  [t = 0] <code>setInterval(tick, 1000);</code>が実行（1s
+                  毎に関数 tick を定期実行）
+                </li>
+                <li>[t = 0] <code>console.log('World');</code>が実行</li>
+              </ol>
+            </li>
+            <li>
+              [t = 1] 予約されていた<code>tick()</code>が実行
+              <ol>
+                <li>[t = 1] <code>console.log('tick[0]');</code>が実行</li>
+                <li>
+                  [t = 1] <code>x++;</code>が実行（<code>x</code>の値が 1
+                  になる）
+                </li>
+              </ol>
+            </li>
+
+            <li>
+              [t = 2] 予約されていた<code>tick()</code>が実行
+              <ol>
+                <li>[t = 2] <code>console.log('tick[1]');</code>が実行</li>
+                <li>
+                  [t = 2] <code>x++;</code>が実行（<code>x</code>の値が 2
+                  になる）
+                </li>
+              </ol>
+            </li>
+            <li>...</li>
+          </ol>
+        </section>
+        <section>
+          <h2 id="order-of-process-3">処理の実行順序 - その3</h2>
+          <p>
+            setInterval
+            の処理の定期実行の経過時刻は，関数を実行した際に次の関数の実行が予約される．具体的には，
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">setInterval(func, time);</code></pre>
+          </div>
+          <p>の挙動と</p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">setTimeout(repeat, time);
+
+function repeat() {
+  setTimeout(repeat, time);//関数実行前に次回予約
+  func();//処理を実行
+}</code></pre>
+          </div>
+          <p>
+            は，挙動の観点から同等と見なして差し支えない．これについては，以下のコードを見るとよく理解できる．以下では説明の都合上，各処理の実行に
+            0.001s だけかかっていると仮定してある．
+          </p>
+
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">setInterval(tick, 1000);
+setTimeout(() => waitTime(2000), 2900);
+
+function tick() {
+  waitTime(500); //500ms 待機
+  console.log('tick');
+}
+
+function waitTime(x: number) {
+  const now = Date.now();
+  while (Date.now() - now &lt; x) {}
+}</code></pre>
+          </div>
+          <ol>
+            <li>
+              [t = 0] 関数
+              <code>tick</code>, <code>waitTime</code>
+              がシステムに登録され，自由に呼び出せるようになる．
+            </li>
+            <li>
+              main 処理を実行
+              <ol>
+                <li>
+                  [t = 0]
+                  <code>setInterval(tick, 1000);</code>が実行（1s 毎に
+                  <code>tick</code> を定期実行）
+                </li>
+                <li>
+                  [t = 0]
+                  <code>setTimeout(() => waitTime(2000), 2900);</code
+                  >が実行（処理 <code>() => waitTime(2000);</code> を，2.9s
+                  後に実行）
+                </li>
+              </ol>
+            </li>
+            <li>
+              [t = 1] 予約されていた<code>tick()</code>が実行．<span
+                style="color: red"
+                >同時に，1s 後に<code>tick()</code>を実行するように登録．</span
+              >
+              <ol>
+                <li>
+                  [t = 1] <code>waitTime(500);</code>が実行
+                  <ol>
+                    <li>[t = 1] <code>const now = Date.now();</code> が実行</li>
+                    <li>
+                      [t = 1]<code>while (Date.now() - now &lt; 500) {}</code>
+                      が実行
+                    </li>
+                    <li>
+                      [t = 1.5] <code>while</code> 継続条件が
+                      <code>false</code> になる．
+                    </li>
+                  </ol>
+                </li>
+                <li>[t = 1.5] <code>console.log('tick');</code>が実行</li>
+              </ol>
+            </li>
+            <li>
+              [t = 2] 予約されていた<code>tick()</code>が実行．<span
+                style="color: red"
+                >同時に，1s 後に<code>tick()</code>を実行するように登録．</span
+              >
+              <ol>
+                <li>
+                  [t = 2] <code>waitTime(500);</code>が実行
+                  <ol>
+                    <li>[t = 2] <code>const now = Date.now();</code> が実行</li>
+                    <li>
+                      [t = 2]<code>while (Date.now() - now &lt; 500) {}</code>
+                      が実行
+                    </li>
+                    <li>
+                      [t = 2.5] <code>while</code> 継続条件が
+                      <code>false</code> になる．
+                    </li>
+                  </ol>
+                </li>
+                <li>[t = 2.5] <code>console.log('tick');</code>が実行</li>
+              </ol>
+            </li>
+
+            <li>
+              [t = 2.9] 予約されていた<code>() => waitTime(2000)</code>が実行．
+              <ol>
+                <li>
+                  [t = 2.9] <code>waitTime(2000);</code>が実行
+                  <ol>
+                    <li>
+                      [t = 2.9] <code>const now = Date.now();</code> が実行
+                    </li>
+                    <li>
+                      [t = 2.9]<code
+                        >while (Date.now() - now &lt; 2000) {}</code
+                      >
+                      が実行
+                    </li>
+                    <li>
+                      [t = 4.9] <code>while</code> 継続条件が
+                      <code>false</code> になる．
+                    </li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+            <li>
+              [t = 5] 予約されていた<code>tick()</code>が実行．<span
+                style="color: red"
+                >同時に，1s 後に<code>tick()</code>を実行するように登録．</span
+              >
+              <ol>
+                <li>
+                  [t = 5] <code>waitTime(500);</code>が実行
+                  <ol>
+                    <li>[t = 5] <code>const now = Date.now();</code> が実行</li>
+                    <li>
+                      [t = 5]<code>while (Date.now() - now &lt; x) {}</code>
+                      が実行
+                    </li>
+                    <li>
+                      [t = 5.5] <code>while</code> 継続条件が
+                      <code>false</code> になる．
+                    </li>
+                  </ol>
+                </li>
+                <li>[t = 5.5] <code>console.log('tick');</code>が実行</li>
+              </ol>
+            </li>
+
+            <li>
+              [t = 6] 予約されていた<code>tick()</code>が実行
+              <ol>
+                <li>...</li>
+              </ol>
+            </li>
+          </ol>
+          <p>
+            実行をしてみるとわかるが，十分時間が経過すると，<code>tick()</code>が
+            1s 毎に表示されるということから，
+          </p>
+          <ul>
+            <li>実行時刻を登録時に設定</li>
+            <li>処理実行時に，次回登録時刻を設定</li>
+          </ul>
+          のいずれかの可能性であることがわかる．また，<code
+            >setTimeout(()=> waitTime(2000), 2900)</code
+          >を割り込ませたあと，<code>tick()</code> が一括で複数回実行されたりせず，時系列に沿って順番に実行され続けていることから，
+          「前回の処理の完了を待って次回が登録される」ことが裏付けられる．
+          したがって，<code>setInterval</code> は，関数の「実行時に次回の予約がなされる」方式であると考えられる．
+        </section>
+        <section>
+          <h2>clearTimeout, clearInterval</h2>
+          <p>
+            <code>setTimeout</code> や
+            <code>setInterval</code> で登録された実行予約については，それぞれ
+            <code>clearTimeout</code> および
+            <code>clearInterval</code> を用いてキャンセルができる． 構文は，
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">clearTimeout(id);</code></pre>
+          </div>
+          <ul>
+            <li><code>id</code>: setTimeout 登録時の登録 id</li>
+          </ul>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">clearInterval(id);</code></pre>
+          </div>
+          <ul>
+            <li><code>id</code>: setInterval 登録時の登録 id</li>
+          </ul>
+          <p>
+            である．特に，<code>setInterval</code> は定期的に処理を繰り返すため，不要になった時点で <code>clearInterval</code> を呼び出さないと，無限に処理が実行され続け，CPU リソースを無駄に消費する可能性がある．
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">let idA = setTimeout(() => console.log('A'), 1000);
+setTimeout(() => console.log('B'), 2000);
+let idC = setInterval(() => console.log('C'), 3000);
+
+clearA();
+setTimeout(() => clearC(), 10000);
+
+function clearA() {
+  clearTimeout(idA);
+}
+
+function clearC() {
+  clearInterval(idC);
+}</code></pre>
+          </div>
+
+          <ol>
+            <li>
+              [t = 0] 関数
+              <code>clearA</code>, <code>clearC</code>
+              がシステムに登録され，自由に呼び出せるようになる．
+            </li>
+            <li>
+              main 処理を実行
+              <ol>
+                <li>
+                  [t = 0]
+                  <code
+                    >let idA = setTimeout(() => console.log('A'), 1000);</code
+                  >が実行（1s 後に id = idA の処理を実行する）
+                </li>
+                <li>
+                  [t = 0]
+                  <code>setTimeout(() => console.log('B'), 2000);</code
+                  >が実行（2s 後に
+                  <code>() => console.log('B');</code> の処理を実行する）
+                </li>
+                <li>
+                  [t = 0]
+                  <code
+                    >let idC = setInterval(() => console.log('C'), 3000);</code
+                  >が実行（3s 毎に id = idC の処理を定期実行する）
+                </li>
+                <li>
+                  [t = 0]
+                  <code>clearA();</code>が実行
+                  <ol>
+                    <li>
+                      [t = 0] <code>clearTimeout(idA);</code> が実行（id = idA
+                      の実行予約をキャンセル）
+                    </li>
+                  </ol>
+                </li>
+                <li>
+                  [t = 0]
+                  <code>setTimeout(() => clearC(), 10000);</code>が実行（10s
+                  後に <code>() => clearC()</code> の処理を実行する）
+                </li>
+              </ol>
+            </li>
+            <li>
+              [t = 2] 予約されていた<code>() => console.log('B');</code>が実行．
+              <ol>
+                <li>[t = 2] <code>console.log('B');</code>が実行</li>
+              </ol>
+            </li>
+            <li>
+              [t = 3] 予約されていた<code>() => console.log('C')</code
+              >が実行．<span style="color: red"
+                >同時に，3s 後に<code>() => console.log('C')</code
+                >を実行するように登録．</span
+              >
+              <ol>
+                <li>[t = 3] <code>console.log('C');</code>が実行</li>
+              </ol>
+            </li>
+            <li>
+              [t = 6] 予約されていた<code>() => console.log('C')</code
+              >が実行．<span style="color: red"
+                >同時に，3s 後に<code>() => console.log('C')</code
+                >を実行するように登録．</span
+              >
+              <ol>
+                <li>[t = 6] <code>console.log('C');</code>が実行</li>
+              </ol>
+            </li>
+            <li>
+              [t = 9] 予約されていた<code>() => console.log('C')</code
+              >が実行．<span style="color: red"
+                >同時に，3s 後に<code>() => console.log('C')</code
+                >を実行するように登録．</span
+              >
+              <ol>
+                <li>[t = 9] <code>console.log('C');</code>が実行</li>
+              </ol>
+            </li>
+
+            <li>
+              [t = 10] 予約されていた<code>() => clearC()</code>が実行．
+              <ol>
+                <li>
+                  [t = 10] <code>clearC();</code>が実行
+                  <ol>
+                    <li>
+                      [t = 10] <code>clearInterval(idC);</code> が実行（id = idC
+                      の実行予約をキャンセル）
+                    </li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+          </ol>
+          <p>
+  以上のように，<code>clearTimeout</code> と <code>clearInterval</code> は，<code>setTimeout</code>/<code>setInterval</code> による非同期処理を安全に制御するために不可欠な機能である．
+  特に setInterval は，自動では停止しない点に注意が必要である．
+</p>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
