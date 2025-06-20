@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>要素取得</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- 現在移行作業中 -->
+    <link rel="stylesheet" href="css/blocks-00.css" />
+    <link rel="stylesheet" href="css/code-00.css" />
+    <link rel="stylesheet" href="css/heading-00.css" />
+    <link rel="stylesheet" href="css/table-00.css" />
+    <link rel="stylesheet" href="css/layout-00.css" />
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>要素取得 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="28-dom-query.html">要素取得</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="27-ts-condition-tips.html" class="prev">前</a> |
+        <a href="" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>DOM 要素の取得と outerHTML</h2>
+          <p>
+            DOM 要素を取得する方法として，<a href="10-dom-introduction.html"
+              >以前</a
+            >に <code>getElementById</code> および
+            <code>getElementsByClassName</code> を学んだ．前者は id
+            を文字列で指定することで，DOM 要素を取得することができる． 後者は
+            class を文字列で指定することで，DOM
+            要素のリストを取得することができる．取得された DOM
+            要素を確認する際，<code>outerHTML</code>
+            プロパティを利用すると便利である． これは，取得した DOM 要素自体の
+            html を取得できる．
+          </p>
+
+          <h3>例</h3>
+          <div class="block-container label-custom" data-label="Browser">
+            <div id="ex1">
+              <span id="idA">idA</span>
+              <button id="idB">idB</button>
+              <input class="classX" value="classX-1" readonly />
+              <input class="classX" value="classX-2" readonly /><br />
+
+              <button id="get-idA">idA取得</button>
+              <button id="get-idB">idB取得</button>
+              <button id="get-classX-1">classX - 1つ目取得</button>
+              <button id="get-classX-2">classX - 2つ目取得</button><br />
+              <textarea id="result-ex1" cols="100" rows="3"></textarea>
+            </div>
+            <script src="js/28_1.js"></script>
+          </div>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;div id="ex1"&gt;
+  &lt;span id="idA"&gt;idA&lt;/span&gt;
+  &lt;button id="idB"&gt;idB&lt;/button&gt;
+  &lt;input class="classX" value = "classX-1" readonly&gt;
+  &lt;input class="classX" value = "classX-2" readonly&gt;&lt;br&gt;
+
+  &lt;button id="get-idA"&gt;idA取得&lt;/button&gt;
+  &lt;button id="get-idB"&gt;idB取得&lt;/button&gt;
+  &lt;button id="get-classX-1"&gt;classX - 1つ目取得&lt;/button&gt;
+  &lt;button id="get-classX-2"&gt;classX - 2つ目取得&lt;/button&gt;&lt;br&gt;
+  &lt;textarea id="result-ex1" cols="100" rows = 3&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+          </div>
+          <div
+            class="block-container label-custom theme-dark"
+            data-label="TypeScript"
+          >
+            <pre><code class="language-ts">const btnA = document.getElementById('get-idA') as HTMLElement | null;
+const btnB = document.getElementById('get-idB') as HTMLElement | null;
+const btnX1 = document.getElementById('get-classX-1') as HTMLElement | null;
+const btnX2 = document.getElementById('get-classX-2') as HTMLElement | null;
+
+btnA?.addEventListener('click', () => getID('idA'));
+btnB?.addEventListener('click', () => getID('idB'));
+btnX1?.addEventListener('click', () => getClass('classX', 1));
+btnX2?.addEventListener('click', () => getClass('classX', 2));
+
+function getClass(cls: string, idx: number) {
+  const elmList = document.getElementsByClassName(cls);
+  const res = document.getElementById('result_ex1') as HTMLTextAreaElement | null;
+  if (res) {
+    res.value = elmList?.[idx - 1].outerHTML ?? '要素がみつかりません';
+  }
+}
+
+function getID(id: string) {
+  const elm = document.getElementById(id) as HTMLElement | null;
+  const res = document.getElementById('result-ex1') as HTMLTextAreaElement | null;
+  if (res) {
+    res.value = elm?.outerHTML ?? '要素がみつかりません';
+  }
+}</code></pre>
+          </div>
+          <p>
+            上記のように，<code>id</code> や <code>class</code> が設定されている
+            DOM
+            要素は自由に取得できるのだが，もっと柔軟に取得したいことがある．例えば，取得したい
+            DOM 要素に <code>id</code> や
+            <code>class</code> が設定されているとは限らない．
+          </p>
+          <p>
+            そこで，より柔軟な DOM 要素の取得の仕方として，<code
+              >querySelector</code
+            >
+            を利用する方法を学ぶ．
+          </p>
+        </section>
+        <section>
+          <h2>querySelector</h2>
+          <p>
+            querySelector を利用することで，様々な指定の仕方で DOM
+            要素が取得できる．
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">let val = xxx.querySelector("検索書式")</code></pre>
+          </div>
+          <ul>
+            <li><code>val</code>の型: <code>Element | null</code> 型</li>
+          </ul>
+          <p>
+            のように利用することで，<code>xxx</code> から指定した検索書式の DOM
+            要素が取得できる．<code>getElementById</code> や
+            <code>getElementsByClassName</code> とは異なり，<code>xxx</code> は
+            <code>document</code> に限らず任意の DOM
+            要素（検索を開始したい要素）が指定できるという点も便利である．一方，検索方法については非常に多くの検索書式があり，一度にすべて紹介するのは大変なため，本ページではまずは以下の3種類を絞って紹介する:
+          </p>
+          <ul>
+            <li>
+              id指定検索: <code>#idName</code> とすれば，id = idName の DOM
+              要素が検索できる
+            </li>
+            <li>
+              class指定検索: <code>.className</code> とすれば，class = className
+              の DOM 要素が検索できる
+            </li>
+            <li>
+              タグ指定検索: <code>tag</code> とすれば，指定した tag の DOM
+              要素が検索できる
+            </li>
+          </ul>
+          <p>
+            その後，いくつかの検索書式を紹介していく．なお，<code>querySelector</code>
+            では，検索して複数 Hit した場合でも最初の 1 件のみが返されることに注意が必要である．
+          </p>
+<h3>例</h3>
+          <div class="block-container label-custom" data-label="Browser">
+<div id = "ex2">              
+  <div id = "idA2">
+    <span class="classX2" style="background-color: antiquewhite;">classX2-1</span>
+    <span class="classX2" style="background-color: aquamarine;">classX2-2</span>
+    <span class="classY2" style="background-color: darksalmon;">classY2</span>
+    <p id="idB2" style="background-color:cornflowerblue">idB2</p>
+  </div>
+
+  <label><input class="queryType-2" type="radio" name="queryType-2" value="#idA2">#idA2</label>
+  <label><input class="queryType-2" type="radio" name="queryType-2" value="#idB2">#idB2</label>
+  <label><input class="queryType-2" type="radio" name="queryType-2" value=".classX2">.classX2</label>
+  <label><input class="queryType-2" type="radio" name="queryType-2" value=".classY2">.classY2</label>
+  <label><input class="queryType-2" type="radio" name="queryType-2" value="span">span</label>
+  <label><input class="queryType-2" type="radio" name="queryType-2" value="p">p</label>
+  <button id="btn-ex2">Get</button><br>
+  <textarea id="result-ex2" rows="5" cols="100" readonly></textarea>
+</div>
+            <script src="js/28_2.js"></script>
+          </div>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;div id = "ex2"&gt;              
+  &lt;div id = "idA2"&gt;
+    &lt;span class="classX2" style="background-color: antiquewhite;"&gt;classX2-1&lt;/span&gt;
+    &lt;span class="classX2" style="background-color: aquamarine;"&gt;classX2-2&lt;/span&gt;
+    &lt;span class="classY2" style="background-color: darksalmon;"&gt;classY2&lt;/span&gt;
+    &lt;p id="idB2" style="background-color:cornflowerblue"&gt;idB2&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;label&gt;&lt;input class="queryType-2" type="radio" name="queryType-2" value="#idA2"&gt;#idA2&lt;/label&gt;
+  &lt;label&gt;&lt;input class="queryType-2" type="radio" name="queryType-2" value="#idB2"&gt;#idB2&lt;/label&gt;
+  &lt;label&gt;&lt;input class="queryType-2" type="radio" name="queryType-2" value=".classX2"&gt;.classX2&lt;/label&gt;
+  &lt;label&gt;&lt;input class="queryType-2" type="radio" name="queryType-2" value=".classY2"&gt;.classY2&lt;/label&gt;
+  &lt;label&gt;&lt;input class="queryType-2" type="radio" name="queryType-2" value="span"&gt;span&lt;/label&gt;
+  &lt;label&gt;&lt;input class="queryType-2" type="radio" name="queryType-2" value="p"&gt;p&lt;/label&gt;
+  &lt;button id="btn-ex2"&gt;Get&lt;/button&gt;&lt;br&gt;
+  &lt;textarea id="result-ex2" rows="5" cols="100" readonly&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+          </div>
+          <div
+            class="block-container label-custom theme-dark"
+            data-label="TypeScript"
+          >
+            <pre><code class="language-ts">const elmBtn = document.getElementById('btn-ex2') as HTMLElement | null;
+elmBtn?.addEventListener('click', getInfo);
+
+function getInfo() {
+  const elmRes = document.getElementById(
+    'result-ex2'
+  ) as HTMLTextAreaElement | null;
+  const elmList = document.getElementsByClassName('queryType-2');
+  const elmEx2 = document.getElementById('ex2');
+  let elm: Element | null | undefined = null;
+
+  let valid = false;
+  for (let i = 0; i &lt; elmList.length; i++) {
+    const elmInput = elmList[i] as HTMLInputElement;
+    if (elmInput.checked && elmRes) {
+      elm = elmEx2?.querySelector(elmInput.value);
+      elmRes.value = elm?.outerHTML ?? '要素が存在しません';
+      break;
+    }
+  }
+}</code></pre>
+          </div>
+          <p>
+            上記例では，id="ex2" である DOM 要素の中において，指定された id,
+            class, tag をもつ DOM 要素を取得している．
+            <code>input</code>タグはラジオボタンにし，value
+            属性に検索したい検索書式をセットしている．検索書式には色々とあり，属性に対する検索書式を学ぶことで，選択されたラジオボタンを取得するコードがもっとスマートに書けるようになる．これについては次のページで学ぶ．
+          </p>
+        </section>
+        <section>
+          <h2>querySelectorAll</h2>
+          <p>
+            <code>querySelector</code> では最初にヒットした 1
+            件のみが取得できたが，条件を満たすすべてのタグを取得するときは，<code
+              >querySelectorAll</code
+            >
+            の利用が適している．
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">let val = xxx.querySelectorAll("検索書式")</code></pre>
+          </div>
+          <ul>
+            <li>
+              <code>val</code>の型: <code>NodeListOf&lt;Element&gt;</code> 型
+            </li>
+          </ul>
+          <p>
+  のように利用することで，<code>xxx</code> から指定した検索書式の DOM
+  要素がすべて取得できる．戻り値の型である
+  <code>NodeListOf&lt;Element&gt;</code> は本来 <code>for...of...</code> による反復処理が可能であり，
+  取得した要素を簡潔に調べることができる．
+  しかし，TypeScript の環境設定（<code>tsconfig.json</code> の <code>lib</code> 項目）によっては
+  <code>for...of...</code> が利用できないことがあるため，以下の例では使用を避けている．
+  そのため，ここでは <code>length</code> プロパティを用いて取得件数を調べている．
+  なお，<code>for...of...</code> の使用方法と必要な設定については，後のページで改めて解説する．
+</p>
+
+          <h3>例</h3>
+          <div class="block-container label-custom" data-label="Browser">
+<div id="ex3">
+  <div>
+    <span class="classX3" style="background-color: antiquewhite;">classX3-1</span>
+    <span class="classX3" style="background-color: aquamarine;">classX3-2</span>
+    <span class="classY3" style="background-color: darksalmon;">classY3-1</span>
+    <span class="classY3" style="background-color:fuchsia">classY3-2</span>
+    <p class="classY3" style="background-color:cornflowerblue">classY3-3</p>
+  </div>
+    <label><input class="queryType-3" type="radio" name="queryType-3" value=".classX3">.classX3</label>
+    <label><input class="queryType-3" type="radio" name="queryType-3" value=".classY3">.classY3</label>
+    <label><input class="queryType-3" type="radio" name="queryType-3" value="span">span</label>
+  <button id="btn-ex3">Get</button><br>
+  <textarea id="result-ex3" rows="6" cols="100" readonly></textarea>
+</div>
+            <script type="module" src="js/28_3.js"></script>
+          </div>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;div id="ex3"&gt;
+  &lt;div&gt;
+    &lt;span class="classX3" style="background-color: antiquewhite;"&gt;classX3-1&lt;/span&gt;
+    &lt;span class="classX3" style="background-color: aquamarine;"&gt;classX3-2&lt;/span&gt;
+    &lt;span class="classY3" style="background-color: darksalmon;"&gt;classY3-1&lt;/span&gt;
+    &lt;span class="classY3" style="background-color:fuchsia"&gt;classY3-2&lt;/span&gt;
+    &lt;p class="classY3" style="background-color:cornflowerblue"&gt;classY3-3&lt;/p&gt;
+  &lt;/div&gt;
+    &lt;label&gt;&lt;input class="queryType-3" type="radio" name="queryType-3" value=".classX3"&gt;.classX3&lt;/label&gt;
+    &lt;label&gt;&lt;input class="queryType-3" type="radio" name="queryType-3" value=".classY3"&gt;.classY3&lt;/label&gt;
+    &lt;label&gt;&lt;input class="queryType-3" type="radio" name="queryType-3" value="span"&gt;span&lt;/label&gt;
+  &lt;button id="btn-ex3"&gt;Get&lt;/button&gt;&lt;br&gt;
+  &lt;textarea id="result-ex3" rows="6" cols="100" readonly&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+          </div>
+          <div
+            class="block-container label-custom theme-dark"
+            data-label="TypeScript"
+          >
+            <pre><code class="language-ts">const elmEx3 = document.getElementById('ex3');
+const elmBtn = document.getElementById('btn-ex3') as HTMLElement | null;
+elmBtn?.addEventListener('click', getInfo3);
+
+function getInfo3() {
+  const elmRes = document.getElementById(
+    'result-ex3'
+  ) as HTMLTextAreaElement | null;
+  const elmList = document.getElementsByClassName('queryType-3');
+
+  if (!elmRes || !elmEx3) {
+    return;
+  }
+
+  for (let i = 0; i &lt; elmList.length; i++) {
+    const elmInput = elmList[i] as HTMLInputElement;
+    if (elmInput.checked) {
+      let elmSearchList = elmEx3.querySelectorAll(elmInput.value);
+      let text = `検索結果: ${elmSearchList.length}件\n`;
+      for (let i = 0; i &lt; elmSearchList.length; i++) {
+        text += elmSearchList[i].outerHTML + '\n';
+      }
+      elmRes.value = text;
+      break;
+    }
+  }
+}</code></pre>
+          </div>
+        </section>
+        <section>
+          <h2>検索書式 - 親要素/子要素, 祖先要素/子孫要素</h2>
+          <p><code>xタグ</code>の直下に<code>yタグ</code>があるとき，</p>
+          <ul>
+            <li><code>xタグ</code>のことを<code>yタグ</code>の親要素</li>
+            <li><code>yタグ</code>のことを<code>xタグ</code>の子要素</li>
+          </ul>
+          <p>という．</p>
+          <p><code>xタグ</code>の下に<code>yタグ</code>があるとき，</p>
+          <ul>
+            <li><code>xタグ</code>のことを<code>yタグ</code>の祖先要素</li>
+            <li><code>yタグ</code>のことを<code>xタグ</code>の子孫要素</li>
+          </ul>
+          <p>という．例えば，</p>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;div&gt;
+  &lt;p&gt;
+    &lt;span&gt;
+      &lt;strong&gt;&lt;/strong&gt;
+    &lt;/span&gt;
+  &lt;/p&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+          <p>の場合，</p>
+          <ul>
+            <li>
+              <code>pタグ</code
+              >は，<code>spanタグ</code>の親要素でもあり，祖先要素でもある
+            </li>
+            <li>
+              <code>spanタグ</code
+              >は，<code>pタグ</code>の子要素でもあり，子孫要素でもある
+            </li>
+            <li>
+              <code>strongタグ</code
+              >は，<code>pタグ</code>の子要素ではないが，子孫要素ではある
+            </li>
+            <li>
+              <code>pタグ</code
+              >は，<code>strongタグ</code>の親要素ではないが，祖先要素ではある
+            </li>
+          </ul>
+          <p>
+            ということができる．親要素/子要素の関係，祖先要素/子孫要素の関係は，以下のように記述することになっている:
+          </p>
+          <ul>
+            <li>
+              <code>"x y"</code>:
+              <code>xタグ</code
+              >の子孫要素に<code>yタグ</code>がある，という状態を表す．より正確には，<strong
+                >x の内部にある y</strong
+              >を意味する．
+            </li>
+            <li>
+              <code>"x &gt; y"</code>:
+              <code>xタグ</code
+              >の子要素に<code>yタグ</code>がある，という状態を表す．より正確には，<strong
+                >x の直下要素である y</strong
+              >を意味する．
+            </li>
+          </ul>
+          <section>
+            <h3>検索書式</h3>
+            <p>
+              <code>"x y"</code>および<code>"x > y"</code
+              >という記法を踏襲して，<code>querySelector</code> および
+              <code>querySelectorAll</code>
+              に対する検索書式として次のようなものを使用することができる:
+            </p>
+            <ul>
+              <li>
+                <code>"x y"</code>と記載すると，「条件 x
+                を満たすタグの中の，条件 y を満たす子孫要素」を検索できる．
+              </li>
+              <li>
+                <code>"x &gt; y"</code>と記載すると，「条件 x
+                を満たすタグの中の，条件 y を満たす子要素」を検索できる．
+              </li>
+            </ul>
+            <p>
+              ここで，条件とは id指定 (<code>#id</code>) や class指定
+              (<code>.class</code>)，タグ指定 (<code>tag</code>) などを指す．
+            </p>
+            <p>例えば，以下のような状況を考える:</p>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;div&gt;
+  &lt;p id="p" class="A" &gt;
+    &lt;span class="C"&gt;&lt;/span&gt;
+    &lt;strong class="A"&gt;&lt;/strong&gt;
+  &lt;/p&gt;
+  &lt;span class="B"&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;span class="C"&gt;&lt;/span&gt;</code></pre>
+            </div>
+            <p>
+              このとき，上記における DOM 要素
+              <code>&lt;span class="C"&gt;&lt;/span&gt;</code> は，
+            </p>
+            <ul>
+              <li><code>"p > span"</code>: p タグ直下にある span タグ</li>
+              <li>
+                <code>"div .C"</code>: div タグの中にある，class = "C"
+                となるタグ
+              </li>
+            </ul>
+            <p>などのようにして抽出することができる．</p>
+            <h3>例</h3>
+            <p>
+              以下では，ボタンを押すとボタンに書かれた書式で DOM
+              要素を検索する．すぐ下にある HTML 構造を見ながら抽出される DOM
+              要素を確認するとよい．
+            </p>
+            <div class="block-container label-custom" data-label="Browser">
+              <div id="ex4" style="background-color: antiquewhite">
+                <div id="idA-4">
+                  <div>
+                    <p class="p1"></p>
+                  </div>
+                  <p class="p2"></p>
+                  <strong class="strong1"></strong>
+                </div>
+                <p class="classB-4">
+                  <span><strong class="strong2"></strong></span>
+                </p>
+                <button id="btn1-ex4">"#idA-4 > p"</button>
+                <button id="btn2-ex4">"p strong"</button><br />
+                <textarea id="result-ex4" cols="100" rows="5"></textarea>
+              </div>
+              <script type="module" src="js/28_4.js"></script>
+            </div>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;div id="ex4" style="background-color: antiquewhite;"&gt;
+  &lt;div id="idA-4"&gt;
+    &lt;div&gt;
+      &lt;p class="p1"&gt;&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;p class="p2"&gt;&lt;/p&gt;
+    &lt;strong class="strong1"&gt;&lt;/strong&gt;
+  &lt;/div&gt;
+  &lt;p class="classB-4"&gt;
+    &lt;span&gt;&lt;strong class="strong2"&gt;&lt;/strong&gt;&lt;/span&gt;
+  &lt;/p&gt;
+
+  &lt;button id="btn1-ex4"&gt;"#idA-4 &gt; p"&lt;/button&gt;
+  &lt;button id="btn2-ex4"&gt;"p strong"&lt;/button&gt;&lt;br&gt;
+  &lt;textarea id="result-ex4" cols="100" rows="5"&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+            </div>
+            <div
+              class="block-container label-custom theme-dark"
+              data-label="TypeScript"
+            >
+              <pre><code class="language-ts">const elmEx4 = document.getElementById('ex4') as HTMLElement | null;
+const elmBtn1_ex4 = elmEx4?.querySelector('#btn1-ex4') as HTMLElement | null;
+const elmBtn2_ex4 = elmEx4?.querySelector('#btn2-ex4') as HTMLElement | null;
+elmBtn1_ex4?.addEventListener('click', () => getInfo4('#idA-4 > p'));
+elmBtn2_ex4?.addEventListener('click', () => getInfo4('p strong'));
+
+function getInfo4(search: string) {
+  const elmRes = elmEx4?.querySelector(
+    '#result-ex4'
+  ) as HTMLTextAreaElement | null;
+  const elm = elmEx4?.querySelector(search);
+  if (elmRes) {
+    elmRes.value = elm?.outerHTML ?? '要素が見つかりません';
+  }
+}</code></pre>
+            </div>
+          </section>
+        </section>
+        <section>
+          <h2>検索書式 - and 検索, or 検索</h2>
+          <p>
+            <code>querySelector</code> や
+            <code>querySelectorAll</code>
+            に指定する検索書式にはさまざまなものがあるが，プログラミングなどで用いる条件式のように，柔軟ではない．しかし，簡単な構文ならば
+            and 検索や or 検索が可能となる．
+          </p>
+          <ul>
+            <li>
+              複数の条件を同時に満たす DOM 要素を取得したいとき (and 検索)
+              は，<strong style="color: red">半角スペースを入れずに</strong
+              >そのまま並列すればよい．半角スペースは子孫要素の意味で用いられるため，意図していないかぎり入れるべきではない．
+            </li>
+            <li>
+              少なくとも一つの条件を満たす DOM 要素を取得したいとき (or 検索)
+              は，「comma」で区切ればよい．
+            </li>
+          </ul>
+          <p>
+            and 検索や or
+            検索は，原則上記のようにして行うが，構文書式の関係上，どうしても and
+            検索不可能な事例が存在するため，その場合は，複数回に分けて
+            <code>querySelector</code> や
+            <code>querySelectorAll</code> を利用することになる．
+          </p>
+          <p>以下では，検索書式の例をいくつか列挙する:</p>
+          <ul>
+          <li><code>"p.classA"</code>: 「<code>&lt;p class="classA"&gt;</code>」となるタグ</li>
+            <li>
+              <code>"p div.classA"</code>
+              「pタグ」の子孫要素で「<code>&lt;div class="classA"&gt;</code>」となるタグ</li>
+            <li>
+              <code>".classA.classB"</code>: 「<code>class = "classA classB"</code>」となるタグ
+            </li>
+            <li>
+              <code>"#idA, #idB"</code>: 「<code>id = "idA"</code>」または「<code>id = "idB"</code>」となるタグ
+            </li>
+            <li>
+              <code>"p.classA, div"</code>: 「<code>&lt;p class="classA"&gt;</code>」となるタグ，または「div タグ」
+            </li>
+          </ul>
+          <h3>例</h3>
+            <div class="block-container label-custom" data-label="Browser">
+<div id="ex5" style="background-color: antiquewhite;">
+  <div class="classA-5"></div>
+  <div class="classB-5"></div>
+  <div class="classC-5"></div>
+  <span class="classA-5 classB-5"></span>
+  <span class="classA-5 classC-5"></span>
+  <span class="classB-5 classC-5"></span>
+  
+  <label><input class="queryType-5" type="radio" name="queryType-5" value="div.classB-5">div.classB-5</label>
+  <label><input class="queryType-5" type="radio" name="queryType-5" value="span.classC-5">span.classC-5</label>
+  <label><input class="queryType-5" type="radio" name="queryType-5" value=".classA-5.classB-5">.classA-5.classB-5</label>
+  <button id="btn-ex5">Get</button><br>
+  <textarea id="result-ex5" rows="5" cols="100" readonly></textarea>
+</div>
+              <script type="module" src="js/28_5.js"></script>
+            </div>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;div id="ex5" style="background-color: antiquewhite;"&gt;
+  &lt;div class="classA-5"&gt;&lt;/div&gt;
+  &lt;div class="classB-5"&gt;&lt;/div&gt;
+  &lt;div class="classC-5"&gt;&lt;/div&gt;
+  &lt;span class="classA-5 classB-5"&gt;&lt;/span&gt;
+  &lt;span class="classA-5 classC-5"&gt;&lt;/span&gt;
+  &lt;span class="classB-5 classC-5"&gt;&lt;/span&gt;
+  
+  &lt;label&gt;&lt;input class="queryType-5" type="radio" name="queryType-5" value="div.classB-5"&gt;div.classB-5&lt;/label&gt;
+  &lt;label&gt;&lt;input class="queryType-5" type="radio" name="queryType-5" value="span.classC-5"&gt;span.classC-5&lt;/label&gt;
+  &lt;label&gt;&lt;input class="queryType-5" type="radio" name="queryType-5" value=".classA-5.classB-5"&gt;.classA-5.classB-5&lt;/label&gt;
+  &lt;button id="btn-ex5"&gt;Get&lt;/button&gt;&lt;br&gt;
+  &lt;textarea id="result-ex5" rows="5" cols="100" readonly&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+            </div>
+            <div
+              class="block-container label-custom theme-dark"
+              data-label="TypeScript"
+            >
+              <pre><code class="language-ts">const elmEx5 = document.getElementById('ex5') as HTMLElement | null;
+const elmBtn_ex5 = elmEx5?.querySelector('#btn-ex5') as HTMLElement | null;
+elmBtn_ex5?.addEventListener('click', getInfo5);
+
+function getInfo5() {
+  if (elmEx5) {
+    const elmRes = elmEx5.querySelector(
+      '#result-ex5'
+    ) as HTMLTextAreaElement | null;
+    const elmList = elmEx5.querySelectorAll('input.queryType-5');
+    for (let i = 0; i &lt; elmList.length; i++) {
+      let elm = elmList[i] as HTMLInputElement;
+      if (elm.checked && elmRes) {
+        let elmSearch = elmEx5.querySelector(elm.value);
+        elmRes.value = elmSearch?.outerHTML ?? '要素が見つかりません';
+      }
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

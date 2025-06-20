@@ -9,15 +9,15 @@ btnX1?.addEventListener('click', () => getClass('classX', 1));
 btnX2?.addEventListener('click', () => getClass('classX', 2));
 function getClass(cls, idx) {
     const elmList = document.getElementsByClassName(cls);
-    const res = document.getElementById('result_1');
-    if (res !== null) {
+    const res = document.getElementById('result-ex1');
+    if (res) {
         res.value = elmList?.[idx - 1].outerHTML ?? '要素がみつかりません';
     }
 }
 function getID(id) {
     const elm = document.getElementById(id);
-    const res = document.getElementById('result_1');
-    if (res !== null) {
+    const res = document.getElementById('result-ex1');
+    if (res) {
         res.value = elm?.outerHTML ?? '要素がみつかりません';
     }
 }
