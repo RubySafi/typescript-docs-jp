@@ -194,6 +194,13 @@ if (temp !== null) {
           <p>
             これらを現段階で書くことは可能だが，構文が冗長になりやすい．それを簡単に書く記法があり，それらをこのページで学んでいく．
           </p>
+          <h3>nullish な値</h3>
+          <p>null チェックは，DOM 操作などで頻繁によく登場する．取得しようとした DOM 要素が存在しないときは null を返したり，取得しようとしたプロパティがないときは undefined を返したり等を，「値がみつからない」ことを null や undefined を使って表現する．</p>
+                 <div class="math-box math-definition">
+            <span class="math-label">定義（nullish）．</span
+            >値 <code>null</code> または値 <code>undefined</code> のことを，<code>nullish</code>な値を表現する．
+          </div>
+          <p>nullish という型が用意されているわけではない．「null または undefined」という表現が「nullish な値」と簡潔に表現するために導入した用語に過ぎない．</p>
         </section>
         <section>
           <h2>オプショナルチェーン演算子</h2>
@@ -215,8 +222,7 @@ if (temp !== null) {
                 <div>アクセスしたいプロパティ名</div>
               </div>
               <p>
-                <strong>戻り値</strong>： foo が JavaScript
-                において値「null」または「undefined」のとき，値
+                <strong>戻り値</strong>： foo が nullish な値のとき，値
                 <code>undefined</code>
                 を返す．そうでない場合は，指定したプロパティにアクセスした結果を返す．
               </p>
@@ -228,11 +234,7 @@ if (temp !== null) {
               </p>
               <p>
                 <strong>注意事項</strong>：TypeScript において，foo
-                の型が，「アクセスしたいプロパティを保持する型」または「null的な型<sup>*1</sup>」でない場合はエラーとなる．
-              </p>
-              <p>
-                <sup>*1</sup
-                >：例えば，null型，never型，undefined型，void型ならばエラーとならない．
+                の型が，「アクセスしたいプロパティを保持する型」または「nullishな値」でない場合はエラーとなる．
               </p>
             </div>
             <p>例１：</p>
@@ -348,22 +350,22 @@ chk(objB); // "1: undefined" および，"2: undefined" が表示される</code
             <ul>
               <li><code>(obj?.foo)?.length</code></li>
               <li style="list-style-type: none">
-                ↓obj (=objA) は非 null 相当より objA.foo (='xyz') を返す
+                ↓obj (=objA) は nullish でないので objA.foo (='xyz') を返す
               </li>
               <li><code>objA.foo?.length</code></li>
               <li style="list-style-type: none">
-                ↓objA.foo(='xyz') は非 null 相当より 'xyz'.length (=3) を返す
+                ↓objA.foo(='xyz') は nullish でないので 'xyz'.length (=3) を返す
               </li>
               <li><code>3</code></li>
             </ul>
             <ul>
               <li><code>(obj?.baa)?.length</code></li>
               <li style="list-style-type: none">
-                ↓obj (=objA) は非 null 相当より objA.baa (=null) を返す
+                ↓obj (=objA) は nullish でないので objA.baa (=null) を返す
               </li>
               <li><code>objA.baa?.length</code></li>
               <li style="list-style-type: none">
-                ↓objA.baa(=null) は null 相当より undefined を返す
+                ↓objA.baa(=null) は nullish なので undefined を返す
               </li>
               <li><code>undefined</code></li>
             </ul>
@@ -373,22 +375,22 @@ chk(objB); // "1: undefined" および，"2: undefined" が表示される</code
             <ul>
               <li><code>(obj?.foo)?.length</code></li>
               <li style="list-style-type: none">
-                ↓obj (= objB = null) は null 相当より undefined を返す
+                ↓obj (= objB = null) は nullish なので undefined を返す
               </li>
               <li><code>objB.foo?.length</code></li>
               <li style="list-style-type: none">
-                ↓objB.foo(= undefined) は null 相当より undefined を返す
+                ↓objB.foo(= undefined) は nullish なので undefined を返す
               </li>
               <li><code>undefined</code></li>
             </ul>
             <ul>
               <li><code>(obj?.baa)?.length</code></li>
               <li style="list-style-type: none">
-                ↓obj (= objB = null) は null 相当より undefined を返す
+                ↓obj (= objB = null) は nullish なので undefined を返す
               </li>
               <li><code>objB.baa?.length</code></li>
               <li style="list-style-type: none">
-                ↓objB.baa(= undefined) は null 相当より undefined を返す
+                ↓objB.baa(= undefined) は nullish なので undefined を返す
               </li>
               <li><code>undefined</code></li>
             </ul>
@@ -510,7 +512,7 @@ chk(objC); //undefined</code></pre>
           <h2>非 null アサーション</h2>
           <p>
   非 null アサーションとは，変数の末尾に <code>!</code> を付けることで，
-  「この値は null でも undefined でもない」と開発者がコンパイラに明示する構文である．
+  「この値は nullish (null または undefined) ではない」と開発者がコンパイラに明示する構文である．
   その意味で，型アサーションを行う <code>as</code> 演算子と似ている（ただし非 null の保証に特化している）．
   オプショナルチェーン <code>?.</code> とは逆に，null チェックを省略して直接アクセスするものである．
 </p>
@@ -519,7 +521,7 @@ chk(objC); //undefined</code></pre>
   let val = x!; //val は string 型
   console.log(val.length);
 }</code></pre>
-<p>上記のように，null または undefined の可能性がある型に対し，その可能性を排除して型 narrowing を発生させることができる．</p>
+<p>上記のように，nullish な可能性がある型に対し，その可能性を排除して型 narrowing を発生させることができる．</p>
 <p>
   オプショナルチェーン演算子のように，ドットと併用することも多い．なお，プロパティ自体が null を許容する場合，利用する際はそのプロパティに対しても非 null アサーションを使う必要がある：
 </p>

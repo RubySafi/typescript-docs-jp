@@ -173,8 +173,7 @@
           </p>
           <pre><code>let val = name ?? "未入力";</code></pre>
           <p>
-            上記式は，「name が null 相当（JavaScript における値 null または
-            undefined）ならば，初期値"未入力"を代入する」という構文である．
+            上記式は，「name が nullish (null または undefined) ならば，初期値"未入力"を代入する」という構文である．
           </p>
           <h3>応用例</h3>
           <p>null 合体は，オプショナルチェーン演算子と相性がよい．</p>
@@ -257,7 +256,7 @@ chk(objB);</code></pre>
           <pre><code>value ??= a;</code></pre>
           <p>という用法であり，</p>
           <pre><code>value = value ?? a;</code></pre>
-          <p>という表現（value が null 的なときのみ a を代入）と同じである．</p>
+          <p>という表現（value が nullish なときのみ a を代入）と同じである．</p>
           <p>使用例：</p>
           <pre><code>type Obj = {
   total: number;
