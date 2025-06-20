@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>条件分岐の技法</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- 現在移行作業中 -->
+    <link rel="stylesheet" href="css/blocks-00.css" />
+    <link rel="stylesheet" href="css/code-00.css" />
+    <link rel="stylesheet" href="css/heading-00.css" />
+    <link rel="stylesheet" href="css/table-00.css" />
+    <link rel="stylesheet" href="css/layout-00.css" />
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>条件分岐の技法 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="27-ts-condition-tips.html">条件分岐の技法</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="25-dom-eventlistener.html" class="prev">前</a> |
+        <a href="28-dom-query.html" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>truthy と falsy</h2>
+          <p>
+            特定の値を true や false
+            として扱うことができると便利である．例えば，入力することを期待するプログラムにおいて，未入力の状態は
+            false として扱い，入力されているときは true
+            として扱って処理を続行するなどである：
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">function dataNormalize(name: string) {
+  if (name === '') {
+    console.log('未入力です');
+  } else {
+    //なんらかの処理
+  }
+}</code></pre>
+          </div>
+          <p>
+            このように，<code>true</code> として扱うことが期待される数や
+            <code>flase</code>
+            として扱うことが期待される数があり，それらをそれぞれ
+            <code>truthy</code> な値，<code>falsy</code> な値と表現する．
+          </p>
+          <h2>条件分岐のテクニック</h2>
+          <p>通常，条件式へは boolean 型の値を渡す．例えば，while 文は，</p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">while (x > 10) {// x は number 型とする
+  //なんらかの処理
+}</code></pre>
+          </div>
+          <p>
+            のように記述するが，条件式「<code>x > 10</code>」は true または
+            false を返すため，boolean 型の値を渡していることになる．
+          </p>
+          <p>実は，条件式へは任意の値を渡すことができる．すなわち，</p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">while ("abc") {
+  //なんらかの処理
+}</code></pre>
+          </div>
+          <p>のような記法も許されるのである．</p>
+          <p>
+            実は条件式は，内部的には true または false を返す関数
+            <code>ToBoolean</code> を経由して while や if
+            などの制御関数に渡される(この関数は内部処理専用なので実際の coding で使うことはできない)．したがって，
+          </p>
+          <ul>
+            <li>
+              <code>truthy</code> な値とは，<code>ToBoolean</code> に渡して
+              <code>true</code> を返す値のことをいう
+            </li>
+            <li>
+              <code>falsy</code> な値とは，<code>ToBoolean</code> に渡して
+              <code>false</code> を返す値のことをいう
+            </li>
+          </ul>
+          <p>
+            と簡単にまとめることができる．<code>ToBoolean</code>
+            の挙動は非常に単純なため，truthy な値および falsy
+            な値は簡単に判別できる：
+          </p>
+          <ul>
+            <li>
+              <code>false</code>, <code>undefined</code>, <code>null</code>,
+              <code>+0</code>, <code>-0</code>, <code>0</code>,
+              <code>NaN</code>, <code>""</code>（空文字）はすべて falsy である．
+            </li>
+            <li>上記以外はすべて <code>truthy</code> である．</li>
+          </ul>
+          <p>例1: 以下のように無限ループを作ることができる</p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">while (1) {//無限ループ
+  //なんらかの処理
+}</code></pre>
+          </div>
+          <p>
+            例2: 以下のように，null チェックに関わる条件分岐を簡潔に記述できる
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">let elm1 = document.getElementById("sample1") as HTMLElement | null;
+let elm2 = document.getElementById("sample2") as HTMLElement | null;
+if (elm1 && elm2) {
+  //elm1 と elm2 がともに null でないときの処理
+}</code></pre>
+          </div>
+        </section>
+        <section>
+          <h2>ショートサーキット(短絡評価)</h2>
+          <section>
+            <h3>and 評価</h3>
+          <p>
+            処理速度が重要なプログラムを動かす際，効率よく coding
+            することは大切である．また，エラーを起こすことなく実行できることも大切である．例えば，
+          </p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">if (条件式1 && 条件式2){
+  //処理              
+}</code></pre>
+          </div>
+          <p>
+            という構文にはさまざまな解釈があり，言語によって仕様が異なる．結果的には処理は
+            条件式1 と 条件式2 がともに
+            <code>true</code>
+            なときのみ行われるのだが，その判定ロジックとして以下の 2
+            つが考えられる:
+          </p>
+          <ol style="list-style-type: lower-alpha">
+            <li>
+              条件式1 と 条件式2 を独立に判定する方法
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">let flag1 = 条件式1;
+let flag2 = 条件式2;
+let flag = flag1 && flag2;
+if (flag){
+  //処理
+}</code></pre>
+              </div>
+            </li>
+            <li>
+              条件式1の真偽判定後に，必要に応じて条件式2 の真偽判定を行う方法
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">if (条件式1){
+  if (条件式2) {
+    //処理
+  }
+}</code></pre>
+              </div>
+            </li>
+          </ol>
+          <p>上記二つの案は同じように見えるが以下の2つの点で異なる:</p>
+          <ul>
+            <li>
+              b. のほうは，必要なときのみ 条件式2
+              をチェックするため，統計的に高速である．
+            </li>
+            <li>
+              条件式2 の前提に 条件式1 が使えるか否かがかわる．例えば，
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">if (x &gt; 0) && (1/x &lt; 3){
+  //処理
+}</code></pre>
+              </div>
+              のようなコードは a. では書けないが b.
+              では書ける．なぜなら，条件「<code>1/x &lt; 3</code
+              >」を判定するには
+              <code>x !== 0</code>
+              であることがわかっていなければならないからである．
+            </li>
+          </ul>
+          <p>JavaScript では，b. のように条件判定が行われる．すなわち，</p>
+          <div class="block-container theme-dark">
+            <pre><code class="language-ts">if (条件式1 && 条件式2){
+  //処理              
+}</code></pre>
+          </div>
+          <p>という処理は，条件式1 が <code>false</code> のときは，そもそも 条件式2 のチェックが行われない．これにより，条件式2 の中では，条件式1 が成り立つ前提で記述することができるのである．
+このような処理のことを<strong>ショートサーキット（短絡評価）</strong>という．</p>
+<p>例1: ショートサーキット(and)は以下のように確認できる．</p>
+ <div class="block-container theme-dark">
+            <pre><code class="language-ts">function chk(x: number) {
+  if (cond1(x) && cond2(x)) {
+    console.log('判定終了');
+  }
+}
+
+function cond1(x: number): boolean {
+  console.log('条件1判定中');
+  return x &gt; 0;
+}
+function cond2(x: number): boolean {
+  console.log('条件2判定中');
+  return x &lt; 10;
+}
+
+chk(-5);//条件1判定中 しか表示されない
+</code></pre>
+          </div>
+<p>例2: ショートサーキットは，条件式の中で型 narrowing が発生する．</p>
+ <div class="block-container theme-dark">
+            <pre><code class="language-ts">function chk(x: number | string) {
+  if (typeof x !== 'number' //この段階では x の型は number | string 型
+    && x.length === 3) {//この段階では x の型は string 型
+    console.log(x);
+  }
+}</code></pre>
+          </div>
+        </section>
+        <section>
+          <h3>or 評価</h3>
+          <p>or 評価でもショートサーキットは発生する．すなわち，</p>
+           <div class="block-container theme-dark">
+            <pre><code class="language-ts">if (条件式1 || 条件式2){
+  //処理              
+}</code></pre>
+          </div>
+          <p>という構文では，条件式1 が偽のときに限り，条件式2 の判定が行われるため，条件式2 の前提条件に 条件式1 が偽であることをいれてよい．これも<strong>ショートサーキット</strong>という．</p>
+          <p>例3: ショートサーキット(or)は以下のように確認できる．</p>
+ <div class="block-container theme-dark">
+            <pre><code class="language-ts">function chk(x: number) {
+  if (cond1(x) || cond2(x)) {
+    console.log('判定終了');
+  }
+}
+
+function cond1(x: number): boolean {
+  console.log('条件1判定中');
+  return x &gt; 0;
+}
+function cond2(x: number): boolean {
+  console.log('条件2判定中');
+  return x &lt; 10;
+}
+
+chk(5); //条件2判定中 は表示されない
+</code></pre>
+          </div>
+        </section>
+          </section>
+          <section>
+            <h2>明示的真偽値変換（!!）</h2>
+            <p><code>truthy</code> や <code>falsy</code> というものは，条件式の中で内部的に boolean 型に変換され，条件判定に使われるが，この真偽値の値そのものを利用したいことがある．もちろん，
+            </p>
+            <div class="block-container theme-dark">
+            <pre><code class="language-ts">let flag = (条件式 === true);
+let flag = Boolean(条件式);
+</code></pre>
+          </div>
+          <p>のようにして取得することはできるのだが<strong>真偽判定演算子</strong><code>!</code>を利用するのが一番簡便である．
+          <a href="02-basic-operators.html">演算子</a>のページで学んだように，演算子<code>!</code>は boolean 型を渡すと真偽判定した結果を返す．一方，boolean 型は内部的には <code>ToBoolean</code> 関数を経由するため，任意の値を渡すことができる．
+        このことから，変数 <code>x</code> を真偽値に置き換えた結果は</p>
+<div class="block-container theme-dark">
+            <pre><code class="language-ts">let flag = !!x;
+</code></pre>
+          </div>
+          <p>のようにあらわすことができる．</p>
+          </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
