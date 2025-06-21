@@ -113,3 +113,14 @@ p code, li code, span code {
   font-family: Consolas, Monaco, 'Courier New', monospace;
   font-size: 0.95em;
 }
+
+/* -----------------------------
+   table データ用のコード
+----------------------------- */
+pre.table {
+  margin:0;
+}
+pre.table > code {
+  padding: 3px 5px;
+  border-radius: 3px;
+}

@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>属性と状態</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- 現在移行作業中 -->
+    <link rel="stylesheet" href="css/blocks-00.css" />
+    <link rel="stylesheet" href="css/code-00.css" />
+    <link rel="stylesheet" href="css/heading-00.css" />
+    <link rel="stylesheet" href="css/table-00.css" />
+    <link rel="stylesheet" href="css/layout-00.css" />
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>属性と状態 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="29-dom-attribute.html">属性と状態</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="28-dom-query copy.html" class="prev">前</a> |
+        <a href="" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>HTMLタグ：属性と状態</h2>
+          <p>HTMLタグは，以下のような構造をもつ:</p>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;xxx attr1="val1" attr2 = "val2" ...&gt;</code></pre>
+          </div>
+          <p>上記において，各値は次のように呼ばれている:</p>
+          <ul>
+            <li><code>xxx</code> タグ名</li>
+            <li><code>attr1, attr2, ...</code>属性名</li>
+            <li><code>"val1", "val2", ...</code>各属性の値</li>
+          </ul>
+          <p>仕様上は以下のようになっている:</p>
+          <ul>
+            <li>
+              タグ名
+              <code>xxx</code> には，好きな文字列<sup>*1</sup>を指定できる
+            </li>
+            <li>
+              属性名
+              <code>attr</code> には，好きな文字列<sup>*1</sup>を指定できる
+            </li>
+            <li>
+              属性の値
+              <code>val</code> には，好きな文字列<sup>*1</sup>を指定できる
+            </li>
+            <li>
+              属性の値は省略することができ，省略した場合は空文字が指定されたことになる
+            </li>
+          </ul>
+          <p>
+            <sup>*1</sup
+            >文字列は，アルファベットは自由に使えるが，それ以外に数字や記号も一定のルールの下で使うことができる．
+          </p>
+          <p>タグや属性，値などは比較的自由度が高く，例えば</p>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;hogehoge xyz="pqr" abcdef&gt;</code></pre>
+          </div>
+          <p>
+            のように，明らかに存在しないタグ名や属性名，属性の値を指定することもできてしまう．さて，タグを一つ宣言すると，タグ名および，属性名と値の組からなるテーブルが作成される．
+          </p>
+          <p>
+            これに加えて，各 HTML
+            タグは様々な状態が保存されているテーブルも作られる．例えば，
+          </p>
+          <ul>
+            <li>現在，利用可能か否か</li>
+            <li>チェックボックスにチェックが入っているか否か</li>
+            <li>入力欄にどんな文字が入力されているか</li>
+            <li>マウスカーソルが載っているか否か</li>
+          </ul>
+          <p>などが該当する．以下は，作成されるテーブルの例である:</p>
+          <div style="display: flex; gap: 1em">
+            <table class="default-table">
+              <caption>
+                タグ名
+              </caption>
+              <tr>
+                <th>タグ名</th>
+              </tr>
+              <tr>
+                <td>hogehoge</td>
+              </tr>
+            </table>
+            <table class="default-table">
+              <caption>
+                属性とその値
+              </caption>
+              <tr>
+                <th>属性名</th>
+                <td>xyz</td>
+                <td>abcdef</td>
+              </tr>
+              <tr>
+                <th>値</th>
+                <td>"pqr"</td>
+                <td>""</td>
+              </tr>
+            </table>
+            <table class="default-table">
+              <caption>
+                状態プロパティとその値
+              </caption>
+              <tr>
+                <th>状態プロパティ</th>
+                <td>利用不能か</td>
+                <td>チェックされているか</td>
+                <td>入力されている文字</td>
+              </tr>
+              <tr>
+                <th>値</th>
+                <td>true</td>
+                <td>true</td>
+                <td>Alice</td>
+              </tr>
+            </table>
+          </div>
+          <p>
+            実際に作成されているのはテーブルよりも高級なクラスのようなものだが，理解としては上記で十分である．本ページでは，この考え方をもとに説明を行う．
+          </p>
+          <section>
+            <h3>例</h3>
+            以下では，利用不可能な button タグおよび，利用不可能な checkbox
+            を用意した．
+            <div class="block-container label-custom" data-label="Browser">
+              <button hoge="pqr" disabled>ボタン(利用不可)</button>
+              <input type="checkbox" value="chk" disabled checked />
+            </div>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;button hoge="pqr" disabled&gt;ボタン(利用不可)&lt;/button&gt;
+&lt;input type="checkbox" value="chk" disabled checked&gt;</code></pre>
+            </div>
+
+            <p><strong>buttonタグ:</strong></p>
+            <div style="display: flex; gap: 1em">
+              <table class="default-table">
+                <caption>
+                  タグ名
+                </caption>
+                <tr>
+                  <th>タグ名</th>
+                </tr>
+                <tr>
+                  <td>button</td>
+                </tr>
+              </table>
+              <table class="default-table">
+                <caption>
+                  属性とその値
+                </caption>
+                <tr>
+                  <th>属性名</th>
+                  <td>hoge</td>
+                  <td>disabled</td>
+                </tr>
+                <tr>
+                  <th>値</th>
+                  <td>"pqr"</td>
+                  <td>""</td>
+                </tr>
+              </table>
+              <table class="default-table">
+                <caption>
+                  状態プロパティとその値(一部)
+                </caption>
+                <tr>
+                  <th>状態プロパティ</th>
+                  <td>利用不能か</td>
+                  <td>セットされている文字</td>
+                </tr>
+                <tr>
+                  <th>値</th>
+                  <td>true</td>
+                  <td>ボタン(利用不可)</td>
+                </tr>
+              </table>
+            </div>
+
+            <p><strong>inputタグ:</strong></p>
+            <div style="display: flex; gap: 1em">
+              <table class="default-table">
+                <caption>
+                  タグ名
+                </caption>
+                <tr>
+                  <th>タグ名</th>
+                </tr>
+                <tr>
+                  <td>input</td>
+                </tr>
+              </table>
+              <table class="default-table">
+                <caption>
+                  属性とその値
+                </caption>
+                <tr>
+                  <th>属性名</th>
+                  <td>type</td>
+                  <td>value</td>
+                  <td>disabled</td>
+                  <td>checked</td>
+                </tr>
+                <tr>
+                  <th>値</th>
+                  <td>"checkbox"</td>
+                  <td>"chk"</td>
+                  <td>""</td>
+                  <td>""</td>
+                </tr>
+              </table>
+              <table class="default-table">
+                <caption>
+                  状態プロパティとその値(一部)
+                </caption>
+                <tr>
+                  <th>状態プロパティ</th>
+                  <td>利用不能か</td>
+                  <td>チェックされているか</td>
+                </tr>
+                <tr>
+                  <th>値</th>
+                  <td>true</td>
+                  <td>true</td>
+                </tr>
+              </table>
+            </div>
+          </section>
+        </section>
+        <section>
+          <h2>属性の分類，状態との関係</h2>
+          <section>
+            <h3>属性</h3>
+            <p>
+              属性とは，通常は HTML
+              タグ宣言時に，タグ内に書いた情報のことを指し，デフォルトのタグ表示仕様を定めている．属性は，以下の
+              3 種類に分類できる:
+            </p>
+            <ul>
+              <li>属性名とその値が両方使われるもの</li>
+              <li>属性名のみ使われ，その値は無視されるもの</li>
+              <li>属性名も値もともに無視されるもの</li>
+            </ul>
+            <h4>属性名と値の両方が使われる例:</h4>
+            <ul>
+              <li>
+                <code>&lt;input type="checkbox"&gt;</code>
+                とすれば，<code>input</code>タグの
+                <code>type</code> 属性に文字列
+                <code>"checkbox"</code> をセットしているが，これにより input
+                タグの見た目がチェックボックス「<input
+                  type="checkbox"
+                />」に変更される．
+              </li>
+              <li>
+                <code>&lt;input type="radio"&gt;</code>
+                とすれば，<code>input</code>タグの
+                <code>type</code> 属性に文字列
+                <code>"radio"</code> をセットしているが，これにより input
+                タグの見た目がラジオボタン「<input
+                  type="radio"
+                />」に変更される．
+              </li>
+            </ul>
+            <h4>属性名のみ使われ，その値は無視される例:</h4>
+            <p>
+              <code>&lt;input type="radio" checked&gt;</code>
+              とすれば，ラジオボタンが <code>checked</code> 状態「<input
+                type="radio"
+                checked
+              />」で表示される．実際には，これは
+              <code>checked</code> 属性に空文字
+              <code>""</code>
+              がセットされているのだが，実はこれは設定された値が無視される典型的な例である．
+              実際，
+            </p>
+            <ul>
+              <li>
+                <code>&lt;input type="radio" checked="false"&gt;</code>「<input
+                  type="radio"
+                  checked="false"
+                />」
+              </li>
+              <li>
+                <code>&lt;input type="radio" checked="true"&gt;</code>「<input
+                  type="radio"
+                  checked="true"
+                />」
+              </li>
+              <li>
+                <code>&lt;input type="radio" checked="hogehoge"&gt;</code
+                >「<input type="radio" checked="hogehoge" />」
+              </li>
+            </ul>
+            <p>のように，何を指定しても表示は変わらない．</p>
+            <h4>属性名も値も無視される例:</h4>
+            <p>
+              もともとそのタグがもたない属性を指定した場合は無視される．これは，ユーザーが何等かの目的でカスタムする際に使うために用意されている．
+            </p>
+            <ul>
+              <li>
+                <code>&lt;button type="radio"&gt;ボタン&lt;/button&gt;</code
+                >「<button type="radio">ボタン</button>」（type属性は button
+                タグに無いため無視される）
+              </li>
+              <li>
+                <code>&lt;button hoge="foo"&gt;ボタン&lt;/button&gt;</code
+                >「<button type="radio">ボタン</button>」（hoge属性は button
+                タグに無いため無視される）
+              </li>
+            </ul>
+            <p>
+              しかし，将来の言語仕様の拡張で，現段階において用意されていない属性が将来もつこともありうるため，今動いているコードが将来動かなくなる可能性があることに留意が必要である．
+            </p>
+          </section>
+          <section>
+            <h3>状態</h3>
+            <p>
+              状態とは，「現在のタグの状況がどのようになっているのか」を示しているものであり，「属性」やその値とは異なる概念である．例えば，チェックボックスに対して
+              <code>checked</code> 属性を書くことで初期表示は
+              <code>check</code>
+              状態で表示されるが，手動でチェック状態を切り替えてもこの属性は変化しない．代わりに，状態プロパティの値が変化する．このように連動しないものもあれば連動するものもある．
+              まずは，以下の例を通して「属性」と「状態」の違いを認識するとよい．
+            </p>
+            <div class="block-container label-custom" data-label="DEMO">
+              <input id="demo1" type="checkbox" value="chk" checked />
+              <button id="demo1-switch">無効/有効変更</button>
+              <p style="margin-bottom: 0">対象タグの初期状態:<br /></p>
+              <pre
+                style="margin: 0"
+              ><code class="language-html">&lt;input id="demo_chkbox" type="checkbox" value="chk" checked&gt;</code></pre>
+              <div style="display: flex; gap: 1em">
+                <table class="default-table">
+                  <caption>
+                    タグ名
+                  </caption>
+                  <tr>
+                    <th>タグ名</th>
+                  </tr>
+                  <tr>
+                    <td>input</td>
+                  </tr>
+                </table>
+                <table class="default-table">
+                  <caption>
+                    属性とその値
+                  </caption>
+                  <tr>
+                    <th>属性名</th>
+                    <td>type</td>
+                    <td>value</td>
+                    <td id="demo1_attr_checked">checked</td>
+                    <td id="demo1_attr_disabled">disabled</td>
+                  </tr>
+                  <tr>
+                    <th>値</th>
+                    <td>"checkbox"</td>
+                    <td>"chk"</td>
+                    <td id="demo1_attr_checked_val">""</td>
+                    <td id="demo1_attr_disabled_val">null</td>
+                  </tr>
+                </table>
+                <table class="default-table">
+                  <caption>
+                    状態プロパティとその値(一部)
+                  </caption>
+                  <tr>
+                    <th>状態プロパティ</th>
+                    <td>チェックされているか</td>
+                    <td>無効状態か</td>
+                  </tr>
+                  <tr>
+                    <th>値</th>
+                    <td id="demo1_state_checked">true</td>
+                    <td id="demo1_state_disabled">false</td>
+                  </tr>
+                </table>
+              </div>
+              <script type="module" src="js/29_1.js"></script>
+            </div>
+            <p>上記の例からわかる重要なことは以下である:</p>
+            <ul>
+              <li>
+                「<code>checked</code> 属性」と「チェック状態」は連動しない．
+              </li>
+              <li>「<code>disabled</code> 属性」と「無効状態」は連動する．</li>
+            </ul>
+            <p>
+              特に，<strong style="color: red"
+                >「属性の値」と「状態の値」は連動するとは限らない</strong
+              >ことがわかる．したがって，現在の状態を把握する際に，属性を利用して判定することは意図的でない限り推奨されない．
+            </p>
+          </section>
+        </section>
+        <section>
+          <h2>属性の取得・設定・削除</h2>
+          <p>
+            DOM要素<code>elm</code>に対し，属性の取得および設定を行うときは，<code>elm.getAttribute()</code>および<code>elm.setAttribute()</code>を利用すればよい．構文は以下の通りである:
+          </p>
+          <section>
+            <h3>属性の設定 (属性 attr に値 val を設定)</h3>
+            <div class="block-container theme-dark">
+              <pre><code class="language-ts">elm.setAttribute(attr, val);</code></pre>
+            </div>
+            <ul>
+              <li><code>attr</code>: 属性名（<code>string</code> 型）</li>
+              <li><code>val</code>: 属性の値（<code>string</code> 型）</li>
+            </ul>
+          </section>
+          <section>
+            <h3>属性の取得 (属性 attr の値を取得)</h3>
+            <div class="block-container theme-dark">
+              <pre><code class="language-ts">let val = elm.getAttribute(attr);</code></pre>
+            </div>
+            <ul>
+              <li><code>attr</code>: 属性名（<code>string</code> 型）</li>
+              <li>
+                <code>val</code>: 取得される属性の値（<code>string | null</code>
+                型）
+              </li>
+              <li>
+                属性の値は string 型で取得されるが，存在しないときは null
+                を返す．
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h3>属性の削除 (属性 attr を削除)</h3>
+            <div class="block-container theme-dark">
+              <pre><code class="language-ts">elm.removeAttribute(attr);</code></pre>
+            </div>
+            <ul>
+              <li><code>attr</code>: 属性名（<code>string</code> 型）</li>
+            </ul>
+          </section>
+        </section>
+        <section>
+          <h2>状態の取得・変更</h2>
+          <p>
+            状態とは，現在の状態を表すということから属性と異なり削除の概念は存在しない．まず，状態には以下の
+            3 種類がある:
+          </p>
+          <ul>
+            <li>常に取得可能な状態</li>
+            <li>取得できるかどうかが環境依存な状態</li>
+            <li>そもそも取得することができない状態</li>
+          </ul>
+          <p>さらに，重大な注意事項として，以下がある:</p>
+          <ul>
+            <li>
+              取得可能な状態において，<strong style="color: red"
+                >その取得方法は状態の種類によって変化しうる</strong
+              >．
+            </li>
+          </ul>
+          <p>
+            そのため，このページで紹介する方法で，どんな属性も取得できるわけではないことに注意が必要である．
+          </p>
+          <section>
+            <h3>プロパティアクセスによる取得</h3>
+            <p>
+              DOM 要素
+              <code>elm</code>
+              の状態を取得する一つの方法として，プロパティアクセスによる方法がある．DOM
+              要素の種類によって
+              <code>elm</code>
+              がどんなプロパティをもつかが変化するため，アクセスしようとしているプロパティが
+              <code>elm</code>
+              の型に存在するかどうかを意識しておく必要がある．
+            </p>
+            <p>
+              状態の取得・設定については，以前までのページで色々と学んでいた．例えば，
+            </p>
+            <ul>
+              <li>
+                <code>elm.value</code> により，<code>input</code> タグや
+                <code>textarea</code> タグの値の取得・設定
+              </li>
+              <li>
+                <code>elm.innerText</code>, <code>elm.innerHTML</code>,
+                <code>elm.textContent</code>,
+                <code>elm.outerHTML</code> により，表示の調整
+              </li>
+            </ul>
+            <p>
+              などがあった．以下では，これ以外の例として「checked 状態，disabled
+              状態，設定されている style の状態, id名,
+              class名」などを取得する方法を紹介する． ただし，style
+              については非常に多くの種類があるため，代表的な 2
+              種類のみ紹介する．
+            </p>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-25" />
+                <col class="table-col-25" />
+                <col class="table-col-50" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>型</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.disabled</code></pre>
+                </td>
+                <td><code>boolean</code></td>
+                <td>
+                  無効 (<code>true</code>) か有効 (<code>false</code>)
+                  かを取得/設定する
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.checked</code></pre>
+                </td>
+                <td><code>boolean</code></td>
+                <td>
+                  選択状態 (<code>true</code>) か未選択状態 (<code>false</code>)
+                  かを取得/設定する
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.id</code></pre>
+                </td>
+                <td><code>string</code></td>
+                <td>
+                  設定されている<code>id名</code>を取得・設定する．ただし，id
+                  が未設定の場合は，<code>elm.id</code>
+                  では空文字を返すため，目的によって null を返す
+                  <code>getAttribute("id")</code> を利用することも検討できる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.className</code></pre>
+                </td>
+                <td><code>string</code></td>
+                <td>
+                  設定されている<code>class名</code>
+                  を取得・設定する．ただし，class が未設定の場合は，<code
+                    >elm.className</code
+                  >
+                  では空文字を返すため，目的によって null を返す
+                  <code>getAttribute("class")</code>
+                  を利用することも検討できる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.classList</code></pre>
+                </td>
+                <td><code>DOMTokenList オブジェクト</code></td>
+                <td>
+                  設定されている<code>class名</code>
+                  からなるリストを取得する．DOMTokenList
+                  には，設定してある（一般に）複数のクラスを操作する便利なプロパティが用意されているため，取得しようとしているタグに複数のクラスが設定されている場合は非常に便利である．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.style.color</code></pre>
+                </td>
+                <td><code>string</code></td>
+                <td>style 属性の color プロパティの値を取得/設定する．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.style.backgroundColor</code></pre>
+                </td>
+                <td><code>string</code></td>
+                <td>
+                  style 属性の background-color プロパティの値を取得/設定する．
+                </td>
+              </tr>
+            </table>
+            <p>style の設定方法との関係は以下のようになっている:</p>
+            <ul>
+              <li>
+                <code>style = "color: red;"</code>
+                とタグに入力することと，<code>elm.style.color = "red";</code>
+                と設定することは同じである．
+              </li>
+              <li>
+                <code>style = "background-color: red;"</code>
+                とタグに入力することと，<code
+                  >elm.style.backgroundColor = "red";</code
+                >
+                と設定することは同じである．
+              </li>
+            </ul>
+            <p>
+              ここで重要なことは，<strong>設定する値にセミコロンは不要である</strong>という点である．タグに入力する際は，style
+              属性の様々なプロパティの区切りとしてセミコロンが使用されているだけであり，設定する値にセミコロンが付与されているわけではないからである．
+            </p>
+            <p>
+              また，style
+              には非常に多くの種類があったが，基本的にはタグに入力する style
+              属性のプロパティの名前が，そのまま DOM
+              要素のプロパティ名になっている．ただし，<strong style="color: red"
+                >style
+                属性のプロパティ名にハイフンがある場合は，ハイフンの代わりに直後の文字を大文字にする</strong
+              >というルールを採用する． これは，JavaScript
+              においてハイフンが減算演算子として定義されているため，これと区別する必要があるからである．例えば，<code
+                >background-color</code
+              >
+              属性は，DOM 要素のプロパティとしては，<code>backgroundColor</code>
+              のように設定する．
+            </p>
+          </section>
+          <section>
+            <h3>例</h3>
+            <p>以下では，初期状態が</p>
+            <div class="block-container theme-light">
+              <pre><code class="language-html">&lt;label id="ex2-id1" style="color:chocolate; background-color:aquamarine"&gt;
+&lt;input id="ex2-id2" class="ex2-class" type="checkbox"&gt;</code></pre>
+            </div>
+            <p>のタグの状態を，プロパティアクセスにより取得する例である．</p>
+            <div class="block-container label-custom" data-label="Browser">
+              <div id="ex2">
+                <label
+                  id="ex2-id1"
+                  style="color: chocolate; background-color: aquamarine"
+                >
+                  <input id="ex2-id2" class="ex2-class" type="checkbox" />
+                  チェックボックス
+                </label>
+                <button class="switchState">無効/有効変更</button>
+                <div class="result"></div>
+              </div>
+              <script type="module" src="dist/index.js"></script>
+              <script type="module" src="js/29_2.js"></script>
+            </div>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;div id="ex2"&gt;
+  &lt;label id="ex2-id1" style="color:chocolate; background-color:aquamarine"&gt;
+  &lt;input id="ex2-id2" class="ex2-class" type="checkbox"&gt;
+  チェックボックス
+  &lt;/label&gt;
+  &lt;button class="switchState"&gt;無効/有効変更&lt;/button&gt;
+  &lt;div class="result"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+            </div>
+            <div
+              class="block-container label-custom theme-dark"
+              data-label="TypeScript"
+            >
+              <pre><code class="language-ts">const elmEx2 = document.getElementById('ex2');
+if (elmEx2) {
+  const btnSwitch = elmEx2.querySelector('.switchState');
+  const label = elmEx2.querySelector('#ex2-id1') as HTMLElement | null;
+  const input = elmEx2.querySelector('#ex2-id2') as HTMLInputElement | null;
+  const result = elmEx2.querySelector('.result');
+
+  if (input && btnSwitch) {
+    btnSwitch.addEventListener('click', () =&gt; {
+      input.disabled = !input.disabled;
+      updateInfo();
+    });
+    input.addEventListener('click', updateInfo);
+  }
+
+  function updateInfo() {
+    if (label && input && result) {
+      let html = '';
+      let style = 'style="background-color: #ddd;"';
+      html += `&lt;strong&gt;inputタグ&lt;/strong&gt;\n`;
+      html += `&lt;ul&gt;\n`;
+      html += `&lt;li&gt;checked: &lt;span ${style} &gt;${input.checked}&lt;/span&gt;&lt;/li&gt;\n`;
+      html += `&lt;li&gt;disabled: &lt;span ${style} &gt;${input.disabled}&lt;/span&gt;&lt;/li&gt;\n`;
+      html += `&lt;li&gt;id: &lt;span ${style} &gt;${input.id}&lt;/span&gt;&lt;/li&gt;\n`;
+      html += `&lt;li&gt;class: &lt;span ${style} &gt;${input.className}&lt;/span&gt;&lt;/li&gt;\n`;
+      html += `&lt;/ul&gt;\n`;
+      html += `&lt;strong&gt;labelタグ&lt;/strong&gt;\n`;
+      html += `&lt;ul&gt;\n`;
+      html += `&lt;li&gt;style.color: &lt;span ${style} &gt;${label.style.color}&lt;/span&gt;&lt;/li&gt;\n`;
+      html += `&lt;li&gt;style.backgroundColor: &lt;span ${style} &gt;${label.style.backgroundColor}&lt;/span&gt;&lt;/li&gt;\n`;
+      html += `&lt;/ul&gt;`;
+      result.innerHTML = html;
+    }
+  }
+
+  updateInfo();
+}</code></pre>
+            </div>
+          </section>
+          <section>
+            <h3>className と classList</h3>
+            <p>
+             タグの class 属性は、クラス名をスペースで区切ることで複数指定できる．
+              class 属性ではスペースがデリミタとして機能し，スペースはクラス名の一部とはみなされなず，
+              例えば <code>"X"</code> や <code>" X"</code>，<code>"X "</code>はすべて同じクラス <code>"X"</code> として認識される．例えば
+            </p>
+            <div class="block-container theme-light">
+              <pre><code class="language-html">&lt;div id="ex3"&gt;
+  &lt;span class=" X" style="background-color:plum"&gt;class=" X"&lt;/span&gt;
+  &lt;span class="X" style="background-color:plum"&gt;class="X"&lt;/span&gt;
+  &lt;span class="X " style="background-color:plum"&gt;class="X "&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+            </div>
+            <p>
+              のような HTML コードにおいて，3 つの span
+              タグはすべて同じクラス<code>"X"</code>が設定されていることになる．したがって，
+            </p>
+            <div class="block-container theme-dark">
+              <pre><code class="language-ts">const elmEx3 = document.getElementById('ex3');
+if (elmEx3) {
+  const elmList = elmEx3.querySelectorAll('.X');
+  let text = '';
+  for (let i = 0; i &lt; elmList.length; i++) {
+    text += `class = [${elmList[i].className}]\n`;
+  }
+  console.log(text);
+}</code></pre>
+            </div>
+            <p>を実行すると，</p>
+            <div class="block-container theme-light">
+              <pre><code class="language-html">class = [ X]
+class = [X]
+class = [X ]</code></pre>
+            </div>
+            <p>
+              が表示される．したがって，同じクラスであるにも関わらず，<code
+                >className</code
+              >
+              プロパティが異なってしまう．複数クラスが設定されている場合も同様であり，
+              <code>className</code>
+              を利用してクラス判定をする場合は，文字列操作する必要があり，少々面倒である．一方，<code>classList</code>を利用すると，クラス名のみを抽出して格納してくれるため，文字列操作が不要になり非常に便利である．
+            </p>
+            <p>例えば，以下のような HTML を考えよう:</p>
+            <div class="block-container theme-light">
+              <pre><code class="language-html">&lt;div id="ex3"&gt;
+  &lt;span class="A  B C   D E"&gt;&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+            </div>
+            <p>
+              このとき，<code
+                >const span = document.querySelector('#ex3 > span');</code
+              >により <code>span</code> タグの DOM 要素を取得すれば，
+            </p>
+            <p>
+              <code>span.classList</code> は，<code
+                >["A", "B", "C", "D", "E"]</code
+              >
+              のようなクラス名の配列（のようなもの）を返すため，非常に取り扱いがしやすい．
+            </p>
+            <p>
+              <code>classList</code> により取得できるものは
+              <code>DOMTokenList</code>
+              なので配列ではないのだが，以下のような便利なプロパティや仕様がある．
+            </p>
+
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-30" />
+                <col class="table-col-70" />
+              </colgroup>
+              <tr>
+                <th>
+                  構文等（<code>list</code> は DOMTokenList オブジェクトとする）
+                </th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">list.add(p1, p2, ...);</code></pre>
+                </td>
+                <td>指定したクラスを追加する．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">list.remove(p1, p2, ...);</code></pre>
+                </td>
+                <td>指定したクラスを削除する．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let flag = list.contains(p1);</code></pre>
+                </td>
+                <td>指定したクラスが存在するかを返す．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = list[idx];</code></pre>
+                </td>
+                <td>
+                  配列のようにインデックスアクセスして取得できる．<strong
+                    style="color: red"
+                    >読み取り専用なので，値の割り当てはできない（実行時エラー）</strong
+                  >．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">for (const elm of list){}</code></pre>
+                </td>
+                <td><code>for...of...</code>構文が使用できる．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let num = list.length;</code></pre>
+                </td>
+                <td>配列の長さが取得できる．</td>
+              </tr>
+            </table>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
