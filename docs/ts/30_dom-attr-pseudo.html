@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>属性と疑似クラス</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- 現在移行作業中 -->
+    <link rel="stylesheet" href="css/blocks-00.css" />
+    <link rel="stylesheet" href="css/code-00.css" />
+    <link rel="stylesheet" href="css/heading-00.css" />
+    <link rel="stylesheet" href="css/table-00.css" />
+    <link rel="stylesheet" href="css/layout-00.css" />
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>属性と疑似クラス - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="30_dom-attr-pseudo.html">属性と疑似クラス</a></li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="29-dom-attribute.html" class="prev">前</a> |
+        <a href="" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <section>
+          <h2>属性・状態と検索書式</h2>
+          <p>属性とは，</p>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;xxx attr1="val1" attr2 = "val2" ...&gt;</code></pre>
+          </div>
+          <p>
+            のように HTML タグ内に書いた <code>attr1</code>, <code>attr2</code>,
+            ... の部分を指すのであった．また，状態とは，この DOM
+            要素に対する現在の動的な状況を指す用語であり，例えば「チェックが付いている」や「利用不可能になっている」などが該当する．
+            DOM 要素 <code>elm</code> が与えられたとき，この DOM
+            要素自体に特定の属性について調べたり，特定の状態について調べるには，
+            <code>elm.getAttribute</code>, <code>elm.setAttribute</code>,
+            <code>elm.removeAttribute</code>
+            を使ったり，それぞれの状態に対応するプロパティアクセスをすればよいことを<a
+              href="29-dom-attribute.html"
+              >前ページ</a
+            >で学んだが，これは，既に DOM 要素
+            <code>elm</code> を取得済みであることを前提とした操作である．
+            よって，そもそも DOM 要素
+            <code>elm</code> 自体を検索・抽出する方法が必要となる．
+          </p>
+          <p>
+            DOM
+            要素を検索する際は，<code>xxx.querySelector(検索書式)</code>を使うことで調べることができる．検索書式は<a
+              href="28-dom-query.html"
+              >querySelector のページ</a
+            >において，
+          </p>
+          <ul>
+            <li>id検索</li>
+            <li>class検索</li>
+            <li>親/子要素検索</li>
+            <li>祖先/子孫要素検索</li>
+            <li>and検索，or検索</li>
+          </ul>
+          <p>
+            について学んだ．本ページでは，これに加えて「属性検索」および「状態検索」についても解説する．
+          </p>
+        </section>
+        <section>
+          <h2>属性の検索書式</h2>
+          <p>属性の検索書式は，以下のものが用意されている:</p>
+          <ul>
+            <li><code>[attr]</code> DOM要素は属性 attr をもつ</li>
+            <li>
+              <code>[attr=val]</code> DOM要素は属性 attr をもち，その値は val
+              である
+            </li>
+            <li>
+              <code>[attr^=s]</code> DOM要素は属性 attr をもち，その値は s
+              から始まる
+            </li>
+            <li>
+              <code>[attr$=e]</code> DOM要素は属性 attr をもち，その値は e
+              で終わる
+            </li>
+            <li>
+              <code>[attr*=sub]</code> DOM要素は属性 attr をもち，その値は sub
+              を含む
+            </li>
+          </ul>
+          <p>
+            属性名<code>attr</code>には任意の名前を指定できるため，タグに設定していれば，ユーザー定義属性名を利用することができる．例えば，
+          </p>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;div id="ex1" hogehoge="xyzw"&gt;&lt;/div&gt;</code></pre>
+          </div>
+          <p>のように定義されたタグは，</p>
+          <ul>
+            <li><code>[hogehoge]</code> (属性 <code>hogehoge</code> をもつ)</li>
+            <li>
+              <code>[hogehoge=xyzw]</code> (属性
+              <code>hogehoge</code> をもち，値は "xyzw" である)
+            </li>
+            <li>
+              <code>[hogehoge*=yz]</code> (属性
+              <code>hogehoge</code> をもち，値に "yz" が含まれる)
+            </li>
+          </ul>
+          <p>などのように検索することができる．</p>
+          <section>
+            <h3>例</h3>
+            <p>
+              以下では，<code>querySelectorAll</code> で検索して Hit
+              したものをすべて表示する例である．<code>and</code>検索にも利用できる．
+              属性の値は文字列であるため，検索の際は
+              <code>[value = "apple"]</code>
+              のように<code>"</code>で囲まなければならない．囲まない場合の動作は保証されない．
+            </p>
+            <div
+              class="block-container label-custom theme-light"
+              data-label="HTML"
+            >
+              <pre><code class="language-html">&lt;div id="ex1"&gt;
+  &lt;span class="ABC-ex1"&gt;&lt;/span&gt;
+  &lt;span class="ex1-CBA" hoge="foo"&gt;&lt;/span&gt;
+  &lt;button disabled&gt;A&lt;/button&gt;
+  &lt;button&gt;B&lt;/button&gt;
+  &lt;button disabled&gt;C&lt;/button&gt;
+  &lt;input type="radio" name="ex1-1" value="1"&gt;
+  &lt;input type="radio" name="ex1-1" value="2" disabled&gt;
+  &lt;input type="radio" name="ex1-1" value="3"&gt;
+  &lt;input type="radio" name="ex1-2" value="1"&gt;
+  &lt;input type="radio" name="ex1-2" value="2"&gt;
+  &lt;input type="radio" name="ex1-2" value="3"&gt;
+&lt;/div&gt;</code></pre>
+            </div>
+            <div class="block-container theme-light">
+              <div id="ex1">
+                <div style="display: none">
+                  <span class="ABC-ex1"></span>
+                  <span class="ex1-CBA" hoge="foo"></span>
+                  <button disabled>A</button>
+                  <button>B</button>
+                  <button disabled>C</button>
+                  <input type="radio" name="ex1-1" value="1" />
+                  <input type="radio" name="ex1-1" value="2" disabled />
+                  <input type="radio" name="ex1-1" value="3" />
+                  <input type="radio" name="ex1-2" value="1" />
+                  <input type="radio" name="ex1-2" value="2" />
+                  <input type="radio" name="ex1-2" value="3" />
+                </div>
+              </div>
+              <div id="ex1-1">
+                <strong>検索書式</strong>
+                <div style="display: flex; gap: 1em; padding-bottom: 10px">
+                  <div style="display: flex; flex-direction: column">
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value='[type="radio"]'
+                      />[type="radio"]</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value='[name="ex1-2"]'
+                      />[name="ex1-2"]</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value='[value="1"]'
+                      />[value="1"]</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value="[disabled]"
+                      />[disabled]</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value="[hoge]"
+                      />[hoge]</label
+                    >
+                  </div>
+                  <div style="display: flex; flex-direction: column">
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value='[class^="A"]'
+                      />[class^="A"]</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value='[class$="A"]'
+                      />[class$="A"]</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value='[class*="BC"]'
+                      />[class*="BC"]</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value='[name="ex1-2"][value="3"]'
+                      />[name="ex1-2"][value="3"]</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex1-search"
+                        value="button[disabled]"
+                      />button[disabled]</label
+                    >
+                  </div>
+                </div>
+                <div>
+                  <button class="get">取得</button> 検索式:<span
+                    class="searchExp"
+                  ></span>
+                </div>
+                <br />
+                <textarea class="result" cols="100" rows="5"></textarea>
+              </div>
+              <script type="module" src="js/30_1.js"></script>
+            </div>
+          </section>
+        </section>
+        <section>
+          <h2>疑似クラス</h2>
+          <p>
+            属性の値と状態プロパティの値は異なるものであることには注意しなければならない．例えば，
+          </p>
+          <div
+            class="block-container label-custom theme-light"
+            data-label="HTML"
+          >
+            <pre><code class="language-html">&lt;input type="checkbox" checked&gt;</code></pre>
+          </div>
+          <p>
+            とすれば，チェック状態のチェックボックスが表示される．この DOM
+            要素は，<strong style="color: red"
+              >チェック状態にかかわらず，常に checked 属性をもつ</strong
+            >
+            ため，<code>checked</code>属性の有無によりチェック状態の取得はできない．
+            このことは，<code>"[checked]"</code> によってチェック状態の DOM
+            要素が検索できないことを意味する．
+          </p>
+          <p>
+            チェック状態を取得する一つの方法は，DOM 要素の checked
+            プロパティを使うことである．さて，checked
+            プロパティを利用するには，DOM
+            要素がそもそも取得できていなければならない．該当する input タグを
+            <code>querySelectorAll</code> で取得し，<code>for</code> 文で<code
+              >checked プロパティ</code
+            >の状態を調べれば， チェック状態の DOM
+            要素を取得できるがもっと簡単に検索したい．そのために利用する概念が<strong>疑似クラス</strong>と呼ばれるものである．
+          </p>
+          <section>
+            <h3>疑似クラスの書式</h3>
+            <p>
+              疑似クラスとは，<strong>現在おかれている状態</strong>を説明する概念のことである．ただし，必ずしも疑似クラスとしてすべての状態が説明できるわけではない．
+              さらに，動作環境によって「疑似クラスで説明できたり出来なかったりする」ことがある．
+            </p>
+            <p>
+              疑似クラスの基本構文は<code>:xxx</code>であり，これは「<code>xxx</code>という条件・状態にある要素」を意味する．以下に代表例を挙げる:
+            </p>
+            <ul>
+              <li><code>:checked</code> チェックが付いた状態</li>
+              <li><code>:disabled</code> 利用不可な状態</li>
+              <li>
+                <code>:hover</code>
+                マウスが乗っている状態（<strong>環境依存で，取得できないことがある</strong>）
+              </li>
+              <li><code>:first-child</code> 最初の子要素</li>
+              <li><code>:last-child</code> 最後の子要素</li>
+              <li>
+                <code>:nth-child(n)</code> n番目の子要素（n = 1, 2,
+                ...）．例えば，<code>n=2</code>なら<code>:nth-child(2)</code>と書く．
+              </li>
+              <li>
+                <code>:not(検索書式)</code>
+                検索書式を満たさない要素（<strong>複雑な検索書式は対応していない</strong>）
+              </li>
+            </ul>
+            <section>
+              <h3>例</h3>
+
+              <div
+                class="block-container label-custom theme-light"
+                data-label="HTML"
+              >
+                <pre><code class="language-html">&lt;div id="ex2"&gt;
+    &lt;input type="radio" name="ex2-1" value="1" checked&gt;
+    &lt;input type="radio" name="ex2-1" value="2" disabled&gt;
+    &lt;input type="radio" name="ex2-1" value="3"&gt;
+    &lt;input type="radio" name="ex2-2" value="1"&gt;
+    &lt;input type="radio" name="ex2-2" value="2"&gt;
+    &lt;input type="radio" name="ex2-2" value="3" disabled&gt;
+&lt;/div&gt;</code></pre>
+              </div>
+              <div class="block-container theme-light">
+                <div style="background-color: antiquewhite">
+                  <strong>ラジオボタン（状態取得用）</strong>
+                  <div id="ex2">
+                    <input type="radio" name="ex2-1" value="1" checked/>
+                    <input type="radio" name="ex2-1" value="2" disabled />
+                    <input type="radio" name="ex2-1" value="3" />
+                    <input type="radio" name="ex2-2" value="1" />
+                    <input type="radio" name="ex2-2" value="2" />
+                    <input type="radio" name="ex2-2" value="3" disabled />
+                  </div>
+                </div>
+                <div id="ex2-1">
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      padding-bottom: 10px;
+                    "
+                  >
+                    <strong>検索書式</strong>
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex2-search"
+                        value=":checked"
+                      />:checked</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex2-search"
+                        value=":disabled"
+                      />:disabled</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex2-search"
+                        value=":first-child"
+                      />:first-child</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex2-search"
+                        value=":last-child"
+                      />:last-child</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex2-search"
+                        value=":nth-child(2)"
+                      />:nth-child(2)</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex2-search"
+                        value=":not(:checked)"
+                      />:not(:checked)</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex2-search"
+                        value=":not(:disabled)"
+                      />:not(:disabled)</label
+                    >
+                    <label
+                      ><input
+                        type="radio"
+                        name="ex2-search"
+                        value=':not([value="3"])'
+                      />:not([value="3"])</label
+                    >
+                  </div>
+                  <div>
+                    <button class="get">取得</button> 検索式:<span
+                      class="searchExp"
+                    ></span>
+                  </div>
+                  <br />
+                  <textarea class="result" cols="100" rows="7"></textarea>
+                </div>
+                <script type="module" src="js/30_2.js"></script>
+              </div>
+            </section>
+
+            <section>
+              <h3>応用例</h3>
+              <p>
+                疑似クラスを利用する大きなメリットは，チェック状態の DOM
+                要素を非常に簡単に取得できるようになる点である．
+              </p>
+              <p>
+                下記の例は，チェック状態/未チェック状態の input
+                タグを検出するプログラムだが，ラジオボタンの value
+                属性に検索書式をセットしている．このように，check
+                状態のときに行いたい挙動を value
+                属性に設定しておくと便利である．
+              </p>
+              <div
+                class="block-container label-custom theme-light"
+                data-label="HTML"
+              >
+                <pre><code class="language-html">&lt;!-- 検出用の input タグ --&gt;
+&lt;div id="ex3"&gt;
+  &lt;div&gt;
+    &lt;label&gt;&lt;input type="checkbox" name="ex3-1" value="X" checked&gt;X&lt;/label&gt;
+    &lt;label&gt;&lt;input type="checkbox" name="ex3-1" value="Y"&gt;Y&lt;/label&gt;
+    &lt;label&gt;&lt;input type="checkbox" name="ex3-1" value="Z"&gt;Z&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="ex3-2" value="X"&gt;X&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="ex3-2" value="Y"&gt;Y&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="ex3-2" value="Z"&gt;Z&lt;/label&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 検出ロジックの UI --&gt;
+&lt;div id="ex3-1"&gt;
+  &lt;div&gt;
+    &lt;strong&gt;検索書式&lt;/strong&gt;
+    &lt;label&gt;&lt;input type="radio" name="ex3-search" value='input:checked'&gt;:checked&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="ex3-search" value='input:not(:checked)'&gt;:not(:checked)&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;div&gt;&lt;button class="get"&gt;取得&lt;/button&gt; 検索式:&lt;span class="searchExp"&gt;&lt;/span&gt;&lt;/div&gt;&lt;br&gt;
+  &lt;textarea class="result" cols="100" rows="5"&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+&lt;script src="dist/index.js"&gt;&lt;/script&gt;</code></pre>
+              </div>
+
+              <div class="block-container theme-light">
+                <div style="background-color: antiquewhite">
+                  <strong>ラジオボタン/チェックボックス（状態取得用）</strong>
+                  <div id="ex3">
+                    <div>
+                      <label
+                        ><input
+                          type="checkbox"
+                          name="ex3-1"
+                          value="X"
+                          checked
+                        />X</label
+                      >
+                      <label
+                        ><input
+                          type="checkbox"
+                          name="ex3-1"
+                          value="Y"
+                        />Y</label
+                      >
+                      <label
+                        ><input
+                          type="checkbox"
+                          name="ex3-1"
+                          value="Z"
+                        />Z</label
+                      >
+                      <label
+                        ><input type="radio" name="ex3-2" value="X" />X</label
+                      >
+                      <label
+                        ><input type="radio" name="ex3-2" value="Y" />Y</label
+                      >
+                      <label
+                        ><input type="radio" name="ex3-2" value="Z" />Z</label
+                      >
+                    </div>
+                  </div>
+                  <div id="ex3-1">
+                    <div>
+                      <strong>検索書式</strong>
+                      <label
+                        ><input
+                          type="radio"
+                          name="ex3-search"
+                          value="input:checked"
+                        />:checked</label
+                      >
+                      <label
+                        ><input
+                          type="radio"
+                          name="ex3-search"
+                          value="input:not(:checked)"
+                        />:not(:checked)</label
+                      >
+                    </div>
+                    <div>
+                      <button class="get">取得</button> 検索式:<span
+                        class="searchExp"
+                      ></span>
+                    </div>
+                    <br />
+                    <textarea class="result" cols="100" rows="7"></textarea>
+                  </div>
+                  <script type="module" src="js/30_3.js"></script>
+                </div>
+              </div>
+
+              <div
+                class="block-container theme-dark label-custom"
+                data-label="TypeScript"
+              >
+                <pre><code class="language-ts">const elmEx3 = document.getElementById('ex3');
+const elmEx3_1 = document.getElementById('ex3-1');
+
+if (elmEx3 && elmEx3_1) {
+  let btn = elmEx3_1.querySelector('.get');
+  btn?.addEventListener('click', getInfo);
+}
+
+function getInfo() {
+  if (elmEx3 && elmEx3_1) {
+    const elm = elmEx3_1.querySelector('[name=ex3-search]:checked') as HTMLInputElement | null;
+    let search = elm ? elm.value : '';
+    searchAndGo(search);
+  }
+}
+
+function searchAndGo(search: string) {
+  if (elmEx3 && elmEx3_1) {
+    let elmRes = elmEx3_1.querySelector(
+      '.result'
+    ) as HTMLTextAreaElement | null;
+    let elmExp = elmEx3_1.querySelector('.searchExp');
+
+    if (elmRes && elmExp) {
+      let text = '';
+      if (search === '') {
+        text = '検索書式を選択してください';
+      } else {
+        let resList = elmEx3.querySelectorAll(search);
+        elmExp.innerHTML = `&lt;span style="background-color: #c8c8c8;"&gt;querySelectorAll('${search}')&lt;/span&gt;`;
+        for (let i = 0; i &lt; resList.length; i++) {
+          text += resList[i].outerHTML + '\n';
+        }
+      }
+      elmRes.value = text;
+    }
+  }
+}</code></pre>
+              </div>
+              <div class="block-info">
+                <span class="icon"></span>
+                <div class="text-content">
+                  <p>
+                    上記では，<code>querySelectorAll</code>
+                    の戻り値に対して<code>for</code>文で回して要素を取得しているが，<code>tsconfig.json</code>の<code>"lib"</code>に対して<code>"DOM.Iterable"</code>を指定することで，<code>for...of...</code>構文を使用することができる．
+                    環境依存なため，ここでは詳しく述べることはせず，環境構築のページで紹介することとする．
+                  </p>
+                </div>
+              </div>
+            </section>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
