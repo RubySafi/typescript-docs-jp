@@ -432,12 +432,17 @@
           </section>
         </section>
         <section>
-          <h2>属性の取得・設定・削除</h2>
+          <h2>属性およびスタイル</h2>
           <p>
-            DOM要素<code>elm</code>に対し，属性の取得および設定を行うときは，<code>elm.getAttribute()</code>および<code>elm.setAttribute()</code>を利用すればよい．構文は以下の通りである:
+            属性やスタイルは，ともにタグに対して「プロパティ名と値の組」を設定する仕組みであるという点で共通している．
+            これらの取得・設定・削除の方法もとても似ている．
           </p>
           <section>
-            <h3>属性の設定 (属性 attr に値 val を設定)</h3>
+            <h3>属性の取得・設定・削除</h3>
+            <p>
+              DOM要素<code>elm</code>に対し，属性の取得，設定，削除を行うときは，<code>elm.getAttribute()</code>, <code>elm.setAttribute()</code>, <code>elm.removeAttribute()</code>を利用すればよい．構文は以下の通りである:
+            </p>
+            <h4>属性の設定 (属性 attr に値 val を設定)</h4>
             <div class="block-container theme-dark">
               <pre><code class="language-ts">elm.setAttribute(attr, val);</code></pre>
             </div>
@@ -445,9 +450,7 @@
               <li><code>attr</code>: 属性名（<code>string</code> 型）</li>
               <li><code>val</code>: 属性の値（<code>string</code> 型）</li>
             </ul>
-          </section>
-          <section>
-            <h3>属性の取得 (属性 attr の値を取得)</h3>
+            <h4>属性の取得 (属性 attr の値を取得)</h4>
             <div class="block-container theme-dark">
               <pre><code class="language-ts">let val = elm.getAttribute(attr);</code></pre>
             </div>
@@ -462,14 +465,60 @@
                 を返す．
               </li>
             </ul>
-          </section>
-          <section>
-            <h3>属性の削除 (属性 attr を削除)</h3>
+            <h4>属性の削除 (属性 attr を削除)</h4>
             <div class="block-container theme-dark">
               <pre><code class="language-ts">elm.removeAttribute(attr);</code></pre>
             </div>
             <ul>
               <li><code>attr</code>: 属性名（<code>string</code> 型）</li>
+            </ul>
+          </section>
+          <section>
+            <h3>スタイルの取得・設定・削除</h3>
+            <p>
+              HTML タグ内でスタイルを設定する場合は，<code>style</code>属性に値を設定すればよい．設定の例としては，
+              </p>
+              <ul>
+                <li><code>color: red;</code></li>
+                <li><code>background-color: blue;</code></li>
+              </ul>
+              <p>などが挙げられる．ここで，<code>color</code>や<code>background-color</code>などが style のプロパティであり，設定した値 <code>red</code> や <code>blue</code> のことをプロパティの値という．</p>
+              <p>
+              DOM要素<code>elm</code>に対し，スタイルの取得，設定，削除を行うときは，<code>elm.style.getPropertyValue()</code>, <code>elm.setProperty()</code>, <code>elm.removeProperty()</code> を利用すればよく，
+              属性の場合と非常に似ているが，些細な違いがある．構文は以下の通りである:
+            </p>
+            <h4>スタイルの設定 (プロパティ prop に値 val を設定)</h4>
+            <div class="block-container theme-dark">
+              <pre><code class="language-ts">elm.style.setProperty(prop, val);</code></pre>
+            </div>
+            <ul>
+              <li><code>prop</code>: プロパティ名（<code>string</code> 型）</li>
+              <li><code>val</code>: 設定する値（<code>string</code> 型）</li>
+            </ul>
+            <h4>スタイルの取得 (プロパティ prop の値を取得)</h4>
+            <div class="block-container theme-dark">
+              <pre><code class="language-ts">let val = elm.style.getPropertyValue(prop);</code></pre>
+            </div>
+            <ul>
+              <li><code>prop</code>: プロパティ名（<code>string</code> 型）</li>
+              <li>
+                <code>val</code>: 取得されるプロパティの値（<code>string</code>型）
+              </li>
+              <li>
+                プロパティの値は string 型で取得される．存在しないときは空文字 (<code>""</code>) を返す．
+              </li>
+            </ul>
+            <h4>プロパティの削除 (プロパティ prop を削除)</h4>
+            <div class="block-container theme-dark">
+              <pre><code class="language-ts">elm.style.removeProperty(prop);</code></pre>
+            </div>
+            <ul>
+              <li><code>prop</code>: プロパティ名（<code>string</code> 型）</li>
+            </ul>
+            <p>上記からわかるように，違いは「値の取得」に以下のように現れている: </p>
+            <ul>
+              <li>属性を取得する場合は<code>getAttribute</code>なのに対し，スタイルのプロパティを取得する場合は<code>getPropertyValue</code>のように記す．</li>
+              <li>属性を取得する場合，存在しないときは <code>null</code> を返すのに対し，スタイルのプロパティを取得する場合，存在しないときは 空文字 を返す．</li>
             </ul>
           </section>
         </section>
@@ -745,9 +794,11 @@ if (elmEx2) {
           <section>
             <h3>className と classList</h3>
             <p>
-             タグの class 属性は、クラス名をスペースで区切ることで複数指定できる．
-              class 属性ではスペースがデリミタとして機能し，スペースはクラス名の一部とはみなされなず，
-              例えば <code>"X"</code> や <code>" X"</code>，<code>"X "</code>はすべて同じクラス <code>"X"</code> として認識される．例えば
+              タグの class
+              属性は、クラス名をスペースで区切ることで複数指定できる． class
+              属性ではスペースがデリミタとして機能し，スペースはクラス名の一部とはみなされなず，
+              例えば <code>"X"</code> や <code>" X"</code>，<code>"X "</code
+              >はすべて同じクラス <code>"X"</code> として認識される．例えば
             </p>
             <div class="block-container theme-light">
               <pre><code class="language-html">&lt;div id="ex3"&gt;
