@@ -106,7 +106,7 @@
 /* -----------------------------
    インラインコード
 ----------------------------- */
-p code, li code, span code {
+p code, li code, span code, td code {
   background-color: #c8c8c8;
   padding: 0 0.3em;
   border-radius: 3px;

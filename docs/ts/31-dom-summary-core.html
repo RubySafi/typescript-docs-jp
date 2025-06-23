@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOM 構造とプロパティ: DOM基礎型</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- 現在移行作業中 -->
+    <link rel="stylesheet" href="css/blocks-00.css" />
+    <link rel="stylesheet" href="css/code-00.css" />
+    <link rel="stylesheet" href="css/heading-00.css" />
+    <link rel="stylesheet" href="css/table-00.css" />
+    <link rel="stylesheet" href="css/layout-00.css" />
+    <link rel="stylesheet" href="css/tree-00.css" />
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>DOM 構造とプロパティ: DOM基礎型 - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li>
+            <a href="31-dom-summary-core.html"
+              >DOM 構造とプロパティ: DOM基礎型</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="30-dom-attr-pseudo.html" class="prev">前</a> |
+        <a href="" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h1>DOM構造とプロパティ</h1>
+        <p>
+          今まで様々な DOM
+          要素とその操作方法について学んできたが，ここでは，未紹介だったものも含めて，主要な機能をまとめて紹介する．
+        </p>
+
+        <section>
+          <h2>DOM 要素におけるクラス構造</h2>
+          <p>
+            DOM 操作で取得できる HTML の DOM 要素の型は主に
+            <code>HTMLElement</code> 型だが，タグの種類によって
+            <code>as</code> 演算子により型変換を行うことが多い．これら DOM
+            要素の型は，以下のような階層構造になっている:
+          </p>
+          <div class="block-container theme-light">
+            <ul class="tree">
+              <li class="top-node">
+                <span>EventTarget</span>
+                <ul>
+                  <li>
+                    <span>Node</span>
+                    <ul>
+                      <li><span>Document</span></li>
+                      <li>
+                        <span>CharacterData</span>
+                        <ul>
+                          <li><span>Comment</span></li>
+                          <li><span>Text</span></li>
+                        </ul>
+                      </li>
+                      <li>
+                        <span>Element</span>
+                        <ul>
+                          <li>
+                            <span>HTMLElement</span>
+                            <ul>
+                              <li><span>HTMLInputElement</span></li>
+                              <li><span>HTMLTextAreaElement</span></li>
+                              <li><span>HTMLDivElement</span></li>
+                              <li><span>HTMLSpanElement</span></li>
+                              <li><span>HTMLButtonElement</span></li>
+                              <li><span>・・・</span></li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <p>
+            <code>EventTarget</code>
+            型が最上位の型であり，これを拡張していくことで，
+            <code>Node</code> 型，<code>Document</code> 型，<code>Element</code>
+            型，<code>HTMLElement</code>
+            が定義されている．さらに，それぞれの具体的なタグごとに拡張して，<code
+              >HTMLInputElement</code
+            >
+            型や <code>HTMLTextAreaElement</code> 型などが作られている．
+          </p>
+          <p>
+            このような拡張構造をしていることから，上位の型に存在するプロパティは，それを拡張した下位の型でも当然使うことができるが逆はできない．
+            さて，具体的なタグを対象として DOM
+            要素を取得するとき，本来はもっと具体的な型なのだが一旦
+            <code>HTMLElement</code> 型として取得して，<code>as</code>
+            演算子を利用して本来の型にキャストするということを行う．
+            これを行うことで，<code>HTMLElement</code>
+            型にない機能を使用することができるようになる．
+          </p>
+          <p>
+            以下では，これらの型にどんなプロパティがあるのかを代表的なものに絞ってまとめていく．
+          </p>
+        </section>
+        <section>
+          <h2>EventTarget 型</h2>
+          <p>
+            <code>EventTarget</code> 型は，すべての DOM
+            要素に対する最上位の型であり，ユーザーが要素に対して行うクリックなどのイベントを管理するための型である．<code
+              >EventTarget</code
+            >
+            を拡張した型でも使用することができ，頻繁によく使われる．
+          </p>
+          <p>
+            以下の例では，<code>dom</code> を
+            <code>EventTarget</code> 型の変数としている．
+          </p>
+          <table class="custom-table">
+            <colgroup>
+              <col class="table-col-35" />
+              <col class="table-col-30" />
+              <col class="table-col-35" />
+            </colgroup>
+            <tr>
+              <th>構文</th>
+              <th>パラメータ，戻り値</th>
+              <th>説明</th>
+            </tr>
+            <tr>
+              <td>
+                <pre
+                  class="table"
+                ><code class="language-ts">dom.addEventListener(event_type, f);</code></pre>
+              </td>
+              <td rowspan="2" style="background-color: antiquewhite">
+                <code>event_type</code> はトリガーとなるイベントタイプを string
+                型で指定する（例: 'click'）<br />
+                <code>f</code> はイベントに紐づく関数を指定する
+              </td>
+              <td>
+                指定したイベント発火時に実行する関数を登録する．イベント発火時は，関数にはイベントタイプに応じたイベントオブジェクトが引数として渡される．使用しないときは引数は省略できる．
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <pre
+                  class="table"
+                ><code class="language-ts">dom.removeEventListener(event_type, f);</code></pre>
+              </td>
+              <td>登録したイベントを削除する</td>
+            </tr>
+          </table>
+        </section>
+        <section>
+          <h2>Node 型</h2>
+          <section>
+            <h3>Node とツリー構造</h3>
+            <p>
+              HTML
+              は，タグなどにより入れ子構造になっている.この入れ子構造を管理しているのが
+              <code>Node</code>
+              型であり，ツリー構造で表すと読みやすい．例えば，以下のような入れ子構造を考える:
+            </p>
+            <div class="block-container theme-light">
+              <pre><code class="language-html">&lt;div&gt;
+  Hello
+  &lt;!-- コメントです --&gt;
+  &lt;p&gt;
+   Type&lt;br&gt;Script
+  &lt;/p&gt;
+  World
+&lt;/div&gt;</code></pre>
+            </div>
+            <p>
+              この入れ子構造は (簡単のため空白と改行は無視して)
+              ツリー表示すると下記のようになる:
+            </p>
+
+            <div class="block-container theme-light">
+              <ul class="tree">
+                <li class="top-node">
+                  <span class="elm">DIV</span>
+                  <ul>
+                    <li>
+                      <span class="txt">TEXT</span>:
+                      <span class="val">"Hello"</span>
+                    </li>
+                    <li>
+                      <span class="cmt">COMMENT</span>:
+                      <span class="val">"コメントです"</span>
+                    </li>
+                    <li>
+                      <span class="elm">P</span>
+                      <ul>
+                        <li>
+                          <span class="txt">TEXT</span>:
+                          <span class="val">"Type"</span>
+                        </li>
+                        <li><span class="elm">BR</span></li>
+                        <li>
+                          <span class="txt">TEXT</span>:
+                          <span class="val">"Script"</span>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <span class="txt">TEXT</span>:
+                      <span class="val">"World"</span>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <p>
+              このようなツリー構造を表す単位のことを
+              <code>Node</code> 型が用いられている．<code>Node</code>
+              は，ツリーの任意の部分（枝）を切り取っても，それ自体が
+              <code>Node</code> として機能する特徴がある．例えば，上記において
+              <span class="treeElm">P</span> から切り取ると以下のような
+              <code>Node</code> を得る:
+            </p>
+            <div class="block-container theme-light">
+              <ul class="tree">
+                <li class="top-node">
+                  <span class="elm">P</span>
+                  <ul>
+                    <li>
+                      <span class="txt">TEXT</span>:
+                      <span class="val">"Type"</span>
+                    </li>
+                    <li><span class="elm">BR</span></li>
+                    <li>
+                      <span class="txt">TEXT</span>:
+                      <span class="val">"Script"</span>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <p>
+              同様に，<span class="treeCmt">COMMENT</span> や
+              <span class="treeElm">BR</span> で切り取ると以下のようになる:
+            </p>
+            <div class="block-container theme-light">
+              <ul class="tree">
+                <li class="top-node">
+                  <span class="cmt">COMMENT</span>:
+                  <span class="val">"コメントです"</span>
+                </li>
+              </ul>
+            </div>
+            <div class="block-container theme-light">
+              <ul class="tree">
+                <li class="top-node">
+                  <span class="elm">BR</span>
+                </li>
+              </ul>
+            </div>
+            <p>
+              これらは子
+              <code>Node</code>
+              をもたないためツリー構造をしているように見えないが，立派な
+              <code>Node</code> の一つである．
+            </p>
+            <p><code>Node</code> については以下のような用語が定められている:</p>
+            <ul>
+              <li>
+                <code>Node</code> X の直下に <code>Node</code> Y があるとき，X
+                は Y の <strong>親ノード</strong>，Y は X の
+                <strong>子ノード</strong> であるという．
+              </li>
+              <li>
+                <code>Node</code> X の内部に <code>Node</code> Y があるとき，X
+                は Y の <strong>祖先ノード</strong>，Y は X の
+                <strong>子孫ノード</strong> であるという．
+              </li>
+              <li>
+                <span class="treeElm">DIV</span>,
+                <span class="treeElm">P</span>,
+                <span class="treeElm">BR</span> のような HTML タグに関連する
+                <code>Node</code> を <strong>要素ノード</strong> という．
+              </li>
+              <li>
+                <span class="treeCmt">COMMENT</span> に対応する
+                <code>Node</code> を <strong>コメントノード</strong> という．
+              </li>
+              <li>
+                <span class="treeTxt">TEXT</span> に対応する
+                <code>Node</code> を <strong>テキストノード</strong> という．
+              </li>
+              <li>
+                コメントノードやテキストノードにおいて，そのノードがもつテキスト（上のツリー表示では
+                colon
+                の後にある文字列）のことを<strong>ノードの値</strong>という．要素ノードはテキスト値を持たない．
+              </li>
+              <li>
+                同じ親ノードをもつ <code>Node</code> のことを
+                <strong>兄弟ノード</strong> という．
+              </li>
+            </ul>
+            <p>
+              なお，上記に書いたノードのツリー表示は，空白や改行を無視しているため，実際にはもう少し子ノードが増える．
+            </p>
+            <p>
+              以下の例では，<code>cur</code> を
+              <code>Node</code> 型の変数としている．また，<code>Node</code>
+              型を拡張した <code>ChildNode</code> 型および
+              <code>ParentNode</code> 型が出てくるが，使用する際は普通の
+              <code>Node</code> 型と思っても通常は差し支えない．
+            </p>
+          </section>
+
+          <section>
+            <h4>関連する Node の取得</h4>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-30" />
+                <col class="table-col-27" />
+                <col class="table-col-43" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.firstChild;
+let val = cur.lastChild;</code></pre>
+                </td>
+                <td>
+                  戻り値は <code>ChildNode | null</code> 型<br /><strong
+                    >読み取り専用</strong
+                  >
+                </td>
+                <td>
+                  最初の子ノード，最後の子ノードを取得する．要素ノードに限らず，テキストノード等も取得できる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.previousSibling;
+let val = cur.nextSibling;</code></pre>
+                </td>
+                <td>
+                  戻り値は <code>ChildNode | null</code> 型<br /><strong
+                    >読み取り専用</strong
+                  >
+                </td>
+                <td>
+                  直前の兄弟ノード，直後の兄弟ノードを取得する．要素ノードに限らず，テキストノード等も取得できる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.childNodes;</code></pre>
+                </td>
+
+                <td>
+                  戻り値は
+                  <code>NodeListOf&lt;ChildNode&gt;</code> 型<br /><strong
+                    >読み取り専用</strong
+                  >
+                </td>
+                <td>すべての子ノードからなる配列のようなものを返す．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.parentNode;</code></pre>
+                </td>
+                <td>
+                  戻り値は <code>ParentNode | null</code> 型<br /><strong
+                    >読み取り専用</strong
+                  >
+                </td>
+                <td>親ノードを返す．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.parentElement;</code></pre>
+                </td>
+                <td>
+                  戻り値は <code>HTMLElement | null</code> 型<br /><strong
+                    >読み取り専用</strong
+                  >
+                </td>
+                <td>
+                  親ノードを
+                  <code>HTMLElement</code> 型として返す．ただし，<code
+                    >HTMLElement</code
+                  >
+                  型でない場合は <code>null</code> を返す．
+                </td>
+              </tr>
+            </table>
+          </section>
+          <section>
+            <h4>Node の情報の取得 / 設定</h4>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-25" />
+                <col class="table-col-23" />
+                <col class="table-col-52" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.textContent;
+cur.textContent = val;
+                </code></pre>
+                </td>
+                <td>値 <code>val</code> は <code>string | null</code> 型</td>
+                <td>
+                  <strong>取得時</strong>:
+                  自身およびすべての子ノードの値（テキスト）として存在するものを単純結合したものを返す．<br />
+                  <strong>設定時</strong>:
+                  <ul>
+                    <li>
+                      設定しようとしている値が
+                      <code>null</code> のときは空文字とみなされる
+                    </li>
+                    <li>
+                      テキストノードやコメントノードに設定する際はノードの値が
+                      <code>val</code> に置き換わる
+                    </li>
+                    <li>
+                      要素ノードに設定する場合，要素ノードの子ノードがすべて削除され，代わりにノードの値が
+                      <code>val</code> であるテキストノード 1 つに置き換わる．
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.nodeName;</code></pre>
+                </td>
+                <td>
+                  戻り値は <code>string</code> 型<br /><strong
+                    >読み取り専用</strong
+                  >
+                </td>
+                <td>
+                  ノード名を返す．テキストノードは
+                  <code>&#x23;text</code>，コメントノードは
+                  <code>&#x23;comment</code>，要素ノードは例えば
+                  <code>DIV</code> や <code>SPAN</code> などになる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.nodeType;</code></pre>
+                </td>
+                <td>
+                  戻り値は <code>number</code> 型<br /><strong
+                    >読み取り専用</strong
+                  >
+                </td>
+                <td>
+                  ノードの種類を数値で返す．テキストノードは
+                  <code>3</code>，コメントノードは <code>8</code>，要素ノードは
+                  <code>1</code> などになる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.nodeValue;
+cur.nodeValue = val;
+                </code></pre>
+                </td>
+                <td>値 <code>val</code> は <code>string | null</code> 型</td>
+                <td>
+                  <ul>
+                    <li>ノードの値を取得/設定をする．</li>
+                    <li>要素ノードは値がないため null を返す．</li>
+                    <li>要素ノードは値がないため，設定しても無視される．</li>
+                    <li>
+                      テキストノード等に
+                      <code>null</code> を設定すると，内部で空文字に変換される．
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </table>
+          </section>
+          <section>
+            <h4>Node 操作</h4>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-30" />
+                <col class="table-col-25" />
+                <col class="table-col-45" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.appendChild(p1);
+cur.appendChild(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node</code> 型<br />
+                  <code>val</code>: <code>Node</code> 型
+                </td>
+                <td>
+                  指定したノード
+                  <code>p1</code> を末尾に子ノードとして追加するが，挙動としては
+                  「<strong>切り取り→貼り付け</strong>」 になるため，<code
+                    >p1</code
+                  >
+                  は元々いた場所から消える．
+                  <br />戻り値は，情報が更新（親ノード情報の更新等）されたノード
+                  <code>p1</code>．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.removeChild(p1);
+cur.removeChild(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node</code> 型<br />
+                  <code>val</code>: <code>Node</code> 型
+                </td>
+                <td>
+                  指定した子ノード <code>p1</code> を削除する．
+                  <br />戻り値は，情報が更新（親ノード情報の更新等）されたノード
+                  <code>p1</code>．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.replaceChild(p1, p2);
+cur.replaceChild(p1, p2);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node</code> 型 (new node)<br />
+                  <code>p2</code>: <code>Node</code> 型 (old node)<br />
+                  <code>val</code>: <code>Node</code> 型
+                </td>
+                <td>
+                  子ノード <code>p2</code> を別のノード
+                  <code>p1</code>
+                  に置き換える．戻り値は，情報が更新（親ノード情報の更新等）されたノード
+                  <code>p2</code>．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.cloneNode(flag);</code></pre>
+                </td>
+                <td>
+                  <code>flag</code>: <code>boolean</code> 型
+                  (省略は<code>false</code>)<br />
+                  <code>val</code>: <code>Node</code> 型
+                </td>
+                <td>
+                  指定したノードのコピーを返す．属性等はすべてコピーされるため，<strong
+                    >id の重複に注意が必要</strong
+                  >である．ツリー構造から切り離された状態としてコピーされるため，親ノードの情報等は消える．また，<code
+                    >addEventListener</code
+                  >
+                  により登録したイベントはコピーされない． <code>flag</code> に
+                  <code>false</code>
+                  を設定すると子ノードを除いてコピーされるため，スタイルや属性のテンプレートのみ欲しい場合に利用できる．<code
+                    >true</code
+                  >
+                  を設定すると子ノードもすべて含めてコピーされる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.contains(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node | null</code> 型<br />
+                  <code>val</code>: <code>boolean</code> 型
+                </td>
+                <td>
+                  引数に指定した node が，cur 自身か，その子孫ノードのときは
+                  <code>true</code> を返す．それ以外は
+                  <code>false</code> を返す．引数に
+                  <code>null</code> を指定すると
+                  <code>false</code>
+                  を返すが，これはオプショナルプロパティ用と思ってよい．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = cur.insertBefore(p1, p2);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node</code> 型<br />
+                  <code>p2</code>: <code>Node | null</code> 型<br />
+                  <code>val</code>: <code>Node</code> 型
+                </td>
+                <td>
+                  指定したノード <code>p1</code> を
+                  <code>p2</code> の直前に子ノードとして追加するが，挙動としては
+                  「<strong>切り取り→貼り付け</strong>」 になるため，<code
+                    >p1</code
+                  >
+                  は元々いた場所から消える． <code>p2</code> が
+                  <code>null</code> のときは末尾に追加される．<code>p2</code> が
+                  <code>null</code> でないときは，<code>cur</code>
+                  の子ノードでないと実行時エラー．
+                  <br />戻り値は，（親ノードなどの）情報が更新されたノード
+                  <code>p1</code>．
+                </td>
+              </tr>
+            </table>
+          </section>
+        </section>
+        <section>
+          <h2>Document 型のプロパティ</h2>
+          <p>
+            以下の例では <code>doc</code> を
+            <code>Document</code> 型の変数としているが，普通は
+            <code>Document</code> 型の主要な対象である
+            <code>document</code> に対して使用する．
+          </p>
+          <section>
+            <h4>DOM 要素の検索</h4>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-34" />
+                <col class="table-col-27" />
+                <col class="table-col-39" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = doc.getElementById(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>HTMLElement | null</code> 型
+                </td>
+                <td>
+                  指定した <code>p1</code> を id にもつ DOM
+                  要素を検索する．見つからない場合は
+                  <code>null</code> を返す．id は，通常
+                  <code>HTMLElement</code>
+                  型のタグに付けられるという前提に基づき，返る型が <code>HTMLElement | null</code> に制限されている．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = doc.getElementsByClassName(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>:
+                  <code>HTMLCollectionOf&lt;Element&gt;</code> 型
+                </td>
+                <td>
+                  指定した <code>p1</code> を class にもつ DOM 要素を検索し，Hit
+                  したものからなる <code>Element</code> 型の配列のようなものを返す．
+                  <strong
+                    >検索結果は常に最新の状態に保つという特性がある（定期的に再検索して検索結果を更新する）</strong
+                  >．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = doc.querySelector(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>Element | null</code> 型
+                </td>
+                <td>
+                  指定した検索書式 <code>p1</code> で DOM 要素を検索し，最初に
+                  Hit した要素を <code>Element</code> 型で返す．見つからない場合は
+                  <code>null</code> を返す．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = doc.querySelectorAll(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>NodeListOf&lt;Element&gt;</code> 型
+                </td>
+                <td>
+                  指定した検索書式 <code>p1</code> で DOM 要素を検索し，Hit
+                  したものからなる <code>Element</code> 型の配列のようなものを返す．<strong
+                    >検索結果は検索した時点で固定される（再検索されない）．</strong
+                  >
+                </td>
+              </tr>
+            </table>
+          </section>
+
+          <section>
+            <h4>ノードの作成</h4>
+            <p>
+              主要なノードである，要素ノード，テキストノード，コメントノードの 3
+              つのノードを作成する．以下において <code>Text</code> 型および
+              <code>Comment</code> 型が出てくるが，これらは
+              <code>Node</code>
+              の派生型であり，それぞれテキストノード専用，コメントノード専用であることを示す．実際には
+              <code>Node</code> 型として扱って通常は差し支えない．
+            </p>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-35" />
+                <col class="table-col-35" />
+                <col class="table-col-30" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = doc.createElement(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>HTMLElement</code> 型およびその派生
+                </td>
+                <td>
+                  <strong>要素ノードを作成する．</strong><br /><code>p1</code>
+                  で指定した文字列をタグ名とする <code>HTMLElement</code> 型の
+                  DOM 要素を作成する．既定のタグ名 (<code>input</code> など)
+                  を指定すると，戻り値の型がより具体的な型 (<code
+                    >HTMLInputElement</code
+                  >
+                  など)になる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = doc.createTextNode(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>Text</code> 型
+                </td>
+                <td>
+                  <strong>テキストノードを作成する．</strong><br /><code
+                    >p1</code
+                  >
+                  で指定した文字列をノードの値とする <code>Text</code> 型の DOM
+                  要素を作成する．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = doc.createComment(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>Comment</code> 型
+                </td>
+                <td>
+                  <strong>コメントノードを作成する．</strong><br /><code
+                    >p1</code
+                  >
+                  で指定した文字列をノードの値とする <code>Comment</code> 型の
+                  DOM 要素を作成する．
+                </td>
+              </tr>
+            </table>
+                        <div class="block-info">
+              <span class="icon"></span>
+              <div class="text-content">
+                <p>
+                  <code>createElement</code> の関数の戻り値の型は，引数の型によって変化する．例えば，
+                </p>
+                <div class="block-container theme-dark">
+            <pre><code class="language-ts">let val = document.createElement('div'); // val は HTMLDivElement
+
+let tag = 'div';
+let val = document.createElement(tag); // val は HTMLElement</code></pre>
+          </div>
+              <p>である．渡される値で変化するわけではない．</p>
+              </div>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

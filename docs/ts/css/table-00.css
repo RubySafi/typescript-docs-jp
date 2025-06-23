@@ -55,11 +55,35 @@ table.custom-table colgroup col.table-col-10   { width: 10%; }
 table.custom-table colgroup col.table-col-15   { width: 15%; }
 table.custom-table colgroup col.table-col-20   { width: 20%; }
 table.custom-table colgroup col.table-col-25   { width: 25%; }
+table.custom-table colgroup col.table-col-26   { width: 26%; }
+table.custom-table colgroup col.table-col-27   { width: 27%; }
+table.custom-table colgroup col.table-col-28   { width: 28%; }
+table.custom-table colgroup col.table-col-29   { width: 29%; }
 table.custom-table colgroup col.table-col-30   { width: 30%; }
+table.custom-table colgroup col.table-col-31   { width: 31%; }
+table.custom-table colgroup col.table-col-32   { width: 32%; }
+table.custom-table colgroup col.table-col-33   { width: 33%; }
+table.custom-table colgroup col.table-col-34   { width: 34%; }
 table.custom-table colgroup col.table-col-35   { width: 35%; }
+table.custom-table colgroup col.table-col-36   { width: 36%; }
+table.custom-table colgroup col.table-col-37   { width: 37%; }
+table.custom-table colgroup col.table-col-38   { width: 38%; }
+table.custom-table colgroup col.table-col-39   { width: 39%; }
 table.custom-table colgroup col.table-col-40   { width: 40%; }
+table.custom-table colgroup col.table-col-41   { width: 41%; }
+table.custom-table colgroup col.table-col-42   { width: 42%; }
+table.custom-table colgroup col.table-col-43   { width: 43%; }
+table.custom-table colgroup col.table-col-44   { width: 44%; }
 table.custom-table colgroup col.table-col-45   { width: 45%; }
+table.custom-table colgroup col.table-col-46   { width: 46%; }
+table.custom-table colgroup col.table-col-47   { width: 47%; }
+table.custom-table colgroup col.table-col-48   { width: 48%; }
+table.custom-table colgroup col.table-col-49   { width: 49%; }
 table.custom-table colgroup col.table-col-50   { width: 50%; }
+table.custom-table colgroup col.table-col-51   { width: 51%; }
+table.custom-table colgroup col.table-col-52   { width: 52%; }
+table.custom-table colgroup col.table-col-53   { width: 53%; }
+table.custom-table colgroup col.table-col-54   { width: 54%; }
 table.custom-table colgroup col.table-col-55   { width: 55%; }
 table.custom-table colgroup col.table-col-60   { width: 60%; }
 
@@ -69,7 +93,7 @@ table.custom-table tbody tr:nth-child(odd) {
 }
 
 table.custom-table tbody tr:nth-child(even) {
-  background-color: #d0d0d0;
+  background-color: #ddffdd;
 }
 
 /* モバイル対応 */
