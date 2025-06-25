@@ -96,6 +96,14 @@ table.custom-table tbody tr:nth-child(even) {
   background-color: #ddffdd;
 }
 
+table.skin-orange tbody tr:nth-child(even) {
+  background-color: #f9ffdd;
+}
+
+table.skin-blue tbody tr:nth-child(even) {
+  background-color: #ddf0ff;
+}
+
 /* モバイル対応 */
 @media (max-width: 600px) {
   table.custom-table {

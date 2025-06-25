@@ -146,20 +146,20 @@ function getID(id: string) {
           <h2>querySelector</h2>
           <p>
             querySelector を利用することで，様々な指定の仕方で DOM
-            要素が取得できる．
+            要素が取得できる．検索する際に利用する書式のことを <strong>セレクタ</strong> と呼ぶ．
           </p>
           <div class="block-container theme-dark">
-            <pre><code class="language-ts">let val = xxx.querySelector("検索書式")</code></pre>
+            <pre><code class="language-ts">let val = xxx.querySelector("セレクタ")</code></pre>
           </div>
           <ul>
             <li><code>val</code>の型: <code>Element | null</code> 型</li>
           </ul>
           <p>
-            のように利用することで，<code>xxx</code> から指定した検索書式の DOM
+            のように利用することで，<code>xxx</code> から指定したセレクタの DOM
             要素が取得できる．<code>getElementById</code> や
             <code>getElementsByClassName</code> とは異なり，<code>xxx</code> は
             <code>document</code> に限らず任意の DOM
-            要素（検索を開始したい要素）が指定できるという点も便利である．一方，検索方法については非常に多くの検索書式があり，一度にすべて紹介するのは大変なため，本ページではまずは以下の3種類を絞って紹介する:
+            要素（検索を開始したい要素）が指定できるという点も便利である．一方，検索方法については非常に多くのセレクタがあり，一度にすべて紹介するのは大変なため，本ページではまずは以下の3種類を絞って紹介する:
           </p>
           <ul>
             <li>
@@ -176,7 +176,7 @@ function getID(id: string) {
             </li>
           </ul>
           <p>
-            その後，いくつかの検索書式を紹介していく．なお，<code>querySelector</code>
+            その後，いくつかのセレクタを紹介していく．なお，<code>querySelector</code>
             では，検索して複数 Hit した場合でも最初の 1 件のみが返されることに注意が必要である．
           </p>
 <h3>例</h3>
@@ -253,7 +253,7 @@ function getInfo() {
             上記例では，id="ex2" である DOM 要素の中において，指定された id,
             class, tag をもつ DOM 要素を取得している．
             <code>input</code>タグはラジオボタンにし，value
-            属性に検索したい検索書式をセットしている．検索書式には色々とあり，属性に対する検索書式を学ぶことで，選択されたラジオボタンを取得するコードがもっとスマートに書けるようになる．これについては次のページで学ぶ．
+            属性に検索したいセレクタをセットしている．セレクタには色々とあり，属性に対するセレクタを学ぶことで，選択されたラジオボタンを取得するコードがもっとスマートに書けるようになる．これについては次のページで学ぶ．
           </p>
         </section>
         <section>
@@ -266,7 +266,7 @@ function getInfo() {
             の利用が適している．
           </p>
           <div class="block-container theme-dark">
-            <pre><code class="language-ts">let val = xxx.querySelectorAll("検索書式")</code></pre>
+            <pre><code class="language-ts">let val = xxx.querySelectorAll("セレクタ")</code></pre>
           </div>
           <ul>
             <li>
@@ -274,7 +274,7 @@ function getInfo() {
             </li>
           </ul>
           <p>
-  のように利用することで，<code>xxx</code> から指定した検索書式の DOM
+  のように利用することで，<code>xxx</code> から指定したセレクタの DOM
   要素がすべて取得できる．戻り値の型である
   <code>NodeListOf&lt;Element&gt;</code> は本来 <code>for...of...</code> による反復処理が可能であり，
   取得した要素を簡潔に調べることができる．
@@ -356,7 +356,7 @@ function getInfo3() {
           </div>
         </section>
         <section>
-          <h2>検索書式 - 親要素/子要素, 祖先要素/子孫要素</h2>
+          <h2>セレクタ - 親要素/子要素, 祖先要素/子孫要素</h2>
           <p><code>xタグ</code>の直下に<code>yタグ</code>があるとき，</p>
           <ul>
             <li><code>xタグ</code>のことを<code>yタグ</code>の親要素</li>
@@ -420,12 +420,12 @@ function getInfo3() {
             </li>
           </ul>
           <section>
-            <h3>検索書式</h3>
+            <h3>セレクタ</h3>
             <p>
               <code>"x y"</code>および<code>"x > y"</code
               >という記法を踏襲して，<code>querySelector</code> および
               <code>querySelectorAll</code>
-              に対する検索書式として次のようなものを使用することができる:
+              に対するセレクタとして次のようなものを使用することができる:
             </p>
             <ul>
               <li>
@@ -536,11 +536,11 @@ function getInfo4(search: string) {
           </section>
         </section>
         <section>
-          <h2>検索書式 - and 検索, or 検索</h2>
+          <h2>セレクタ - and 検索, or 検索</h2>
           <p>
             <code>querySelector</code> や
             <code>querySelectorAll</code>
-            に指定する検索書式にはさまざまなものがあるが，プログラミングなどで用いる条件式のように，柔軟ではない．しかし，簡単な構文ならば
+            に指定するセレクタにはさまざまなものがあるが，プログラミングなどで用いる条件式のように，柔軟ではない．しかし，簡単な構文ならば
             and 検索や or 検索が可能となる．
           </p>
           <ul>
@@ -561,7 +561,7 @@ function getInfo4(search: string) {
             <code>querySelector</code> や
             <code>querySelectorAll</code> を利用することになる．
           </p>
-          <p>以下では，検索書式の例をいくつか列挙する:</p>
+          <p>以下では，セレクタの例をいくつか列挙する:</p>
           <ul>
           <li><code>"p.classA"</code>: 「<code>&lt;p class="classA"&gt;</code>」となるタグ</li>
             <li>

@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOM構造とプロパティ</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+
+    <!-- 現在移行作業中 -->
+    <link rel="stylesheet" href="css/blocks-00.css" />
+    <link rel="stylesheet" href="css/code-00.css" />
+    <link rel="stylesheet" href="css/heading-00.css" />
+    <link rel="stylesheet" href="css/table-00.css" />
+    <link rel="stylesheet" href="css/layout-00.css" />
+    <link rel="stylesheet" href="css/tree-00.css" />
+    <link rel="stylesheet" href="css/toc-00.css" />
+
+    <!-- MathJaxライブラリの読み込み -->
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    <header>
+      <h1>DOM 構造とプロパティ (Element型) - TypeScript</h1>
+    </header>
+
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb-nav-grid">
+      <div class="breadcrumb-container">
+        <ul class="breadcrumb">
+          <li><a href="index.html">ホーム</a></li>
+          <li>
+            <a href="32-dom-summary-element.html"
+              >DOM 構造とプロパティ: Element 型とその派生</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="next-prev-links">
+        &lt; <a href="31-dom-summary-core.html" class="prev">前</a> |
+        <a href="" class="next">次</a>&gt;
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <main>
+      <section class="content">
+        <h1>DOM構造とプロパティ</h1>
+        <p>
+          前ページに引き続き，DOM
+          要素のさまざまな型とその主要な機能を紹介する．
+        </p>
+
+        <div class="toc">
+          <ul>
+            <li class="section-label"><a href="#element">Element 型</a></li>
+            <li><a href="#element-basic">基本情報の取得/設定</a></li>
+            <li><a href="#element-attr">属性操作</a></li>
+            <li><a href="#element-query">要素検索</a></li>
+            <li><a href="#element-domtree-search">DOM構造に基づく参照</a></li>
+            <li><a href="#element-domoperation">DOM変更操作</a></li>
+          </ul>
+          <ul>
+            <li class="section-label"><a href="#htmlelement">HTMLElement 型</a></li>
+            <li><a href="#htmlelement-basic">基本情報の取得/設定</a></li>
+            <li><a href="#htmlelement-event">イベント操作</a></li>
+            <li><a href="#htmlelement-style">スタイル操作</a></li>
+            <li><a href="#htmlelement-data-attr">data-* 属性操作</a></li>
+          </ul>
+          <ul>
+            <li class="section-label"><a href="#htmlelement-special">HTMLElement の派生型</a></li>
+          </ul>
+        </div>
+
+        <section>
+          <h2>DOM 要素におけるクラス構造</h2>
+          <p>DOM 要素のクラス構造は以下のようになっている:</p>
+          <div class="block-container theme-light">
+            <ul class="tree">
+              <li class="top-node">
+                <span>EventTarget</span>
+                <ul>
+                  <li>
+                    <span>Node</span>
+                    <ul>
+                      <li><span>Document</span></li>
+                      <li>
+                        <span>CharacterData</span>
+                        <ul>
+                          <li><span>Comment</span></li>
+                          <li><span>Text</span></li>
+                        </ul>
+                      </li>
+                      <li>
+                        <span>Element</span>
+                        <ul>
+                          <li>
+                            <span>HTMLElement</span>
+                            <ul>
+                              <li><span>HTMLInputElement</span></li>
+                              <li><span>HTMLTextAreaElement</span></li>
+                              <li><span>HTMLDivElement</span></li>
+                              <li><span>HTMLSpanElement</span></li>
+                              <li><span>HTMLButtonElement</span></li>
+                              <li><span>・・・</span></li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <p>
+            ここでは，<code>Element</code> 型およびその派生型について紹介する．
+          </p>
+        </section>
+
+        <section>
+          <h2 id="element">Element 型のプロパティ</h2>
+          <p>
+            <code>Element</code> 型は
+            <code>Node</code>
+            型から派生した型だが，大きな違いの一つは「属性を設定することができるか否か」という点である．そのため，属性関係のメソッドがここから登場する．
+          </p>
+          <p>
+            以下の例では，<code>elm</code> を
+            <code>Element</code> 型の変数としている．
+          </p>
+
+          <section>
+            <h4 id="element-basic">基本情報の取得 / 設定</h4>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-25" />
+                <col class="table-col-25" />
+                <col class="table-col-50" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.innerHTML;
+elm.innerHTML = val;</code></pre>
+                </td>
+                <td><code>val</code>: <code>string</code>型</td>
+                <td>
+                  そのタグの内容を HTML テキストとして取得 /
+                  設定する．設定する場合は，そのタグ内の内容が書き換えられる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.outerHTML;
+elm.outerHTML = val;</code></pre>
+                </td>
+                <td><code>val</code>: <code>string</code>型</td>
+                <td>
+                  そのタグ自身およびその内容を HTML テキストとして取得 /
+                  設定する．設定する場合は，そのタグ自体が書き換わる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.tagName;</code></pre>
+                </td>
+                <td>
+                  <code>val</code>: <code>string</code>型<br /><strong
+                    >読み取り専用</strong
+                  >
+                </td>
+                <td>そのタグ名を取得する．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre class="table"><code class="language-ts">let val = elm.id;
+elm.id = val;</code></pre>
+                </td>
+                <td><code>val</code>: <code>string</code>型</td>
+                <td>そのタグに設定されている id を取得 / 設定する．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.className;
+elm.className = val;</code></pre>
+                </td>
+                <td><code>val</code>: <code>string</code>型</td>
+                <td>
+                  そのタグに設定されている class
+                  を，空白区切りの文字列として設定時の文字列のままで取得する．trimming
+                  などの整形は行われない．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.classList;</code></pre>
+                </td>
+                <td>
+                  <code>val</code>: <code>DOMTokenList</code> 型<br /><strong
+                    >読み取り専用</strong
+                  >
+                </td>
+                <td>
+                  そのタグに設定されている class
+                  の配列のようなものを取得する．各 class 名は trimming
+                  済みである．この配列自体は読み取り専用なため，クラス操作をしたい場合は，DOMTokenList
+                  のメソッドである <code>.add</code> や
+                  <code>.remove</code> を利用する必要がある．
+                </td>
+              </tr>
+            </table>
+          </section>
+
+          <section>
+            <h4 id="element-attr">属性操作</h4>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-30" />
+                <col class="table-col-20" />
+                <col class="table-col-50" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let flag = elm.hasAttribute(attr);</code></pre>
+                </td>
+                <td>
+                  <code>attr</code>: <code>string</code> 型<br />
+                  <code>flag</code>: <code>boolean</code> 型
+                </td>
+                <td>
+                  指定した属性 <code>attr</code> をもつかどうかを bool
+                  値で返す．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.getAttribute(attr);</code></pre>
+                </td>
+                <td>
+                  <code>attr</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>string | null</code> 型
+                </td>
+                <td>
+                  指定した属性
+                  <code>attr</code> の値を取得する．存在しないときは
+                  <code>null</code> を返す．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.setAttribute(attr, val);</code></pre>
+                </td>
+                <td>
+                  <code>attr</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>string</code> 型
+                </td>
+                <td>
+                  指定した属性 <code>attr</code> に値
+                  <code>val</code> を設定する．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.removeAttribute(attr);</code></pre>
+                </td>
+                <td><code>attr</code>: <code>string</code> 型</td>
+                <td>指定した属性 <code>attr</code> を削除する．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.attributes;</code></pre>
+                </td>
+                <td><code>val</code>: <code>NamedNodeMap</code> 型<br /></td>
+                <td>
+                  属性情報からなる配列のようなものを返す．<code
+                    >let attr = val[i]</code
+                  >
+                  のようにして <code>Attr</code> 型の属性情報が取得できる．<code
+                    >attr.name</code
+                  >
+                  で属性名，<code>attr.value</code> で属性の値を
+                  <code>string</code> 型で取得できる．
+                </td>
+              </tr>
+            </table>
+          </section>
+
+          <section>
+            <h4 id="element-query">要素検索</h4>
+            <p>
+              以下は要素検索に使われるメソッドだが，<code>getElementById</code>は無い
+              (<code>document</code> 型専用)．
+            </p>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-35" />
+                <col class="table-col-30" />
+                <col class="table-col-35" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.getElementsByClassName(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>:
+                  <code>HTMLCollectionOf&lt;Element&gt;</code> 型
+                </td>
+                <td>
+                  指定した <code>p1</code> を class にもつ DOM 要素を検索し，Hit
+                  したものからなる
+                  <code>Element</code> 型の配列のようなものを返す．
+                  <strong
+                    >検索結果は常に最新の状態に保つという特性がある（定期的に再検索して検索結果を更新する）</strong
+                  >．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.querySelector(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>Element | null</code> 型<br />
+                  (またはその派生)
+                </td>
+                <td>
+                  指定したセレクタ <code>p1</code> で DOM 要素を検索し，最初に
+                  一致した要素を
+                  <code>Element</code> 型で返す．見つからない場合は
+                  <code>null</code> を返す．<code>p1</code> に規定の<span
+                    style="text-decoration: underline"
+                    >タグ名のみ</span
+                  >を入れると，返り値の型がより具体的な型になる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.querySelectorAll(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>:
+                  <code>NodeListOf&lt;Element&gt;</code> 型<br />
+                  (またはその派生)
+                </td>
+                <td>
+                  指定したセレクタ <code>p1</code> で DOM 要素を検索し，一致したものからなる
+                  <code>Element</code> 型の配列のようなものを返す．<strong
+                    >検索結果は検索した時点で固定される（再検索されない）．</strong
+                  ><code>p1</code> に規定の<span
+                    style="text-decoration: underline"
+                    >タグ名のみ</span
+                  >を入れると，返り値の型がより具体的な型になる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.closest(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>Element | null</code> 型<br />
+                  (またはその派生)
+                </td>
+                <td>
+                  指定したセレクタ
+                  <code>p1</code>
+                  に一致する最も近い先祖要素を返す．見つからないときは
+                  <code>null</code> を返す．<code>p1</code> に規定の<span
+                    style="text-decoration: underline"
+                    >タグ名のみ</span
+                  >を入れると，返り値の型がより具体的な型になる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.matches(p1);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>string</code> 型<br />
+                  <code>val</code>: <code>boolean</code> 型
+                </td>
+                <td>
+                  <code>elm</code> が指定しセレクタ
+                  <code>p1</code> に一致するかどうかを bool 値で返す．
+                </td>
+              </tr>
+            </table>
+          </section>
+
+          <section>
+            <h4 id="element-domtree-search">DOM 構造に基づく参照</h4>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-35" />
+                <col class="table-col-23" />
+                <col class="table-col-42" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.children;</code></pre>
+                </td>
+                <td>
+                  <code>val</code>: <code>HTMLCollection</code> 型<br />
+                  <strong>読み取り専用</strong>
+                </td>
+                <td>
+                  <code>elm</code>
+                  の子ノードのうち，要素ノードからなる配列のようなものを返す．（コメントノードやテキストノードは含まれない．）<strong
+                    >取得結果は常に最新の状態に保つという特性がある．</strong
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.childElementCount;</code></pre>
+                </td>
+                <td>
+                  <code>val</code>: <code>number</code> 型<br />
+                  <strong>読み取り専用</strong>
+                </td>
+                <td>
+                  <code>elm</code> の子ノードのうち，要素ノードの個数を返す．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.firstElementChild;</code></pre>
+                </td>
+                <td>
+                  <code>val</code>: <code>Element | null</code> 型<br />
+                  <strong>読み取り専用</strong>
+                </td>
+                <td>
+                  <code>elm</code> の子ノードのうち，最初の要素ノードを返す．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.lastElementChild;</code></pre>
+                </td>
+                <td>
+                  <code>val</code>: <code>Element | null</code> 型<br />
+                  <strong>読み取り専用</strong>
+                </td>
+                <td>
+                  <code>elm</code> の子ノードのうち，最後の要素ノードを返す．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.nextElementSibling;</code></pre>
+                </td>
+                <td>
+                  <code>val</code>: <code>Element | null</code> 型<br />
+                  <strong>読み取り専用</strong>
+                </td>
+                <td>
+                  <code>elm</code>
+                  以降の兄弟ノードのうち，一番近い要素ノードを返す．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.previousElementSibling;</code></pre>
+                </td>
+                <td>
+                  <code>val</code>: <code>Element | null</code> 型<br />
+                  <strong>読み取り専用</strong>
+                </td>
+                <td>
+                  <code>elm</code>
+                  より前の兄弟ノードのうち，一番近い要素ノードを返す．
+                </td>
+              </tr>
+            </table>
+          </section>
+
+          <section>
+            <h4 id="element-domoperation">DOM 変更操作</h4>
+            <p>
+              以下において，各説明にも書いてはいるが，テキストを指定した場合はテキストノードとして解釈される．また，対象ノードがすでに他の場所に存在する場合は，自動的に移動される（複製はされない）．
+            </p>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-25" />
+                <col class="table-col-20" />
+                <col class="table-col-55" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.append(p1, p2, ...);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node | string</code> 型<br />
+                  <code>p2</code>: <code>Node | string</code> 型<br />
+                  ...
+                </td>
+                <td>
+                  <code>p1</code>, <code>p2</code>, ...
+                  の順を保った形で，末尾に子ノードとして追加する．<code
+                    >p1</code
+                  >
+                  達について，文字列の場合はテキストノードとして追加される．また，ノードの場合は
+                  「<strong>切り取り→貼り付け</strong>」のような挙動で追加されるため，元々いた場所から消える．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.prepend(p1, p2, ...);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node | string</code> 型<br />
+                  <code>p2</code>: <code>Node | string</code> 型<br />
+                  ...
+                </td>
+                <td>
+                  <code>p1</code>, <code>p2</code>, ...
+                  の順を保った形で，先頭に子ノードとして追加する．<code
+                    >p1</code
+                  >
+                  達について，文字列の場合はテキストノードとして追加される．また，ノードの場合は
+                  「<strong>切り取り→貼り付け</strong>」のような挙動で追加されるため，元々いた場所から消える．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.before(p1, p2, ...);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node | string</code> 型<br />
+                  <code>p2</code>: <code>Node | string</code> 型<br />
+                  ...
+                </td>
+                <td>
+                  <code>p1</code>, <code>p2</code>, ... の順を保った形で，ノード
+                  <code>elm</code> の直前に兄弟ノードとして追加する．<code
+                    >p1</code
+                  >
+                  達について，文字列の場合はテキストノードとして追加される．また，ノードの場合は
+                  「<strong>切り取り→貼り付け</strong>」のような挙動で追加されるため，元々いた場所から消える．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.after(p1, p2, ...);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node | string</code> 型<br />
+                  <code>p2</code>: <code>Node | string</code> 型<br />
+                  ...
+                </td>
+                <td>
+                  <code>p1</code>, <code>p2</code>, ... の順を保った形で，ノード
+                  <code>elm</code> の直後に兄弟ノードとして追加する．<code
+                    >p1</code
+                  >
+                  達について，文字列の場合はテキストノードとして追加される．また，ノードの場合は
+                  「<strong>切り取り→貼り付け</strong>」のような挙動で追加されるため，元々いた場所から消える．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.replaceWith(p1, p2, ...);</code></pre>
+                </td>
+                <td>
+                  <code>p1</code>: <code>Node | string</code> 型<br />
+                  <code>p2</code>: <code>Node | string</code> 型<br />
+                  ...
+                </td>
+                <td>
+                  <code>p1</code>, <code>p2</code>, ... の順を保った形で，ノード
+                  <code>elm</code> を<code>p1</code>, <code>p2</code>, ...
+                  に置換する．<code>p1</code>
+                  達について，文字列の場合はテキストノードとして追加される．また，node
+                  の場合は
+                  「<strong>切り取り→貼り付け</strong>」のような挙動で追加されるため，元々いた場所から消える．置き換え元のノード
+                  <code>elm</code>
+                  は親ノード情報等が消えるだけで，インスタンスとしては残っている．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.remove();</code></pre>
+                </td>
+                <td>-</td>
+                <td>
+                  自身を親ノードから削除する．削除したノード
+                  <code>elm</code>
+                  は親ノード情報等が消えるだけで，インスタンスとしては残っている．
+                </td>
+              </tr>
+            </table>
+          </section>
+
+          <div class="block-info">
+            <span class="icon"></span>
+            <div class="text-content">
+              <p>
+                <code>querySelector</code>, <code>querySelectorAll</code>,
+                <code>createElement</code>,
+                <code>closest</code>
+                関数の戻り値の型は，引数の型によって変化する．例えば
+                <code>querySelector</code> の場合，
+              </p>
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">let val1 = elm.querySelector('div'); // val1 は HTMLDivElement
+
+let tag = 'div';
+let val2 = elm.querySelector(tag); // val2 は HTMLElement</code></pre>
+              </div>
+              <p>である．渡される値で変化するわけではない．</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h2 id="htmlelement">HTMLElement 型のプロパティ</h2>
+          <p>
+            <code>HTMLElement</code> 型は
+            <code>Element</code>
+            型から派生した型だが，大きな違いの一つは「スタイルを設定することができるか否か」という点である．そのため，画面表示に関わるタグが多い．
+          </p>
+          <p>
+            以下の例では，<code>elm</code> を
+            <code>HTMLElement</code> 型の変数としている．
+          </p>
+
+          <section>
+            <h4 id="htmlelement-basic">基本情報の取得・設定</h4>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-30" />
+                <col class="table-col-20" />
+                <col class="table-col-50" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.innerText;
+elm.innerText = val;</code></pre>
+                </td>
+                <td><code>val</code>: <code>string</code>型</td>
+                <td>
+                  レイアウトを保った形で，表示されているテキストを取得する．レイアウトを可能な限り保った形でテキストを設定する．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.tabIndex;
+elm.tabIndex = val;</code></pre>
+                </td>
+                <td><code>val</code>: <code>number</code> 型</td>
+                <td>
+                  tab index を取得 / 設定をする．tab index を設定すると，tab
+                  stop の対象となり，数値の大小で巡回順が決まる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.hidden;
+elm.hidden = val;</code></pre>
+                </td>
+                <td><code>val</code>: <code>boolean</code> 型</td>
+                <td>
+                  hidden 属性の bool 値を取得・設定できる．<code>true</code>
+                  をセットすると非表示になる．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.title;
+elm.title = val;</code></pre>
+                </td>
+                <td><code>val</code>: <code>string</code> 型</td>
+                <td>
+                  title
+                  属性の値を取得・設定できる．値をセットすると，その値がツールチップとして表示される．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.isContentEditable;</code></pre>
+                </td>
+                <td>
+                  <code>val</code>: <code>boolean</code> 型<br />
+                  <strong>読み取り専用</strong>
+                </td>
+                <td>
+                  DOM 要素 <code>elm</code> が編集可能状態にあるかを bool
+                  値で取得する．編集可能状態には色々と種類があり，細かい種類まで認識する場合は
+                  <code>contentEditable</code> により
+                  <code>contenteditable</code> 属性の値を取得する必要がある．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let val = elm.contentEditable;
+elm.contentEditable = val;
+                </code></pre>
+                </td>
+                <td><code>val</code>: <code>string</code> 型</td>
+                <td>
+                  contenteditable
+                  属性の値を取得・設定できる．不正な値は無視される．主要な値は以下:
+                  <ul style="margin: 0">
+                    <li><code>"true"</code> 編集可能</li>
+                    <li><code>"plaintext-only"</code> 編集可能 (装飾不可)</li>
+                    <li><code>"false"</code> 編集不可</li>
+                    <li><code>"inherit"</code> 初期状態</li>
+                  </ul>
+                </td>
+              </tr>
+            </table>
+          </section>
+          <section>
+            <h4 id="htmlelement-event">イベント操作</h4>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-30" />
+                <col class="table-col-25" />
+                <col class="table-col-45" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.click();</code></pre>
+                </td>
+                <td>-</td>
+                <td><code>elm</code> を（プログラム側から）クリックする．</td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.focus();</code></pre>
+                </td>
+                <td>-</td>
+                <td>
+                  <code>elm</code> を (プログラム側から) focus
+                  された状態にする．
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">elm.blur();</code></pre>
+                </td>
+                <td>-</td>
+                <td>
+                  <code>elm</code> を (プログラム側から) focus
+                  が外れた状態にする．
+                </td>
+              </tr>
+            </table>
+          </section>
+
+          <section>
+            <h4 id="htmlelement-style">スタイル操作</h4>
+            <p>
+              タグには，style 属性によって様々な装飾等を与えることができる．
+            </p>
+            <p>
+              この <code>style</code> 属性を便利に取り扱うためのプロパティとして
+              <code>.style</code>
+              プロパティがある．使用するためには，<code>.style</code>プロパティの使い方も知らなければならない．
+            </p>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-30" />
+                <col class="table-col-25" />
+                <col class="table-col-45" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let style = elm.style;
+elm.style = cssText;</code></pre>
+                </td>
+                <td>
+                  <code>style</code>: <code>CSSStyleDeclaration</code> 型<br />
+                  <strong>読み取り専用</strong><br />
+                  <code>cssText</code>: <code>string</code> 型
+                </td>
+                <td>
+                  <code>style</code>
+                  属性を便利に扱うためのクラスを取得する．<code
+                    >CSSStyleDeclaration</code
+                  >
+                  型としては読み取り専用だが，文字列 (<code>"color: blue;"</code
+                  >など)
+                  を渡したときは，内部において別のメソッド経由でスタイルを更新している．
+                  ただし，渡した style
+                  でスタイル全体が書き換わるので注意（指定したスタイルプロパティの値のみ更新ではない）．
+                </td>
+              </tr>
+            </table>
+
+            <section>
+              <h5>CSSStyleDeclaration 型</h5>
+              <p>
+                以下の例において，変数 <code>style</code> は，DOM 要素
+                <code>elm</code> (<code>HTMLElement</code> 型) に対して，
+              </p>
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">let style = elm.style;</code></pre>
+              </div>
+              <p>
+                によって取得されたものとする．スタイルのプロパティ名には 2
+                種類のフォーマットがある．一つは kebab-case であり，<code
+                  >background-color</code
+                >
+                のように，ハイフンを使った表現である． もう一つは camelCase
+                であり，<code>backgroundColor</code>
+                のように，ハイフンを使わない表現である．ハイフンを除去して直後の文字を大文字にする，という関係で両者が結びついている．
+              </p>
+              <table class="custom-table skin-orange">
+                <colgroup>
+                  <col class="table-col-35" />
+                  <col class="table-col-25" />
+                  <col class="table-col-40" />
+                </colgroup>
+                <tr>
+                  <th>構文</th>
+                  <th>パラメータ，戻り値</th>
+                  <th>説明</th>
+                </tr>
+                <tr>
+                  <td>
+                    <pre
+                      class="table"
+                    ><code class="language-ts">let val = style.cssText;<br>
+style.cssText = val;</code></pre>
+                  </td>
+                  <td><code>val</code>: <code>string</code> 型</td>
+                  <td>
+                    渡した style (<code>'color:blue;'</code>
+                    など)でスタイル全体を書き換える．
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <pre
+                      class="table"
+                    ><code class="language-ts">let val = style.getPropertyValue(prop);</code></pre>
+                  </td>
+                  <td>
+                    <code>prop</code>: <code>string</code> 型<br />
+                    <code>val</code>: <code>string</code> 型<br />
+                  </td>
+                  <td>
+                    指定したプロパティ名 <code>prop</code> (kebab-case) の値
+                    <code>val</code> を取得する．存在しない時は空文字を返す．
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <pre
+                      class="table"
+                    ><code class="language-ts">style.setProperty(prop, val);</code></pre>
+                  </td>
+                  <td>
+                    <code>prop</code>: <code>string</code> 型<br />
+                    <code>val</code>: <code>string | null</code> 型<br />
+                  </td>
+                  <td>
+                    指定したプロパティ名 <code>prop</code> (kebab-case) に値
+                    <code>val</code> をセットする．<code>null</code>
+                    は空文字として扱われる．
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <pre
+                      class="table"
+                    ><code class="language-ts">let val = style.removeProperty(prop);</code></pre>
+                  </td>
+                  <td>
+                    <code>prop</code>: <code>string</code> 型<br />
+                    <code>val</code>: <code>string</code> 型
+                  </td>
+                  <td>
+                    指定したプロパティ名 <code>prop</code> (kebab-case)
+                    のスタイルを削除し，その値を返す．
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <pre class="table"><pre
+                    class="table theme-dark" style="border-radius: 3px;"
+                  ><span class="hljs-comment">//オブジェクトアクセス (bracket)</span>
+<span class="hljs-keyword">let</span> val = style[<span style="color:orange; font-style: italic;">prop</span>];
+style[<span style="color:orange; font-style: italic;">prop</span>] = val;</pre></pre>
+                  </td>
+                  <td>
+                    <code>prop</code>: <code>string</code> 型<br />
+                    <code>val</code>: <code>string</code>
+                  </td>
+                  <td>
+                    指定したプロパティ名 <code>prop</code> (kebab-case)
+                    のスタイルを取得・設定する．
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <pre
+                      class="table theme-dark"
+                      style="border-radius: 3px"
+                    ><span class="hljs-comment">//オブジェクトアクセス (dot)</span>
+<span class="hljs-keyword">let</span> val = style.<span style="color:orange; font-style: italic;">prop</span>;
+style.<span style="color:orange; font-style: italic;">prop</span> = val;</pre>
+                  </td>
+                  <td>
+                    <code>prop</code>: <code>string</code> 型<br />
+                    <code>val</code>: <code>string</code>
+                  </td>
+                  <td>
+                    指定したプロパティ名 <code>prop</code> (camelCase)
+                    に対応するスタイルを取得・設定する．
+                  </td>
+                </tr>
+              </table>
+            </section>
+          </section>
+
+          <section>
+            <h4 id="htmlelement-data-attr">data-* 属性操作</h4>
+            <p>
+              タグには任意文字列の属性が設定可能だが，属性名の衝突が発生したり，将来の仕様変更で変数の衝突が起こったりと，好き勝手に設定するとリスクが高い．そこで，カスタム属性として安全に使用することを可能にする属性名として
+              <code>data-*</code> 属性と呼ばれるものがある．
+            </p>
+            <ul>
+              <li>prefix は <code>data-</code> である．</li>
+              <li>
+                使用できる文字列は小文字アルファベットまたはハイフンである．
+              </li>
+            </ul>
+            <p>
+              この
+              <code>data-*</code> 属性を便利に取り扱うためのプロパティとして
+              <code>.dataset</code>
+              プロパティがある．使用するためには，<code>.dataset</code>プロパティの使い方も知らなければならない．
+            </p>
+            <table class="custom-table">
+              <colgroup>
+                <col class="table-col-30" />
+                <col class="table-col-50" />
+                <col class="table-col-20" />
+              </colgroup>
+              <tr>
+                <th>構文</th>
+                <th>パラメータ，戻り値</th>
+                <th>説明</th>
+              </tr>
+              <tr>
+                <td>
+                  <pre
+                    class="table"
+                  ><code class="language-ts">let ds = elm.dataset;</code></pre>
+                </td>
+                <td><code>ds</code>: <code>DOMStringMap</code> 型</td>
+                <td>
+                  <code>data-*</code> 属性を便利に扱うためのクラスを取得する．
+                </td>
+              </tr>
+            </table>
+
+            <section>
+              <h5>DOMStringMap 型</h5>
+              <p>
+                以下の例において，変数 <code>ds</code> は，DOM 要素
+                <code>elm</code> (<code>HTMLElement</code> 型) に対して，
+              </p>
+              <div class="block-container theme-dark">
+                <pre><code class="language-ts">let ds = elm.dataset;</code></pre>
+              </div>
+              <p>
+                によって取得されたものとする．この型は
+                <code>data-*</code>
+                属性をドットアクセス可能にするためのものである．<code
+                  >data-*</code
+                >
+                には 2 つのフォーマットがある． 一つは kebab-case であり，<code
+                  >data-custom-attr</code
+                >
+                のように，ハイフンを使った表現である．こちらは，<code
+                  >setAttribute</code
+                >
+                など，直接属性操作をするときに使用する．もう一つは dataset key
+                であり，<code>customAttr</code> のように，prefix である
+                <code>data-</code> およびハイフンを使わない表現である．prefix
+                である
+                <code>data-</code>
+                を除去したあと，「ハイフンを除去して直後の文字を大文字にする」という関係で両者が結びついている．
+              </p>
+              <table class="custom-table skin-orange">
+                <colgroup>
+                  <col class="table-col-35" />
+                  <col class="table-col-25" />
+                  <col class="table-col-40" />
+                </colgroup>
+                <tr>
+                  <th>構文</th>
+                  <th>パラメータ，戻り値</th>
+                  <th>説明</th>
+                </tr>
+                <tr>
+                  <td>
+                    <pre class="table"><pre
+                    class="table theme-dark" style="border-radius: 3px;"
+                  ><span class="hljs-comment">//オブジェクトアクセス (bracket)</span>
+<span class="hljs-keyword">let</span> val = ds[<span style="color:orange; font-style: italic;">customAttr</span>];
+ds[<span style="color:orange; font-style: italic;">customAttr</span>] = val;</pre></pre>
+                  </td>
+                  <td>
+                    <code>customAttr</code>: <code>string</code> 型<br />
+                    <code>val</code>: <code>string</code>
+                  </td>
+                  <td>
+                    指定したプロパティ名 <code>customAttr</code> (camelCase) に対応する
+                    <code>data-*</code> 属性を取得・設定する．
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <pre
+                      class="table theme-dark"
+                      style="border-radius: 3px"
+                    ><span class="hljs-comment">//オブジェクトアクセス (dot)</span>
+<span class="hljs-keyword">let</span> val = ds.<span style="color:orange; font-style: italic;">customAttr</span>;
+ds.<span style="color:orange; font-style: italic;">customAttr</span> = val;</pre>
+                  </td>
+                  <td>
+                    <code>dataCustomAttr</code>: <code>string</code> 型<br />
+                    <code>val</code>: <code>string</code>
+                  </td>
+                  <td>
+                    指定したプロパティ名 <code>customAttr</code> (camelCase) に対応する
+                    <code>data-*</code> 属性を取得・設定する．
+                  </td>
+                </tr>
+              </table>
+            </section>
+          </section>
+        </section>
+
+        <section>
+          <h2 id="htmlelement-special">HTMLElement の派生型</h2>
+          <p>
+            DOM
+            では，具体的なタグそれぞれにつき，具体的な型が対応していることが多い．そのような型は，
+          </p>
+          <ul>
+            <li>
+              そのタグ特有の属性（例: <code>input</code> タグなら
+              <code>value</code> 属性など）をプロパティアクセス可能にする
+            </li>
+          </ul>
+          <p>
+            という設計思想のもとで拡張されている．さて，属性へのアクセスは，<code
+              >getAttribute</code
+            >
+            などで取得等が可能である．また，そのタグ特有の属性を使わないならば，その具体的な派生型にする必要性は薄い．
+            しかし，型をより具体的に制限することにより，将来の仕様変更の際にエラーがすぐに検出されるなど，より安全な
+            coding が可能となる．そのことから，特にそのタグ特有の属性が存在しなくても，あえて特化型を使うことはある．
+          </p>
+          <p><code>&lt;xxx&gt;</code> というタグは <code>HTMLXxxElement</code> 型に対応していることが多いが，いくつか例外がある（例: <code>a</code> タグ）ため，必要に応じて調べるのが確実である．</p>
+          <p>以下では，主要なタグに対し，対応する特化型を名前のみ紹介する．</p>
+          <table class="custom-table">
+            <colgroup>
+              <col class="table-col-30" />
+              <col class="table-col-70" />
+            </colgroup>
+            <tr>
+              <th>タグ（一部）</th>
+              <th>対応する特化型</th>
+            </tr>
+            <tr>
+              <td><code>a</code>タグ</td>
+              <td><code>HTMLAnchorElement</code> 型</td>
+            </tr>
+            <tr>
+              <td><code>button</code>タグ</td>
+              <td><code>HTMLButtonElement</code> 型</td>
+            </tr>
+            <tr>
+              <td><code>input</code>タグ</td>
+              <td><code>HTMLInputElement</code> 型</td>
+            </tr>
+            <tr>
+              <td><code>textarea</code>タグ</td>
+              <td><code>HTMLTextAreaElement</code> 型</td>
+            </tr>
+            <tr>
+              <td><code>div</code>タグ</td>
+              <td><code>HTMLDivElement</code> 型</td>
+            </tr>
+            <tr>
+              <td><code>span</code>タグ</td>
+              <td><code>HTMLSpanElement</code> 型</td>
+            </tr>
+          </table>
+        </section>
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer>
+      <small>Copyright &copy; 2025 by RubySafi. All right reserved.</small>
+    </footer>
+
+    <!-- コードハイライト用のスクリプト -->
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="css/table-00.css" />
     <link rel="stylesheet" href="css/layout-00.css" />
     <link rel="stylesheet" href="css/tree-00.css" />
-
+    <link rel="stylesheet" href="css/toc-00.css" />
+    
     <!-- MathJaxライブラリの読み込み -->
     <script
       id="MathJax-script"
@@ -30,7 +31,7 @@
   <body>
     <!-- ヘッダー -->
     <header>
-      <h1>DOM 構造とプロパティ: DOM基礎型 - TypeScript</h1>
+      <h1>DOM 構造とプロパティ (DOM基礎型) - TypeScript</h1>
     </header>
 
     <!-- パンくずリスト -->
@@ -40,14 +41,14 @@
           <li><a href="index.html">ホーム</a></li>
           <li>
             <a href="31-dom-summary-core.html"
-              >DOM 構造とプロパティ: DOM基礎型</a
+              >DOM 構造とプロパティ: DOM 基礎型</a
             >
           </li>
         </ul>
       </div>
       <div class="next-prev-links">
         &lt; <a href="30-dom-attr-pseudo.html" class="prev">前</a> |
-        <a href="" class="next">次</a>&gt;
+        <a href="32-dom-summary-element.html" class="next">次</a>&gt;
       </div>
     </nav>
 
@@ -59,6 +60,23 @@
           今まで様々な DOM
           要素とその操作方法について学んできたが，ここでは，未紹介だったものも含めて，主要な機能をまとめて紹介する．
         </p>
+
+        <div class="toc">
+          <ul>
+            <li class="section-label"><a href="#eventtarget">EventTarget 型</a></li>
+          </ul>
+          <ul>
+            <li class="section-label"><a href="#node">Node 型</a></li>
+            <li><a href="#node-relatednode">関連する Node の取得</a></li>
+            <li><a href="#node-basicinfo">Node の情報の取得 / 設定</a></li>
+            <li><a href="#node-operation">Node 操作</a></li>
+          </ul>
+          <ul>
+            <li class="section-label"><a href="#document">Document 型</a></li>
+            <li><a href="#docuemnt-query">DOM 要素の検索</a></li>
+            <li><a href="#document-createnode">ノードの作成</a></li>
+          </ul>
+        </div>
 
         <section>
           <h2>DOM 要素におけるクラス構造</h2>
@@ -130,7 +148,7 @@
           </p>
         </section>
         <section>
-          <h2>EventTarget 型</h2>
+          <h2 id = "eventtarget">EventTarget 型</h2>
           <p>
             <code>EventTarget</code> 型は，すべての DOM
             要素に対する最上位の型であり，ユーザーが要素に対して行うクリックなどのイベントを管理するための型である．<code
@@ -179,7 +197,7 @@
           </table>
         </section>
         <section>
-          <h2>Node 型</h2>
+          <h2 id = "node">Node 型</h2>
           <section>
             <h3>Node とツリー構造</h3>
             <p>
@@ -338,7 +356,7 @@
           </section>
 
           <section>
-            <h4>関連する Node の取得</h4>
+            <h4 id="node-relatednode">関連する Node の取得</h4>
             <table class="custom-table">
               <colgroup>
                 <col class="table-col-30" />
@@ -432,7 +450,7 @@ let val = cur.nextSibling;</code></pre>
             </table>
           </section>
           <section>
-            <h4>Node の情報の取得 / 設定</h4>
+            <h4 id="node-basicinfo">Node の情報の取得 / 設定</h4>
             <table class="custom-table">
               <colgroup>
                 <col class="table-col-25" />
@@ -532,7 +550,7 @@ cur.nodeValue = val;
             </table>
           </section>
           <section>
-            <h4>Node 操作</h4>
+            <h4 id="node-operation">Node 操作</h4>
             <table class="custom-table">
               <colgroup>
                 <col class="table-col-30" />
@@ -675,7 +693,7 @@ cur.replaceChild(p1, p2);</code></pre>
           </section>
         </section>
         <section>
-          <h2>Document 型のプロパティ</h2>
+          <h2 id="document">Document 型のプロパティ</h2>
           <p>
             以下の例では <code>doc</code> を
             <code>Document</code> 型の変数としているが，普通は
@@ -683,7 +701,7 @@ cur.replaceChild(p1, p2);</code></pre>
             <code>document</code> に対して使用する．
           </p>
           <section>
-            <h4>DOM 要素の検索</h4>
+            <h4 id="docuemnt-query">DOM 要素の検索</h4>
             <table class="custom-table">
               <colgroup>
                 <col class="table-col-34" />
@@ -710,7 +728,8 @@ cur.replaceChild(p1, p2);</code></pre>
                   要素を検索する．見つからない場合は
                   <code>null</code> を返す．id は，通常
                   <code>HTMLElement</code>
-                  型のタグに付けられるという前提に基づき，返る型が <code>HTMLElement | null</code> に制限されている．
+                  型のタグに付けられるという前提に基づき，返る型が
+                  <code>HTMLElement | null</code> に制限されている．
                 </td>
               </tr>
               <tr>
@@ -726,7 +745,8 @@ cur.replaceChild(p1, p2);</code></pre>
                 </td>
                 <td>
                   指定した <code>p1</code> を class にもつ DOM 要素を検索し，Hit
-                  したものからなる <code>Element</code> 型の配列のようなものを返す．
+                  したものからなる
+                  <code>Element</code> 型の配列のようなものを返す．
                   <strong
                     >検索結果は常に最新の状態に保つという特性がある（定期的に再検索して検索結果を更新する）</strong
                   >．
@@ -740,12 +760,17 @@ cur.replaceChild(p1, p2);</code></pre>
                 </td>
                 <td>
                   <code>p1</code>: <code>string</code> 型<br />
-                  <code>val</code>: <code>Element | null</code> 型
+                  <code>val</code>: <code>Element | null</code> 型<br />
+                  (またはその派生)
                 </td>
                 <td>
-                  指定した検索書式 <code>p1</code> で DOM 要素を検索し，最初に
-                  Hit した要素を <code>Element</code> 型で返す．見つからない場合は
-                  <code>null</code> を返す．
+                  指定したセレクタ <code>p1</code> で DOM 要素を検索し，最初に
+                  Hit した要素を
+                  <code>Element</code> 型で返す．見つからない場合は
+                  <code>null</code> を返す．<code>p1</code> に規定の<span
+                    style="text-decoration: underline"
+                    >タグ名のみ</span
+                  >を入れると，返り値の型がより具体的な型になる．
                 </td>
               </tr>
               <tr>
@@ -756,20 +781,26 @@ cur.replaceChild(p1, p2);</code></pre>
                 </td>
                 <td>
                   <code>p1</code>: <code>string</code> 型<br />
-                  <code>val</code>: <code>NodeListOf&lt;Element&gt;</code> 型
+                  <code>val</code>:
+                  <code>NodeListOf&lt;Element&gt;</code> 型<br />
+                  (またはその派生)
                 </td>
                 <td>
-                  指定した検索書式 <code>p1</code> で DOM 要素を検索し，Hit
-                  したものからなる <code>Element</code> 型の配列のようなものを返す．<strong
+                  指定したセレクタ <code>p1</code> で DOM 要素を検索し，Hit
+                  したものからなる
+                  <code>Element</code> 型の配列のようなものを返す．<strong
                     >検索結果は検索した時点で固定される（再検索されない）．</strong
-                  >
+                  ><code>p1</code> に規定の<span
+                    style="text-decoration: underline"
+                    >タグ名のみ</span
+                  >を入れると，返り値の型がより具体的な型になる．
                 </td>
               </tr>
             </table>
           </section>
 
           <section>
-            <h4>ノードの作成</h4>
+            <h4 id="document-createnode">ノードの作成</h4>
             <p>
               主要なノードである，要素ノード，テキストノード，コメントノードの 3
               つのノードを作成する．以下において <code>Text</code> 型および
@@ -846,19 +877,21 @@ cur.replaceChild(p1, p2);</code></pre>
                 </td>
               </tr>
             </table>
-                        <div class="block-info">
+            <div class="block-info">
               <span class="icon"></span>
               <div class="text-content">
                 <p>
-                  <code>createElement</code> の関数の戻り値の型は，引数の型によって変化する．例えば，
+                  <code>querySelector</code>, <code>querySelectorAll</code>,
+                  <code>createElement</code>
+                  の関数の戻り値の型は，引数の型によって変化する．例えば <code>createElement</code> の場合，
                 </p>
                 <div class="block-container theme-dark">
-            <pre><code class="language-ts">let val = document.createElement('div'); // val は HTMLDivElement
+                  <pre><code class="language-ts">let val1 = document.createElement('div'); // val1 は HTMLDivElement
 
 let tag = 'div';
-let val = document.createElement(tag); // val は HTMLElement</code></pre>
-          </div>
-              <p>である．渡される値で変化するわけではない．</p>
+let val2 = document.createElement(tag); // val2 は HTMLElement</code></pre>
+                </div>
+                <p>である．渡される値で変化するわけではない．</p>
               </div>
             </div>
           </section>

@@ -50,7 +50,7 @@
     <main>
       <section class="content">
         <section>
-          <h2>属性・状態と検索書式</h2>
+          <h2>属性・状態とセレクタ</h2>
           <p>属性とは，</p>
           <div
             class="block-container label-custom theme-light"
@@ -76,7 +76,7 @@
           </p>
           <p>
             DOM
-            要素を検索する際は，<code>xxx.querySelector(検索書式)</code>を使うことで調べることができる．検索書式は<a
+            要素を検索する際は，<code>xxx.querySelector(セレクタ)</code>を使うことで調べることができる．セレクタは<a
               href="28-dom-query.html"
               >querySelector のページ</a
             >において，
@@ -93,8 +93,8 @@
           </p>
         </section>
         <section>
-          <h2>属性の検索書式</h2>
-          <p>属性の検索書式は，以下のものが用意されている:</p>
+          <h2>属性のセレクタ</h2>
+          <p>属性のセレクタは，以下のものが用意されている:</p>
           <ul>
             <li><code>[attr]</code> DOM要素は属性 attr をもつ</li>
             <li>
@@ -180,7 +180,7 @@
                 </div>
               </div>
               <div id="ex1-1">
-                <strong>検索書式</strong>
+                <strong>セレクタ</strong>
                 <div style="display: flex; gap: 1em; padding-bottom: 10px">
                   <div style="display: flex; flex-direction: column">
                     <label
@@ -322,8 +322,8 @@
                 ...）．例えば，<code>n=2</code>なら<code>:nth-child(2)</code>と書く．
               </li>
               <li>
-                <code>:not(検索書式)</code>
-                検索書式を満たさない要素（<strong>複雑な検索書式は対応していない</strong>）
+                <code>:not(セレクタ)</code>
+                セレクタを満たさない要素（<strong>複雑なセレクタは対応していない</strong>）
               </li>
             </ul>
             <section>
@@ -362,7 +362,7 @@
                       padding-bottom: 10px;
                     "
                   >
-                    <strong>検索書式</strong>
+                    <strong>セレクタ</strong>
                     <label
                       ><input
                         type="radio"
@@ -441,7 +441,7 @@
               <p>
                 下記の例は，チェック状態/未チェック状態の input
                 タグを検出するプログラムだが，ラジオボタンの value
-                属性に検索書式をセットしている．このように，check
+                属性にセレクタをセットしている．このように，check
                 状態のときに行いたい挙動を value
                 属性に設定しておくと便利である．
               </p>
@@ -464,7 +464,7 @@
 &lt;!-- 検出ロジックの UI --&gt;
 &lt;div id="ex3-1"&gt;
   &lt;div&gt;
-    &lt;strong&gt;検索書式&lt;/strong&gt;
+    &lt;strong&gt;セレクタ&lt;/strong&gt;
     &lt;label&gt;&lt;input type="radio" name="ex3-search" value='input:checked'&gt;:checked&lt;/label&gt;
     &lt;label&gt;&lt;input type="radio" name="ex3-search" value='input:not(:checked)'&gt;:not(:checked)&lt;/label&gt;
   &lt;/div&gt;
@@ -514,7 +514,7 @@
                   </div>
                   <div id="ex3-1">
                     <div>
-                      <strong>検索書式</strong>
+                      <strong>セレクタ</strong>
                       <label
                         ><input
                           type="radio"
@@ -572,7 +572,7 @@ function searchAndGo(search: string) {
     if (elmRes && elmExp) {
       let text = '';
       if (search === '') {
-        text = '検索書式を選択してください';
+        text = 'セレクタを選択してください';
       } else {
         let resList = elmEx3.querySelectorAll(search);
         elmExp.innerHTML = `&lt;span style="background-color: #c8c8c8;"&gt;querySelectorAll('${search}')&lt;/span&gt;`;

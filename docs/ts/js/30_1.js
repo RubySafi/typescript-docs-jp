@@ -27,7 +27,7 @@ function searchAndGo(search) {
         if (elmRes && elmExp) {
             let text = '';
             if (search === '') {
-                text = '検索書式を選択してください';
+                text = 'セレクタを選択してください';
             }
             else {
                 let resList = elmEx1.querySelectorAll(search);
